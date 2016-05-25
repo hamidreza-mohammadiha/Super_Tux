@@ -25,6 +25,8 @@
 
 #include "util/writer.hpp"
 
+typedef SDLKey SDL_Keycode;
+
 class KeyboardConfig
 {
 public:

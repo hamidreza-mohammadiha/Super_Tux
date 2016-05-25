@@ -152,7 +152,8 @@ TextureManager::create_image_texture_raw(const std::string& filename, const Rect
   SDL_PixelFormat* format = image->format;
   if(format->Rmask == 0 && format->Gmask == 0 && format->Bmask == 0 && format->Amask == 0) {
     log_debug << "Wrong surface format for image " << filename << ". Compensating." << std::endl;
-    image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGBA8888, 0);
+    //image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGBA8888, 0);
+    image = SDL_ConvertSurface(image, SDL_GetVideoSurface()->format, 0);
   }
 
   SDLSurfacePtr subimage(SDL_CreateRGBSurfaceFrom(static_cast<uint8_t*>(image->pixels) +
@@ -170,12 +171,14 @@ TextureManager::create_image_texture_raw(const std::string& filename, const Rect
     throw std::runtime_error("SDL_CreateRGBSurfaceFrom() call failed");
   }
 
-#ifdef OLD_SDL
   if (image->format->palette)
   { // copy the image palette to subimage if present
-    SDL_SetSurfacePalette(subimage.get(), image->format->palette->colors);
+    SDL_SetColors(subimage.get(), image->format->palette->colors, 0, image->format->palette->ncolors);
   }
-#endif
+  if (image->flags & SDL_SRCCOLORKEY)
+  { // Some images use colorkey transparency
+    SDL_SetColorKey(subimage.get(), SDL_SRCCOLORKEY, image->format->colorkey);
+  }
 
   return VideoSystem::current()->new_texture(subimage.get());
 }
@@ -246,6 +249,7 @@ TextureManager::create_dummy_texture()
 void
 TextureManager::save_textures()
 {
+#if 0
 #if defined(GL_PACK_ROW_LENGTH) || defined(USE_GLBINDING)
   /* all this stuff is not support by OpenGL ES */
   glPixelStorei(GL_PACK_ROW_LENGTH, 0);
@@ -271,11 +275,13 @@ TextureManager::save_textures()
 
     save_texture(texture);
   }
+#endif
 }
 
 void
 TextureManager::save_texture(GLTexture* texture)
 {
+#if 0
   SavedTexture saved_texture;
   saved_texture.texture = texture;
   glBindTexture(GL_TEXTURE_2D, texture->get_handle());
@@ -308,13 +314,14 @@ TextureManager::save_texture(GLTexture* texture)
 
   glDeleteTextures(1, &(texture->get_handle()));
   texture->set_handle(0);
-
   assert_gl("retrieving texture for save");
+#endif
 }
 
 void
 TextureManager::reload_textures()
 {
+#if 0
 #if defined(GL_UNPACK_ROW_LENGTH) || defined(USE_GLBINDING)
   /* OpenGL ES doesn't support these */
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -355,6 +362,16 @@ TextureManager::reload_textures()
   }
 
   m_saved_textures.clear();
+#endif
+  for(Textures::iterator i = m_textures.begin(); i != m_textures.end(); ++i) {
+    //log_info << "Texture manager: reuploading texture " << *i << std::endl;
+    (*i)->reupload();
+  }
+  for(ImageTextures::iterator i = m_image_textures.begin();
+      i != m_image_textures.end(); ++i)
+  {
+    dynamic_cast<GLTexture*>(i->second.lock().get())->reupload();
+  }
 }
 #endif
 

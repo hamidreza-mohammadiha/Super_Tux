@@ -17,6 +17,8 @@
 #ifndef HEADER_SUPERTUX_CONTROL_CONTROLLER_HPP
 #define HEADER_SUPERTUX_CONTROL_CONTROLLER_HPP
 
+#include "math/vector.hpp"
+
 class Controller
 {
 public:
@@ -58,6 +60,10 @@ public:
   /** returns true if the control has just been released this frame */
   bool released(Control control) const;
 
+  bool mouse_pressed() const;
+  Vector mouse_pos() const;
+  void set_mouse(int x, int y, bool pressed);
+
   virtual void reset();
   virtual void update();
 
@@ -66,6 +72,8 @@ protected:
   bool controls[CONTROLCOUNT];
   /** control status at last frame */
   bool oldControls[CONTROLCOUNT];
+  bool mousePressed;
+  Vector mousePos;
 };
 
 #endif

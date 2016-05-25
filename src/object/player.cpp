@@ -160,6 +160,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   grabbed_object(NULL),
   sprite(),
   airarrow(),
+  jumparrow(),
   floor_normal(),
   ghost_mode(false),
   edit_mode(false),
@@ -176,6 +177,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   // constructor
   sprite = SpriteManager::current()->create("images/creatures/tux/tux.sprite");
   airarrow = Surface::create("images/engine/hud/airarrow.png");
+  jumparrow = Surface::create("images/engine/menu/scroll-down.png");
   idle_timer.start(IDLE_TIME[0]/1000.0f);
 
   SoundManager::current()->preload("sounds/bigjump.wav");
@@ -239,6 +241,12 @@ Player::init()
   grabbed_object = NULL;
 
   climbing = 0;
+
+  jump_helper = false;
+  jump_helper_draw = false;
+  jump_helper_jump = false;
+  jump_helper_move_left = false;
+  jump_helper_move_right = false;
 
   physic.reset();
 }
@@ -534,12 +542,14 @@ Player::handle_horizontal_input()
 
   float dirsign = 0;
   if(!duck || physic.get_velocity_y() != 0) {
-    if(controller->hold(Controller::LEFT) && !controller->hold(Controller::RIGHT)) {
+    if((controller->hold(Controller::LEFT) && !controller->hold(Controller::RIGHT))
+       || jump_helper_move_left) {
       old_dir = dir;
       dir = LEFT;
       dirsign = -1;
-    } else if(!controller->hold(Controller::LEFT)
-              && controller->hold(Controller::RIGHT)) {
+    } else if((!controller->hold(Controller::LEFT)
+              && controller->hold(Controller::RIGHT))
+              || jump_helper_move_right) {
       old_dir = dir;
       dir = RIGHT;
       dirsign = 1;
@@ -732,7 +742,7 @@ Player::handle_vertical_input()
 {
   // Press jump key
   if(controller->pressed(Controller::JUMP)) jump_button_timer.start(JUMP_GRACE_TIME);
-  if(controller->hold(Controller::JUMP) && jump_button_timer.started() && can_jump) {
+  if (((controller->hold(Controller::JUMP) && jump_button_timer.started()) || jump_helper_jump) && can_jump) {
     jump_button_timer.stop();
     if (duck) {
       // when running, only jump a little bit; else do a backflip
@@ -772,7 +782,7 @@ Player::handle_vertical_input()
 
 
   // Let go of jump key
-  else if(!controller->hold(Controller::JUMP)) {
+  else if(!(controller->hold(Controller::JUMP) || jump_helper_jump)) {
     if (!backflipping && jumping && physic.get_velocity_y() < 0) {
       jumping = false;
       early_jump_apex();
@@ -853,6 +863,8 @@ Player::handle_input()
 
   /* Handle vertical movement: */
   if (!stone) handle_vertical_input();
+
+  handle_jump_helper();
 
   /* Shoot! */
   if (controller->pressed(Controller::ACTION) && (player_status->bonus == FIRE_BONUS || player_status->bonus == ICE_BONUS)) {
@@ -1206,6 +1218,13 @@ Player::draw(DrawingContext& context)
     float py = Sector::current()->camera->get_translation().y;
     py += std::min(((py - (bbox.p2.y + 16)) / 4), 16.0f);
     context.draw_surface(airarrow, Vector(px, py), LAYER_HUD - 1);
+  }
+
+  // Show where Tux will land after using jump helper
+  if (jump_helper_draw && Sector::current() && Sector::current()->camera) {
+    float px = jump_helper_x + (get_bbox().p2.x - get_bbox().p1.x) / 2 - jumparrow.get()->get_width() / 2;
+    float py = get_bbox().p2.y - jumparrow.get()->get_height();
+    context.draw_surface(jumparrow, Vector(px, py), LAYER_HUD - 1);
   }
 
   std::string sa_prefix = "";
@@ -1782,6 +1801,67 @@ Player::handle_input_climbing()
   }
   physic.set_velocity(vx, vy);
   physic.set_acceleration(0, 0);
+}
+
+void
+Player::handle_jump_helper()
+{
+  if (!Sector::current() || !Sector::current()->camera)
+    return;
+
+  if (controller->mouse_pressed() && can_jump && !jump_helper)
+  { // Select a target to jump
+    jump_helper_draw = true;
+    jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
+  }
+
+  if (!controller->mouse_pressed() && can_jump && !jump_helper && jump_helper_draw)
+  { // Initiate the jump
+    jump_helper = true;
+    jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
+    // Do not use scriptiong controller - we need to be able to cancel jump helper mid-jump
+    jump_helper_move_left = false;
+    jump_helper_move_right = false;
+    if (jump_helper_x > get_pos().x)
+      jump_helper_move_right = true;
+    else
+      jump_helper_move_left = true;
+  }
+
+  if (jump_helper)
+  {
+    float friction = WALK_ACCELERATION_X * (on_ice ? ICE_FRICTION_MULTIPLIER : NORMAL_FRICTION_MULTIPLIER);
+    float frictionDistance = physic.get_velocity_x() * physic.get_velocity_x() / friction / 2.0f;
+    if (!jump_helper_jump)
+    { // Start running before jump for long jumps
+      float gravity = Sector::current()->get_gravity();
+      float jumpSpeed = fabs(physic.get_velocity_x()) > MAX_WALK_XM ? 580 : 520;
+      float jumpTime = jumpSpeed / gravity * 2.0f;
+      float maxRunSpeed = speedlimit > 0 ? speedlimit : MAX_RUN_XM;
+      float actualJumpDistance = fabs(physic.get_velocity_x()) * jumpTime / 100.0f;
+      float maxJumpDistance = maxRunSpeed * jumpTime / 100.0f;
+      // Check if we can jump that far at current speed, compensate a bit for velocity we'll gain in the air
+      // Empirical coefficients, we should use WALK_ACCELERATION_X / RUN_ACCELERATION_X here
+      if (fabs(jump_helper_x - get_pos().x) <= actualJumpDistance * 0.4f + maxJumpDistance * 0.6f)
+        jump_helper_jump = true;
+      // Check if we can jump that far without running first
+      if (fabs(jump_helper_x - get_pos().x) <= maxJumpDistance * 0.75f)
+        jump_helper_jump = true;
+    }
+    if (controller->mouse_pressed() // Cancel a jump if user presses any button
+        || controller->pressed(Controller::JUMP) || controller->pressed(Controller::ACTION)
+        || controller->pressed(Controller::DOWN) || controller->pressed(Controller::UP)
+        || controller->pressed(Controller::LEFT) || controller->pressed(Controller::RIGHT)
+        || (jump_helper_x >= get_pos().x - frictionDistance && jump_helper_move_left) // Reached destination - finish the jump
+        || (jump_helper_x <= get_pos().x + frictionDistance && jump_helper_move_right))
+    {
+      jump_helper = false;
+      jump_helper_draw = false;
+      jump_helper_jump = false;
+      jump_helper_move_left = false;
+      jump_helper_move_right = false;
+    }
+  }
 }
 
 /* EOF */

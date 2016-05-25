@@ -20,6 +20,9 @@
 #include <version.h>
 
 #include <SDL_image.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 #include <array>
@@ -130,7 +133,7 @@ public:
     if (!PHYSFS_init(argv0))
     {
       std::stringstream msg;
-      msg << "Couldn't initialize physfs: " << PHYSFS_getLastError();
+      msg << "Couldn't initialize physfs: " << PHYSFS_getLastError() << " argv0: " << argv0;
       throw std::runtime_error(msg.str());
     }
     else
@@ -145,50 +148,9 @@ public:
 
   void find_datadir()
   {
-    std::string datadir;
-    if (m_forced_datadir)
+    if (!PHYSFS_addToSearchPath("data.zip", 1))
     {
-      datadir = *m_forced_datadir;
-    }
-    else if (const char* env_datadir = getenv("SUPERTUX2_DATA_DIR"))
-    {
-      datadir = env_datadir;
-    }
-    else
-    {
-      // check if we run from source dir
-      char* basepath_c = SDL_GetBasePath();
-      std::string basepath = basepath_c;
-      SDL_free(basepath_c);
-
-      // If we are on windows, the data directory is one directory above the binary
-#ifdef WIN32
-      const std::array<std::string, 2> subdirs = { "data", "../data" };
-#else
-      const std::array<std::string, 1> subdirs = { "data" };
-#endif
-      bool found = false;
-      for (const std::string &subdir : subdirs)
-      {
-        datadir = FileSystem::join(basepath, subdir);
-        if (FileSystem::exists(FileSystem::join(datadir, "credits.txt")))
-        {
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-      {
-        // if the game is not run from the source directory, try to find
-        // the global install location
-        datadir = datadir.substr(0, datadir.rfind(INSTALL_SUBDIR_BIN));
-        datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
-      }
-    }
-
-    if (!PHYSFS_addToSearchPath(datadir.c_str(), 1))
-    {
-      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
+      log_warning << "Couldn't add data.zip to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
     }
   }
 
@@ -254,7 +216,7 @@ class SDLSubsystem
 public:
   SDLSubsystem()
   {
-    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
       std::stringstream msg;
       msg << "Couldn't initialize SDL: " << SDL_GetError();
@@ -273,7 +235,7 @@ public:
 void
 Main::init_video()
 {
-  SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
+  //SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
 
   const char* icon_fname = "images/engine/icons/supertux-256x256.png";
   SDL_Surface* icon = IMG_Load_RW(get_physfs_SDLRWops(icon_fname), true);
@@ -283,7 +245,7 @@ Main::init_video()
   }
   else
   {
-    SDL_SetWindowIcon(VideoSystem::current()->get_renderer().get_window(), icon);
+    SDL_WM_SetIcon(icon, NULL);
     SDL_FreeSurface(icon);
   }
   SDL_ShowCursor(0);
@@ -398,6 +360,14 @@ Main::run(int argc, char** argv)
   try
   {
     CommandLineArguments args;
+
+    // Copy over old savegames
+    struct stat st;
+    if (stat(".supertux2/profile1", &st) != 0)
+    {
+      system("mkdir -p .supertux2/profile1");
+      system("cp $SDCARD/app-data/org.lethargik.supertux2/.supertux2/profile1/* .supertux2/profile1/");
+    }
 
     try
     {

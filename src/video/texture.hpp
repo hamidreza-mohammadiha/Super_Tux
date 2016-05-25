@@ -65,6 +65,7 @@ public:
   virtual unsigned int get_texture_height() const = 0;
   virtual unsigned int get_image_width() const = 0;
   virtual unsigned int get_image_height() const = 0;
+  virtual void reupload() = 0;
 
 private:
   Texture(const Texture&);

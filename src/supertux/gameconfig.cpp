@@ -34,7 +34,7 @@ Config::Config() :
   window_size(1280, 800),
   aspect_size(0, 0), // auto detect
   magnification(0.0f),
-  use_fullscreen(false),
+  use_fullscreen(true),
   video(VideoSystem::AUTO_VIDEO),
   try_vsync(true),
   show_fps(false),

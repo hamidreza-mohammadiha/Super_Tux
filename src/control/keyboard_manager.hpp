@@ -41,9 +41,12 @@ public:
   ~KeyboardManager();
 
   void process_key_event(const SDL_KeyboardEvent& event);
-  void process_text_input_event(const SDL_TextInputEvent& event);
+  //void process_text_input_event(const SDL_TextInputEvent& event);
   void process_console_key_event(const SDL_KeyboardEvent& event);
   void process_menu_key_event(const SDL_KeyboardEvent& event);
+
+  void process_mouse_event(const SDL_MouseMotionEvent& event);
+  void process_mouse_event(const SDL_MouseButtonEvent& event);
 
   void bind_next_event_to(Controller::Control id);
 

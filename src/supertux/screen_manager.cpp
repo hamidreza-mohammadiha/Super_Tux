@@ -195,7 +195,7 @@ ScreenManager::update_gamelogic(float elapsed_time)
 }
 
 void
-ScreenManager::process_events()
+ScreenManager::process_events(DrawingContext &context)
 {
   InputManager::current()->update();
   SDL_Event event;
@@ -211,24 +211,10 @@ ScreenManager::process_events()
         quit();
         break;
 
-      case SDL_WINDOWEVENT:
-        switch(event.window.event)
-        {
-          case SDL_WINDOWEVENT_RESIZED:
-            VideoSystem::current()->resize(event.window.data1,
-                                           event.window.data2);
-            m_menu_manager->on_window_resize();
-            break;
 
-          case SDL_WINDOWEVENT_FOCUS_LOST:
-            if(GameSession::current() != NULL &&
-               GameSession::current()->is_active())
-            {
-              GameSession::current()->toggle_pause();
-            }
-            break;
-        }
-        break;
+      case SDL_VIDEORESIZE:
+            VideoSystem::current()->resize(event.resize.w,
+                                           event.resize.h);
 
       case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_F10)
@@ -241,7 +227,7 @@ ScreenManager::process_events()
           VideoSystem::current()->apply_config();
           m_menu_manager->on_window_resize();
         }
-        else if (event.key.keysym.sym == SDLK_PRINTSCREEN ||
+        else if (event.key.keysym.sym == SDLK_PRINT ||
                  event.key.keysym.sym == SDLK_F12)
         {
           take_screenshot();
@@ -370,7 +356,7 @@ ScreenManager::run(DrawingContext &context)
       timestep *= m_speed;
       game_time += timestep;
 
-      process_events();
+      process_events(context);
       update_gamelogic(timestep);
       frames += 1;
     }

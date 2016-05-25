@@ -16,6 +16,9 @@
 
 #include "control/controller.hpp"
 
+#include "video/renderer.hpp"
+#include "video/video_system.hpp"
+
 const char* Controller::controlNames[] = {
   "left",
   "right",
@@ -51,6 +54,8 @@ Controller::reset()
     controls[i] = false;
     oldControls[i] = false;
   }
+  mousePressed = false;
+  mousePos = Vector(0,0);
 }
 
 void
@@ -82,6 +87,25 @@ Controller::update()
 {
   for(int i = 0; i < CONTROLCOUNT; ++i)
     oldControls[i] = controls[i];
+}
+
+bool
+Controller::mouse_pressed() const
+{
+  return mousePressed;
+}
+
+Vector
+Controller::mouse_pos() const
+{
+  return mousePos;
+}
+
+void
+Controller::set_mouse(int x, int y, bool pressed)
+{
+  mousePressed = pressed;
+  mousePos = VideoSystem::current()->get_renderer().to_logical(x, y);
 }
 
 /* EOF */

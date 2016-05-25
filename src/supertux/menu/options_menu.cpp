@@ -126,22 +126,13 @@ OptionsMenu::OptionsMenu(bool complete) :
   }
 
   resolutions.clear();
-  int display_mode_count = SDL_GetNumDisplayModes(0);
   std::string last_display_mode;
-  for(int i = 0; i < display_mode_count; ++i)
+  for(int i = 0; SDL_ListModes(NULL, 0)[i]; ++i)
   {
-    SDL_DisplayMode mode;
-    int ret = SDL_GetDisplayMode(0, i, &mode);
-    if (ret != 0)
-    {
-      log_warning << "failed to get display mode: " << SDL_GetError() << std::endl;
-    }
-    else
+    SDL_Rect mode = *(SDL_ListModes(NULL, 0)[i]);
     {
       std::ostringstream out;
       out << mode.w << "x" << mode.h;
-      if(mode.refresh_rate)
-        out << "@" << mode.refresh_rate;
       if(last_display_mode == out.str())
         continue;
       last_display_mode = out.str();
