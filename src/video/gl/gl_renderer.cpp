@@ -191,6 +191,13 @@ GLRenderer::flip()
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glColor4f(1, 1, 1, 1);
+
+  static int counter = 0;
+  counter++;
+  if (counter % 200)
+    log_info << "SuperTux renderer: " << GLPainter::s_texture_draw_count << " texture draw operations per frame" << std::endl;
+
+  GLPainter::s_texture_draw_count = 0;
 }
 
 void

@@ -24,12 +24,17 @@
 #include "video/drawing_request.hpp"
 #include "video/gl/gl_surface_data.hpp"
 #include "video/gl/gl_texture.hpp"
+#include "util/log.hpp"
+
 
 GLuint GLPainter::s_last_texture = static_cast<GLuint>(-1);
 GLenum GLPainter::s_blend_sfactor = -1;
 GLenum GLPainter::s_blend_dfactor = -1;
+int GLPainter::s_texture_draw_count = 0;
 
 namespace {
+
+static int texture_draw_count = 0;
 
 inline void intern_draw(float left, float top, float right, float bottom,
                         float uv_left, float uv_top,
@@ -110,6 +115,8 @@ inline void intern_draw(float left, float top, float right, float bottom,
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
   if (restoreBlendMode)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  GLPainter::s_texture_draw_count++;
 }
 
 } // namespace
