@@ -194,8 +194,8 @@ GLRenderer::flip()
 
   static int counter = 0;
   counter++;
-  if (counter % 200)
-    log_info << "SuperTux renderer: " << GLPainter::s_texture_draw_count << " texture draw operations per frame" << std::endl;
+  if (counter % 200 == 0)
+    log_warning << "SuperTux renderer: " << GLPainter::s_texture_draw_count << " texture draw operations per frame" << std::endl;
 
   GLPainter::s_texture_draw_count = 0;
 }

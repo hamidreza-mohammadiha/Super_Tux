@@ -27,7 +27,7 @@
 #include "supertux/gameconfig.hpp"
 #include "supertux/globals.hpp"
 
-#ifdef ANDROID
+#ifdef __ANDROID__
 class _android_debugbuf: public std::streambuf
 {
  public:
@@ -100,7 +100,7 @@ LogLevel g_log_level = LOG_WARNING;
 
 static std::ostream& get_logging_instance (bool use_console_buffer = true)
 {
-#ifdef ANDROID
+#ifdef __ANDROID__
   return android_logcat;
 #else
   if (ConsoleBuffer::current() && use_console_buffer)
