@@ -136,11 +136,11 @@ TileMap::TileMap(const Reader& reader) :
     log_info << "Tilemap '" << name << "', z-pos '" << z_pos << "' is empty." << std::endl;
   }
 
-  log_warning << "Loaded tilemap " << width << " x " << height << std::endl;
+  //log_warning << "Loaded tilemap " << width << " x " << height << std::endl;
   tilesDrawRects.resize(tiles.size() * 2, 0);
   std::vector<unsigned char> inputRects(tiles.size());
   for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
-    log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
+    //log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
     bool skip = true;
     fill(inputRects.begin(), inputRects.end(), 0);
     std::vector<unsigned char>::iterator ir = inputRects.begin();
