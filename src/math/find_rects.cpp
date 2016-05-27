@@ -82,7 +82,7 @@ Rect findBiggest(const InputType* input, int width, int height) {
 	return findBiggest(input, width, height, width);
 }
 
-//#define CHECK_BOTH_WAYS 1
+//#define CHECK_BOTH_WAYS 1 /* This will make the algorithm terribly slow, with a factorial complexity */
 
 /** Find biggest rectangle, then recursively search area to the left/right and to the top/bottom of that rectangle
 	for smaller rectangles, and choose the one that covers biggest area.
@@ -118,26 +118,6 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 		We are not filling the output array in the first recursive call, it's just for determining the resulting area size
 	*/
 
-	long long splitHorizArea =
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(search.x, search.y, biggest.x - search.x, search.h)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(biggest.x + biggest.w, search.y, search.x + search.w - biggest.x - biggest.w, search.h)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(biggest.x, search.y, biggest.w, biggest.y - search.y)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(biggest.x, biggest.y + biggest.h, biggest.w, search.y + search.h - biggest.y - biggest.h));
-#ifdef CHECK_BOTH_WAYS
-	long long splitVertArea =
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(search.x, search.y, search.w, biggest.y - search.y)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(search.x, biggest.y + biggest.h, search.w, search.y + search.h - biggest.y - biggest.h)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(search.x, biggest.y, biggest.x - search.x, biggest.h)) +
-		findRectsInArea(input, rowWidth, minLength, NULL,
-			Rect(biggest.x + biggest.w, biggest.y, search.x + search.w - biggest.x - biggest.w, biggest.h));
-#endif
 	if (output != NULL) {
 		for (int y = biggest.y; y < biggest.y + biggest.h; y++) {
 			for (int x = biggest.x; x < biggest.x + biggest.w; x++) {
@@ -149,11 +129,32 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 		output[(biggest.y * rowWidth + biggest.x) * 2 + 1] = biggest.h;
 	}
 
-	/* Inefficiently perform the recursive call again, this time with non-NULL output array */
 #ifdef CHECK_BOTH_WAYS
+	long long splitHorizArea =
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(search.x, search.y, biggest.x - search.x, search.h)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(biggest.x + biggest.w, search.y, search.x + search.w - biggest.x - biggest.w, search.h)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(biggest.x, search.y, biggest.w, biggest.y - search.y)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(biggest.x, biggest.y + biggest.h, biggest.w, search.y + search.h - biggest.y - biggest.h));
+
+	long long splitVertArea =
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(search.x, search.y, search.w, biggest.y - search.y)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(search.x, biggest.y + biggest.h, search.w, search.y + search.h - biggest.y - biggest.h)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(search.x, biggest.y, biggest.x - search.x, biggest.h)) +
+		findRectsInArea(input, rowWidth, minLength, NULL,
+			Rect(biggest.x + biggest.w, biggest.y, search.x + search.w - biggest.x - biggest.w, biggest.h));
+
+	/* Inefficiently perform the recursive call again, this time with non-NULL output array */
 	if (splitHorizArea > splitVertArea) {
-#endif
 		if (output != NULL) {
+#endif
+			return (long long)biggest.w * biggest.h +
 			findRectsInArea(input, rowWidth, minLength, output,
 				Rect(search.x, search.y, biggest.x - search.x, search.h)) +
 			findRectsInArea(input, rowWidth, minLength, output,
@@ -162,17 +163,17 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 				Rect(biggest.x, search.y, biggest.w, biggest.y - search.y)) +
 			findRectsInArea(input, rowWidth, minLength, output,
 				Rect(biggest.x, biggest.y + biggest.h, biggest.w, search.y + search.h - biggest.y - biggest.h));
+#ifdef CHECK_BOTH_WAYS
 		}
 		return splitHorizArea + (long long)biggest.w * biggest.h;
-#ifdef CHECK_BOTH_WAYS
 	} else {
 		if (output != NULL) {
 			findRectsInArea(input, rowWidth, minLength, output,
-				Rect(search.x, search.y, search.w, biggest.y - search.y)) +
+				Rect(search.x, search.y, search.w, biggest.y - search.y));
 			findRectsInArea(input, rowWidth, minLength, output,
-				Rect(search.x, biggest.y + biggest.h, search.w, search.y + search.h - biggest.y - biggest.h)) +
+				Rect(search.x, biggest.y + biggest.h, search.w, search.y + search.h - biggest.y - biggest.h));
 			findRectsInArea(input, rowWidth, minLength, output,
-				Rect(search.x, biggest.y, biggest.x - search.x, biggest.h)) +
+				Rect(search.x, biggest.y, biggest.x - search.x, biggest.h));
 			findRectsInArea(input, rowWidth, minLength, output,
 				Rect(biggest.x + biggest.w, biggest.y, search.x + search.w - biggest.x - biggest.w, biggest.h));
 		}
