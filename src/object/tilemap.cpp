@@ -24,10 +24,12 @@
 #include "supertux/tile_manager.hpp"
 #include "supertux/tile_set.hpp"
 #include "util/reader.hpp"
+#include "math/find_rects.hpp"
 
 TileMap::TileMap(const TileSet *new_tileset) :
   tileset(new_tileset),
   tiles(),
+  tilesDrawRects(),
   real_solid(false),
   effective_solid(false),
   speed_x(1),
@@ -50,6 +52,7 @@ TileMap::TileMap(const TileSet *new_tileset) :
 TileMap::TileMap(const Reader& reader) :
   tileset(),
   tiles(),
+  tilesDrawRects(),
   real_solid(false),
   effective_solid(false),
   speed_x(1),
@@ -131,6 +134,25 @@ TileMap::TileMap(const Reader& reader) :
   if(empty)
   {
     log_info << "Tilemap '" << name << "', z-pos '" << z_pos << "' is empty." << std::endl;
+  }
+
+  log_warning << "Loaded tilemap " << width << " x " << height << std::endl;
+  tilesDrawRects.resize(tiles.size() * 2, 0);
+  std::vector<unsigned char> inputRects(tiles.size());
+  for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
+    log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
+    bool skip = true;
+    fill(inputRects.begin(), inputRects.end(), 0);
+    std::vector<unsigned char>::iterator ir = inputRects.begin();
+    for (Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i, ++ir) {
+      *ir = (*i == tileid) ? 1 : 0;
+      if (*ir) {
+        skip = false;
+      }
+    }
+    if (!skip) {
+      FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+    }
   }
 }
 

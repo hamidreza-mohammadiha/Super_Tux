@@ -171,7 +171,9 @@ private:
   const TileSet *tileset;
 
   typedef std::vector<uint32_t> Tiles;
+  typedef std::vector<unsigned char> TilesDrawRects;
   Tiles tiles;
+  TilesDrawRects tilesDrawRects;
 
   /* read solid: In *general*, is this a solid layer?
    * effective solid: is the layer *currently* solid? A generally solid layer
