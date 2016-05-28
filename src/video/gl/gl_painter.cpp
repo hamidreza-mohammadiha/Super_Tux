@@ -146,7 +146,7 @@ GLPainter::draw_surface(const DrawingRequest& request)
     glBindTexture(GL_TEXTURE_2D, th);
   }
   intern_draw(request.pos.x, request.pos.y,
-              request.pos.x + surface->get_width(), // Avoid seams between background textures
+              request.pos.x + surface->get_width(),
               request.pos.y + surface->get_height(),
               surface_data->get_uv_left(),
               surface_data->get_uv_top(),
