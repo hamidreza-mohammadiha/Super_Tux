@@ -203,6 +203,7 @@ private:
 private:
   TileMap(const TileMap&);
   TileMap& operator=(const TileMap&);
+  void calculateDrawRects(void);
 };
 
 #endif /*SUPERTUX_TILEMAP_H*/

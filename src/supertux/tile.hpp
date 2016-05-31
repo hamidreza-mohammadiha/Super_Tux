@@ -129,7 +129,7 @@ public:
   void load_images();
 
   /** Draw a tile on the screen */
-  void draw(DrawingContext& context, const Vector& pos, int z_pos) const;
+  void draw(DrawingContext& context, const Vector& pos, int z_pos, Size span = Size(1, 1)) const;
 
   uint32_t getAttributes() const
   { return attributes; }

@@ -137,23 +137,7 @@ TileMap::TileMap(const Reader& reader) :
   }
 
   //log_warning << "Loaded tilemap " << width << " x " << height << std::endl;
-  tilesDrawRects.resize(tiles.size() * 2, 0);
-  std::vector<unsigned char> inputRects(tiles.size());
-  for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
-    //log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
-    bool skip = true;
-    fill(inputRects.begin(), inputRects.end(), 0);
-    std::vector<unsigned char>::iterator ir = inputRects.begin();
-    for (Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i, ++ir) {
-      *ir = (*i == tileid) ? 1 : 0;
-      if (*ir) {
-        skip = false;
-      }
-    }
-    if (!skip) {
-      FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
-    }
-  }
+  calculateDrawRects();
 }
 
 TileMap::TileMap(const TileSet *new_tileset, std::string name_, int z_pos_,
@@ -233,15 +217,20 @@ TileMap::draw(DrawingContext& context)
    * For consistency (i.e., to avoid 1-pixel gaps), this needs to be done even
    * for solid tilemaps that are guaranteed to have speed 1.
    * FIXME Force integer translation for all graphics, not just tilemaps. */
+
   float trans_x = roundf(context.get_translation().x);
   float trans_y = roundf(context.get_translation().y);
   context.set_translation(Vector(int(trans_x * speed_x),
                                  int(trans_y * speed_y)));
 
-  Rectf draw_rect = Rectf(context.get_translation(),
+  Rectf draw_rect = Rectf(Vector(0, 0),
         context.get_translation() + Vector(SCREEN_WIDTH, SCREEN_HEIGHT));
   Rect t_draw_rect = get_tiles_overlapping(draw_rect);
   Vector start = get_tile_position(t_draw_rect.left, t_draw_rect.top);
+  Rectf screen_edge_rect = Rectf(context.get_translation(),
+        context.get_translation() + Vector(SCREEN_WIDTH, SCREEN_HEIGHT));
+  Rect t_screen_edge_rect = get_tiles_overlapping(screen_edge_rect);
+  int screen_start_x = t_screen_edge_rect.left, screen_start_y = t_screen_edge_rect.top;
 
   Vector pos;
   int tx, ty;
@@ -252,10 +241,11 @@ TileMap::draw(DrawingContext& context)
       assert (index >= 0);
       assert (index < (width * height));
 
-      if (tiles[index] == 0) continue;
+      if (tilesDrawRects[index * 2] == 0) continue;
+      if (tx + tilesDrawRects[index * 2] < screen_start_x || ty + tilesDrawRects[index * 2 + 1] < screen_start_y) continue;
       const Tile* tile = tileset->get(tiles[index]);
       assert(tile != 0);
-      tile->draw(context, pos, z_pos);
+      tile->draw(context, pos, z_pos, Size(tilesDrawRects[index * 2], tilesDrawRects[index * 2 + 1]));
     } /* for (pos y) */
   } /* for (pos x) */
 
@@ -324,6 +314,8 @@ TileMap::set(int newwidth, int newheight, const std::vector<unsigned int>&newt,
   // make sure all tiles are loaded
   for(Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
     tileset->get(*i);
+
+  calculateDrawRects();
 }
 
 void
@@ -356,6 +348,8 @@ TileMap::resize(int new_width, int new_height, int fill_id)
 
   height = new_height;
   width = new_width;
+
+  calculateDrawRects();
 }
 
 Rect
@@ -415,6 +409,7 @@ TileMap::change(int x, int y, uint32_t newtile)
 {
   assert(x >= 0 && x < width && y >= 0 && y < height);
   tiles[y*width + x] = newtile;
+  calculateDrawRects();
 }
 
 void
@@ -432,9 +427,11 @@ TileMap::change_all(uint32_t oldtile, uint32_t newtile)
       if (get_tile_id(x,y) != oldtile)
         continue;
 
-      change(x,y,newtile);
+      tiles[y*width + x] = newtile;
     }
   }
+
+  calculateDrawRects();
 }
 
 void
@@ -471,6 +468,28 @@ TileMap::update_effective_solid (void)
     effective_solid = false;
   else if (!effective_solid && (current_alpha >= .75))
     effective_solid = true;
+}
+
+void
+TileMap::calculateDrawRects(void)
+{
+  tilesDrawRects.resize(tiles.size() * 2, 0);
+  std::vector<unsigned char> inputRects(tiles.size());
+  for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
+    //log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
+    bool skip = true;
+    fill(inputRects.begin(), inputRects.end(), 0);
+    std::vector<unsigned char>::iterator ir = inputRects.begin();
+    for (Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i, ++ir) {
+      *ir = (*i == tileid) ? 1 : 0;
+      if (*ir) {
+        skip = false;
+      }
+    }
+    if (!skip) {
+      FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+    }
+  }
 }
 
 /* EOF */
