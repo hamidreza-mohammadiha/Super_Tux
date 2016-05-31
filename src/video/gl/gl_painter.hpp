@@ -49,7 +49,6 @@ public:
   static void draw_filled_rect(const DrawingRequest& request);
   static void draw_inverse_ellipse(const DrawingRequest& request);
   static void reset_last_texture();
-  static int s_texture_draw_count;
 
 private:
   GLPainter(const GLPainter&) = delete;
