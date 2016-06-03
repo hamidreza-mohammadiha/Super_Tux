@@ -36,6 +36,7 @@
 #include "supertux/screen.hpp"
 #include "supertux/screen_fade.hpp"
 #include "supertux/timer.hpp"
+#include "supertux/levelloadinganimation.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 
@@ -59,7 +60,8 @@ ScreenManager::ScreenManager() :
   m_fps(0),
   m_screen_fade(),
   m_screen_stack(),
-  m_screenshot_requested(false)
+  m_screenshot_requested(false),
+  m_loading_screen_context(NULL)
 {
   using namespace scripting;
   TimeScheduler::instance = new TimeScheduler();
@@ -333,6 +335,7 @@ ScreenManager::run(DrawingContext &context)
 {
   Uint32 last_ticks = 0;
   Uint32 elapsed_ticks = 0;
+  m_loading_screen_context = &context;
 
   handle_screen_switch();
 
@@ -384,12 +387,30 @@ ScreenManager::run(DrawingContext &context)
 
     handle_screen_switch();
   }
+  m_loading_screen_context = NULL;
 }
 
 void
 ScreenManager::take_screenshot()
 {
   m_screenshot_requested = true;
+}
+
+void
+ScreenManager::draw_loading_screen()
+{
+  printf("ScreenManager::draw_loading_screen(): m_loading_screen_context %p\n", m_loading_screen_context);
+  if (m_loading_screen_context == NULL)
+  {
+    return;
+  }
+  LevelLoadingAnimation anim;
+
+  real_time += 0.2;
+  game_time += 0.2;
+
+  anim.draw(*m_loading_screen_context);
+  m_loading_screen_context->do_drawing();
 }
 
 /* EOF */

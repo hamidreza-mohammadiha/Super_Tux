@@ -25,6 +25,10 @@
 #include "supertux/tile_manager.hpp"
 #include "supertux/tile_set.hpp"
 #include "trigger/secretarea_trigger.hpp"
+#include "supertux/screen_manager.hpp"
+#include "supertux/levelloadinganimation.hpp"
+#include "supertux/screen_fade.hpp"
+
 
 #include <sstream>
 #include <stdexcept>
@@ -57,6 +61,7 @@ Level::~Level()
 void
 Level::load(const std::string& filepath)
 {
+  ScreenManager::current()->draw_loading_screen();
   try {
     filename = filepath;
     lisp::Parser parser;
