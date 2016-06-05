@@ -676,7 +676,7 @@ WorldMap::update(float delta)
 
           // update state and savegame
           save_state();
-          if(g_config->transitions_enabled)
+          if(g_config->transitions_enabled && false)
           {
             ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new GameSession(levelfile, m_savegame, &level_->statistics)),
                                           std::unique_ptr<ScreenFade>(new ShrinkFade(shrinkpos, 1.0f)));
