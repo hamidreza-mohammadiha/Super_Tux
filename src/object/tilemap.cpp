@@ -74,7 +74,6 @@ TileMap::TileMap(const Reader& reader) :
   assert(tileset != NULL);
 
   ScreenManager::current()->draw_loading_screen();
-  SDL_Delay(500);
 
   reader.get("name",   name);
   reader.get("solid",  real_solid);

@@ -397,7 +397,6 @@ ScreenManager::take_screenshot()
 void
 ScreenManager::draw_loading_screen()
 {
-  printf("ScreenManager::draw_loading_screen(): m_loading_screen_context %p\n", m_loading_screen_context);
   if (m_loading_screen_context == NULL)
   {
     return;
