@@ -38,7 +38,7 @@ class ScreenFade;
 class ScreenManager : public Currenton<ScreenManager>
 {
 public:
-  ScreenManager();
+  ScreenManager(DrawingContext *context);
   ~ScreenManager();
 
   void run(DrawingContext &context);
@@ -56,6 +56,9 @@ public:
   void push_screen(std::unique_ptr<Screen> screen, std::unique_ptr<ScreenFade> fade = {});
   void pop_screen(std::unique_ptr<ScreenFade> fade = {});
   void set_screen_fade(std::unique_ptr<ScreenFade> fade);
+
+  // draw a loading screen, outside of the usual drawing loop
+  void draw_loading_screen();
 
   /// threads that wait for a screenswitch
   scripting::ThreadQueue m_waiting_threads;
@@ -117,6 +120,10 @@ private:
   std::unique_ptr<ScreenFade> m_screen_fade;
   std::vector<std::unique_ptr<Screen> > m_screen_stack;
   bool m_screenshot_requested; /**< true if a screenshot should be taken after the next frame has been rendered */
+
+  DrawingContext * m_loading_screen_context;
+  ScreenManager(const ScreenManager&);
+  ScreenManager& operator=(const ScreenManager&);
 };
 
 #endif

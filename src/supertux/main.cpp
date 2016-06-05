@@ -310,7 +310,7 @@ Main::launch_game()
   const std::unique_ptr<Savegame> default_savegame(new Savegame(std::string()));
 
   GameManager game_manager;
-  ScreenManager screen_manager;
+  ScreenManager screen_manager(&context);
 
   if(g_config->start_level != "") {
     // we have a normal path specified at commandline, not a physfs path.

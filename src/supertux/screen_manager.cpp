@@ -36,6 +36,7 @@
 #include "supertux/screen.hpp"
 #include "supertux/screen_fade.hpp"
 #include "supertux/timer.hpp"
+#include "supertux/levelloadinganimation.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 
@@ -50,7 +51,7 @@ static const Uint32 TICKS_PER_FRAME = (Uint32) (1000.0 / LOGICAL_FPS);
 /** don't skip more than every 2nd frame */
 static const int MAX_FRAME_SKIP = 2;
 
-ScreenManager::ScreenManager() :
+ScreenManager::ScreenManager(DrawingContext *context) :
   m_waiting_threads(),
   m_menu_storage(new MenuStorage),
   m_menu_manager(new MenuManager),
@@ -59,7 +60,8 @@ ScreenManager::ScreenManager() :
   m_fps(0),
   m_screen_fade(),
   m_screen_stack(),
-  m_screenshot_requested(false)
+  m_screenshot_requested(false),
+  m_loading_screen_context(context)
 {
   using namespace scripting;
   TimeScheduler::instance = new TimeScheduler();
@@ -376,6 +378,22 @@ void
 ScreenManager::take_screenshot()
 {
   m_screenshot_requested = true;
+}
+
+void
+ScreenManager::draw_loading_screen()
+{
+  if (m_loading_screen_context == NULL)
+  {
+    return;
+  }
+  LevelLoadingAnimation anim;
+
+  real_time += 0.2;
+  game_time += 0.2;
+
+  anim.draw(*m_loading_screen_context);
+  m_loading_screen_context->do_drawing();
 }
 
 /* EOF */

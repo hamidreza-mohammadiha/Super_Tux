@@ -25,6 +25,8 @@
 #include "supertux/tile_set.hpp"
 #include "util/reader.hpp"
 #include "math/find_rects.hpp"
+#include "supertux/screen_manager.hpp"
+#include "supertux/screen_fade.hpp"
 
 TileMap::TileMap(const TileSet *new_tileset) :
   tileset(new_tileset),
@@ -72,6 +74,8 @@ TileMap::TileMap(const Reader& reader) :
 {
   tileset = current_tileset;
   assert(tileset != NULL);
+
+  ScreenManager::current()->draw_loading_screen();
 
   reader.get("name",   name);
   reader.get("solid",  real_solid);
