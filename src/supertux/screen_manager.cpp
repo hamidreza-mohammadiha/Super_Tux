@@ -51,7 +51,7 @@ static const Uint32 TICKS_PER_FRAME = (Uint32) (1000.0 / LOGICAL_FPS);
 /** don't skip more than every 2nd frame */
 static const int MAX_FRAME_SKIP = 2;
 
-ScreenManager::ScreenManager() :
+ScreenManager::ScreenManager(DrawingContext *context) :
   m_waiting_threads(),
   m_menu_storage(new MenuStorage),
   m_menu_manager(new MenuManager),
@@ -61,7 +61,7 @@ ScreenManager::ScreenManager() :
   m_screen_fade(),
   m_screen_stack(),
   m_screenshot_requested(false),
-  m_loading_screen_context(NULL)
+  m_loading_screen_context(context)
 {
   using namespace scripting;
   TimeScheduler::instance = new TimeScheduler();
@@ -335,7 +335,6 @@ ScreenManager::run(DrawingContext &context)
 {
   Uint32 last_ticks = 0;
   Uint32 elapsed_ticks = 0;
-  m_loading_screen_context = &context;
 
   handle_screen_switch();
 
@@ -387,7 +386,6 @@ ScreenManager::run(DrawingContext &context)
 
     handle_screen_switch();
   }
-  m_loading_screen_context = NULL;
 }
 
 void

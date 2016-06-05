@@ -38,7 +38,7 @@ class ScreenFade;
 class ScreenManager : public Currenton<ScreenManager>
 {
 public:
-  ScreenManager();
+  ScreenManager(DrawingContext *context);
   ~ScreenManager();
 
   void run(DrawingContext &context);
