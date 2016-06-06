@@ -412,8 +412,11 @@ void
 TileMap::change(int x, int y, uint32_t newtile)
 {
   assert(x >= 0 && x < width && y >= 0 && y < height);
-  tiles[y*width + x] = newtile;
-  calculateDrawRects();
+  if (tiles[y*width + x] != newtile) {
+    uint32_t oldtile = tiles[y*width + x];
+    tiles[y*width + x] = newtile;
+    calculateDrawRects(oldtile, newtile);
+  }
 }
 
 void
@@ -435,7 +438,7 @@ TileMap::change_all(uint32_t oldtile, uint32_t newtile)
     }
   }
 
-  calculateDrawRects();
+  calculateDrawRects(oldtile, newtile);
 }
 
 void
@@ -475,23 +478,44 @@ TileMap::update_effective_solid (void)
 }
 
 void
+TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
+{
+  std::vector<unsigned char> inputRects(tiles.size(), 0);
+  for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
+    if (tiles[i] == newtile || tiles[i] == oldtile) {
+      tilesDrawRects[i * 2] = 0;
+      tilesDrawRects[i * 2 + 1] = 0;
+    }
+    if (tiles[i] == newtile) {
+      inputRects[i] = 1;
+    }
+  }
+  FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+  for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
+    inputRects[i] = (tiles[i] == oldtile) ? 1 : 0;
+  }
+  FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+}
+
+void
 TileMap::calculateDrawRects(void)
 {
+  fill(tilesDrawRects.begin(), tilesDrawRects.end(), 0);
   tilesDrawRects.resize(tiles.size() * 2, 0);
-  std::vector<unsigned char> inputRects(tiles.size());
+  std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
     //log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
     bool skip = true;
-    fill(inputRects.begin(), inputRects.end(), 0);
     std::vector<unsigned char>::iterator ir = inputRects.begin();
     for (Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i, ++ir) {
-      *ir = (*i == tileid) ? 1 : 0;
-      if (*ir) {
+      if (*i == tileid) {
         skip = false;
+        *ir = 1;
       }
     }
     if (!skip) {
       FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+      fill(inputRects.begin(), inputRects.end(), 0);
     }
   }
 }
