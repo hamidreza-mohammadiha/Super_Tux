@@ -275,6 +275,9 @@ GameSession::toggle_pause()
     SoundManager::current()->pause_sounds();
     SoundManager::current()->pause_music();
     game_pause = true;
+  } else if (game_pause && MenuManager::instance().is_active()) {
+    MenuManager::instance().clear_menu_stack();
+    ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
   }
 
   // unpause is done in update() after the menu is processed
