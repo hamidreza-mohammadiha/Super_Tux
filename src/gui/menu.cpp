@@ -30,6 +30,7 @@
 #include "supertux/globals.hpp"
 #include "supertux/resources.hpp"
 #include "supertux/screen_manager.hpp"
+#include "supertux/screen_fade.hpp"
 #include "supertux/timer.hpp"
 #include "util/gettext.hpp"
 #include "video/drawing_context.hpp"
@@ -260,6 +261,9 @@ Menu::process_action(MenuAction menuaction)
 
     case MENU_ACTION_BACK:
       MenuManager::instance().pop_menu();
+      if (!MenuManager::instance().is_active()) {
+        ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
+      }
       return;
       break;
 
