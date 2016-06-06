@@ -57,12 +57,12 @@ void
 LevelLoadingAnimation::draw(DrawingContext& context)
 {
   context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
-  static int counter = 0;
+  static int counter = -1;
   counter++;
 
   //player_sprite->draw(context, Vector((SCREEN_WIDTH - player_sprite->get_current_hitbox_width()) / 2, SCREEN_HEIGHT / 2), LAYER_FOREGROUND1);
   std::stringstream ss;
-  for (int i = -1; i < counter % 4; i++)
+  for (int i = -1; i < counter % 5; i++)
   {
     ss << "* ";
   }

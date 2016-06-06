@@ -75,6 +75,7 @@ TileMap::TileMap(const Reader& reader) :
   tileset = current_tileset;
   assert(tileset != NULL);
 
+  //log_warning << "TileMap::draw_loading_screen" << std::endl;
   ScreenManager::current()->draw_loading_screen();
 
   reader.get("name",   name);
@@ -148,6 +149,7 @@ TileMap::TileMap(const TileSet *new_tileset, std::string name_, int z_pos_,
                  bool solid, size_t width_, size_t height_) :
   tileset(new_tileset),
   tiles(),
+  tilesDrawRects(),
   real_solid(solid),
   effective_solid(solid),
   speed_x(1),
@@ -480,6 +482,7 @@ TileMap::update_effective_solid (void)
 void
 TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 {
+  //log_warning << "TileMap::calculateDrawRects short" << std::endl;
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
     if (tiles[i] == newtile || tiles[i] == oldtile) {
@@ -500,11 +503,11 @@ TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 void
 TileMap::calculateDrawRects(void)
 {
+  //log_warning << "TileMap::calculateDrawRects long" << std::endl;
   fill(tilesDrawRects.begin(), tilesDrawRects.end(), 0);
   tilesDrawRects.resize(tiles.size() * 2, 0);
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
-    //log_warning << "Finding rectangles in tile ID " << tileid << std::endl;
     bool skip = true;
     std::vector<unsigned char>::iterator ir = inputRects.begin();
     for (Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i, ++ir) {
