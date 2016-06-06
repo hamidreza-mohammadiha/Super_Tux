@@ -148,9 +148,9 @@ public:
 
   void find_datadir()
   {
-    if (!PHYSFS_addToSearchPath("data.zip", 1))
+    if (!PHYSFS_addToSearchPath(getenv("ANDROID_MY_OWN_APP_FILE"), 1))
     {
-      log_warning << "Couldn't add data.zip to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
+      log_warning << "Couldn't add " << getenv("ANDROID_MY_OWN_APP_FILE") << " to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
     }
   }
 
