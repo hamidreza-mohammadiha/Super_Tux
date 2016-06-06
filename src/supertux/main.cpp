@@ -33,6 +33,9 @@
 extern "C" {
 #include <findlocale.h>
 }
+#ifdef __ANDROID__
+#include <SDL_android.h>
+#endif
 
 #include "addon/addon_manager.hpp"
 #include "audio/sound_manager.hpp"
@@ -280,6 +283,11 @@ Main::launch_game()
 {
   SDLSubsystem sdl_subsystem;
   ConsoleBuffer console_buffer;
+#ifdef __ANDROID__
+  if (getenv("ANDROID_TV")) {
+    SDL_ANDROID_SetScreenKeyboardShown(0);
+  }
+#endif
 
   timelog("controller");
   InputManager input_manager(g_config->keyboard_config, g_config->joystick_config);
