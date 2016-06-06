@@ -148,9 +148,13 @@ public:
 
   void find_datadir()
   {
-    if (!PHYSFS_addToSearchPath(getenv("ANDROID_MY_OWN_APP_FILE"), 1))
+    const char *dataPath = "data";
+#ifdef __ANDROID__
+    dataPath = getenv("ANDROID_MY_OWN_APP_FILE");
+#endif
+    if (!PHYSFS_addToSearchPath(dataPath, 1))
     {
-      log_warning << "Couldn't add " << getenv("ANDROID_MY_OWN_APP_FILE") << " to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
+      log_warning << "Couldn't add " << dataPath << " to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
     }
   }
 

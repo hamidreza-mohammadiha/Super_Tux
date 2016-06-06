@@ -81,6 +81,9 @@ public:
 
 private:
   void set_texture_params();
+
+  GLTexture(const GLTexture&);
+  GLTexture& operator=(const GLTexture&);
 };
 
 #endif
