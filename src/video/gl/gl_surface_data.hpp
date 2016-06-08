@@ -37,7 +37,7 @@ public:
     uv_right((float) ((surface.get_x() + surface.get_width()) - surface.get_width() / 2000.0f) / surface.get_texture()->get_texture_width()),
     uv_bottom((float) ((surface.get_y() + surface.get_height()) - surface.get_height() / 2000.0f) / surface.get_texture()->get_texture_height())
   {
-    if (surface.get_texture()->get_texture_width() <= 32 && surface.get_texture()->get_texture_height() <= 32) {
+    if (surface.get_width() == 32 && surface.get_height() == 32) {
       uv_right = (float) (surface.get_x() + surface.get_width()) / surface.get_texture()->get_texture_width();
       uv_bottom = (float) (surface.get_y() + surface.get_height()) / surface.get_texture()->get_texture_height();
     }
