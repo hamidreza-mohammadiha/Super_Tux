@@ -867,7 +867,7 @@ Player::handle_input()
   handle_jump_helper();
 
   /* Shoot! */
-  if (controller->pressed(Controller::ACTION) && (player_status->bonus == FIRE_BONUS || player_status->bonus == ICE_BONUS)) {
+  if (controller->pressed(Controller::ACTION) && (player_status->bonus == FIRE_BONUS || player_status->bonus == ICE_BONUS) && !grabbed_object) {
     if((player_status->bonus == FIRE_BONUS &&
       Sector::current()->get_active_bullets() < player_status->max_fire_bullets) ||
       (player_status->bonus == ICE_BONUS &&
@@ -924,7 +924,7 @@ Player::handle_input()
   /* grabbing */
   try_grab();
 
-  if(!controller->hold(Controller::ACTION) && grabbed_object) {
+  if (controller->pressed(Controller::ACTION) && grabbed_object) {
     MovingObject* moving_object = dynamic_cast<MovingObject*> (grabbed_object);
     if(moving_object) {
       // move the grabbed object a bit away from tux
