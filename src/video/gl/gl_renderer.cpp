@@ -41,6 +41,7 @@
 
 #ifdef GL_VERSION_ES_CM_1_0
 #  define glOrtho glOrthof
+bool GLEW_ARB_texture_non_power_of_two = false;
 #endif
 
 GLRenderer::GLRenderer() :
@@ -101,6 +102,13 @@ GLRenderer::GLRenderer() :
   log_info << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
   log_info << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
 #  endif
+#else
+  const char * extensions = (const char *) glGetString(GL_EXTENSIONS);
+  if (extensions && (strstr(extensions, "GL_OES_texture_npot") || strstr(extensions, "GL_NV_texture_npot_2D_mipmap")))
+  {
+    GLEW_ARB_texture_non_power_of_two = true;
+  }
+  log_warning << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
 #endif
 }
 

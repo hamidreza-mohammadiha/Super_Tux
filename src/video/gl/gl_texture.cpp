@@ -25,13 +25,6 @@
 
 namespace {
 
-#ifdef GL_VERSION_ES_CM_1_0
-inline bool is_power_of_2(int v)
-{
-  return (v & (v-1)) == 0;
-}
-#endif
-
 inline int next_power_of_two(int val)
 {
   int result = 1;
@@ -50,10 +43,6 @@ GLTexture::GLTexture(unsigned int width, unsigned int height) :
   m_image_height(),
   m_pixels(NULL)
 {
-#ifdef GL_VERSION_ES_CM_1_0
-  assert(is_power_of_2(width));
-  assert(is_power_of_2(height));
-#endif
   m_texture_width  = width;
   m_texture_height = height;
   m_image_width  = width;
@@ -73,10 +62,6 @@ GLTexture::GLTexture(SDL_Surface* image) :
   m_image_height(),
   m_pixels(NULL)
 {
-#ifdef GL_VERSION_ES_CM_1_0
-  m_texture_width = next_power_of_two(image->w);
-  m_texture_height = next_power_of_two(image->h);
-#else
 #  ifdef USE_GLBINDING
   static auto extensions = glbinding::ContextInfo::extensions();
   if (extensions.find(GLextension::GL_ARB_texture_non_power_of_two) != extensions.end())
@@ -96,7 +81,6 @@ GLTexture::GLTexture(SDL_Surface* image) :
     m_texture_width = next_power_of_two(image->w);
     m_texture_height = next_power_of_two(image->h);
   }
-#endif
 
   m_image_width  = image->w;
   m_image_height = image->h;
