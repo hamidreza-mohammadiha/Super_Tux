@@ -158,6 +158,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   physic(),
   visible(),
   grabbed_object(NULL),
+  released_object(false),
   sprite(),
   airarrow(),
   jumparrow(),
@@ -239,6 +240,7 @@ Player::init()
 
   on_ground_flag = false;
   grabbed_object = NULL;
+  released_object = false;
 
   climbing = 0;
 
@@ -947,10 +949,17 @@ Player::handle_input()
           grabbed_object->ungrab(*this, dir);
         }
         grabbed_object = NULL;
+        log_warning << "released_object = true" << std::endl;
+        released_object = true;
       }
     } else {
       log_debug << "Non MovingObject grabbed?!?" << std::endl;
     }
+  }
+
+  if (!controller->hold(Controller::ACTION) && released_object) {
+    log_warning << "released_object = false" << std::endl;
+    released_object = false;
   }
 
   /* stop backflipping at will */
@@ -985,7 +994,7 @@ void
 Player::try_grab()
 {
   if(controller->hold(Controller::ACTION) && !grabbed_object
-     && !duck) {
+     && !duck && !released_object) {
     Sector* sector = Sector::current();
     Vector pos;
     if(dir == LEFT) {

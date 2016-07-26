@@ -323,6 +323,7 @@ public:
   bool visible;
 
   Portable* grabbed_object;
+  bool released_object;
 
   SpritePtr sprite; /**< The main sprite representing Tux */
 
