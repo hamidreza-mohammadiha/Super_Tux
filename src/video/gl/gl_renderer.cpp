@@ -104,11 +104,12 @@ GLRenderer::GLRenderer() :
 #  endif
 #else
   const char * extensions = (const char *) glGetString(GL_EXTENSIONS);
-  if (extensions && (strstr(extensions, "GL_OES_texture_npot") || strstr(extensions, "GL_NV_texture_npot_2D_mipmap")))
+  if (extensions && (strstr(extensions, "GL_OES_texture_npot") || strstr(extensions, "GL_NV_texture_npot_2D_mipmap") || strstr(extensions, "GL_ARB_texture_non_power_of_two")))
   {
     GLEW_ARB_texture_non_power_of_two = true;
   }
   log_warning << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
+  log_warning << "GLES extensions: " << extensions << std::endl;
 #endif
 }
 
