@@ -127,9 +127,10 @@ OptionsMenu::OptionsMenu(bool complete) :
 
   resolutions.clear();
   std::string last_display_mode;
-  for(int i = 0; SDL_ListModes(NULL, 0) && SDL_ListModes(NULL, 0)[i]; ++i)
+  SDL_Rect **modes = SDL_ListModes(NULL, 0);
+  for(int i = 0; modes != (SDL_Rect **) -1 && modes && modes[i]; ++i)
   {
-    SDL_Rect mode = *(SDL_ListModes(NULL, 0)[i]);
+    SDL_Rect mode = *(modes[i]);
     {
       std::ostringstream out;
       out << mode.w << "x" << mode.h;
