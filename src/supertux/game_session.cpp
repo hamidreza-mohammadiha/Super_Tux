@@ -412,6 +412,8 @@ GameSession::check_end_conditions()
 void
 GameSession::draw(DrawingContext& context)
 {
+  if (!currentsector)
+    return;
   currentsector->draw(context);
   drawstatus(context);
 
