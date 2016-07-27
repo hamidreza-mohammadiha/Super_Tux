@@ -40,9 +40,6 @@ public:
   void update(float elapsed_time);
 
 private:
-  //SpritePtr player_sprite; /**< Sprite representing the player */
-
-private:
   LevelLoadingAnimation(const LevelLoadingAnimation&);
   LevelLoadingAnimation& operator=(const LevelLoadingAnimation&);
 };

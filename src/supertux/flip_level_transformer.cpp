@@ -24,6 +24,8 @@
 #include "supertux/flip_level_transformer.hpp"
 #include "supertux/sector.hpp"
 #include "supertux/spawn_point.hpp"
+#include "supertux/screen_manager.hpp"
+
 
 void
 FlipLevelTransformer::transform_sector(Sector* sector)
@@ -36,6 +38,7 @@ FlipLevelTransformer::transform_sector(Sector* sector)
 
     TileMap* tilemap = dynamic_cast<TileMap*>(object.get());
     if(tilemap) {
+      ScreenManager::current()->draw_loading_screen(); // This is lenghtly operation, because it will recalculate tiles draw cache, so show some visual feedback
       transform_tilemap(height, *tilemap);
     }
     Player* player = dynamic_cast<Player*>(object.get());

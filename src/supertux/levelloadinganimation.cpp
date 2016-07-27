@@ -28,15 +28,14 @@
 #include "supertux/player_status.hpp"
 #include "util/gettext.hpp"
 
+#include <math.h>
 #include <sstream>
 #include <boost/format.hpp>
 
 class PlayerStatus;
 
-LevelLoadingAnimation::LevelLoadingAnimation() //: player_sprite(SpriteManager::current()->create("images/creatures/tux/tux.sprite"))
+LevelLoadingAnimation::LevelLoadingAnimation()
 {
-  //Show walking tux animation
-  //player_sprite->set_action("small-walk-right");
 }
 
 LevelLoadingAnimation::~LevelLoadingAnimation()
@@ -56,17 +55,16 @@ LevelLoadingAnimation::update(float elapsed_time)
 void
 LevelLoadingAnimation::draw(DrawingContext& context)
 {
-  context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
   static int counter = -1;
   counter++;
 
-  //player_sprite->draw(context, Vector((SCREEN_WIDTH - player_sprite->get_current_hitbox_width()) / 2, SCREEN_HEIGHT / 2), LAYER_FOREGROUND1);
-  std::stringstream ss;
-  for (int i = -1; i < counter % 5; i++)
+  for (int i = 0; i < 12; i ++)
   {
-    ss << "* ";
+    float x = -cosf(i * 30 * M_PI / 180.0f) * SCREEN_HEIGHT / 12;
+    float y = sinf(i * 30 * M_PI / 180.0f) * SCREEN_HEIGHT / 12;
+    context.draw_center_text(Resources::normal_font, "*", Vector(x, SCREEN_HEIGHT / 2 + y), LAYER_FOREGROUND1,
+                             Color((i + counter) % 12 / 12.0f, (i + counter) % 12 / 12.0f, 0.5f, 1.0f));
   }
-  context.draw_center_text(Resources::normal_font, ss.str(), Vector(0, SCREEN_HEIGHT / 2), LAYER_FOREGROUND1, Color(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 /* EOF */

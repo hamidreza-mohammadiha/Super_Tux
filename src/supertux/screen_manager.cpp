@@ -387,6 +387,16 @@ ScreenManager::draw_loading_screen()
   {
     return;
   }
+
+  if (!m_screen_stack.empty())
+  {
+    draw(*m_loading_screen_context);
+  }
+  else
+  {
+    m_loading_screen_context->draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
+  }
+
   LevelLoadingAnimation anim;
 
   real_time += 0.2;

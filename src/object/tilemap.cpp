@@ -75,7 +75,6 @@ TileMap::TileMap(const Reader& reader) :
   tileset = current_tileset;
   assert(tileset != NULL);
 
-  //log_warning << "TileMap::draw_loading_screen" << std::endl;
   ScreenManager::current()->draw_loading_screen();
 
   reader.get("name",   name);
@@ -482,7 +481,6 @@ TileMap::update_effective_solid (void)
 void
 TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 {
-  //log_warning << "TileMap::calculateDrawRects short" << std::endl;
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
     if (tiles[i] == newtile || tiles[i] == oldtile) {
