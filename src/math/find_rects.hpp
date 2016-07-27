@@ -17,9 +17,9 @@ namespace FindRects {
 		int y;
 		int w;
 		int h;
-		Rect(int x, int y, int w, int h): x(x), y(y), w(w), h(h) {}
+		Rect(int X, int Y, int W, int H): x(X), y(Y), w(W), h(H) {}
 		/** Returns true if a point (x,y) is inside this rectangle */
-		bool isPointInside(int x, int y) { return x >= this->x && x < this->x + this->w && y >= this->y && y < this->y + this->h; }
+		bool isPointInside(int X, int Y) { return X >= this->x && X < this->x + this->w && Y >= this->y && Y < this->y + this->h; }
 	};
 
 	/** Find a biggest rectangle in a given two-dimensional array
