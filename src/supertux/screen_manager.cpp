@@ -391,6 +391,8 @@ ScreenManager::draw_loading_screen()
   DrawingContext& context = *m_loading_screen_context;
 
   context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
+  // This is buggy and sometimes crashes
+  /*
   if (!m_screen_stack.empty())
   {
     m_screen_stack.back()->draw(context);
@@ -400,6 +402,7 @@ ScreenManager::draw_loading_screen()
       m_screen_fade->draw(context);
     }
   }
+  */
 
   LevelLoadingAnimation anim;
   real_time += 0.2;

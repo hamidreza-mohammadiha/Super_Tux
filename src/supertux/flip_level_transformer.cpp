@@ -32,13 +32,15 @@ FlipLevelTransformer::transform_sector(Sector* sector)
 {
   float height = sector->get_height();
 
+  // This is lenghtly operation, because it will recalculate tiles draw cache, so show some visual feedback
+  ScreenManager::current()->draw_loading_screen();
   for(Sector::GameObjects::iterator i = sector->gameobjects.begin();
       i != sector->gameobjects.end(); ++i) {
     GameObjectPtr object = *i;
 
     TileMap* tilemap = dynamic_cast<TileMap*>(object.get());
     if(tilemap) {
-      ScreenManager::current()->draw_loading_screen(); // This is lenghtly operation, because it will recalculate tiles draw cache, so show some visual feedback
+      ScreenManager::current()->draw_loading_screen();
       transform_tilemap(height, *tilemap);
     }
     Player* player = dynamic_cast<Player*>(object.get());
