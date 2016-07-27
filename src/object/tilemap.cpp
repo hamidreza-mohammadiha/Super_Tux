@@ -27,6 +27,9 @@
 #include "math/find_rects.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/screen_fade.hpp"
+#include "addon/md5.hpp"
+#include <physfs.h>
+
 
 TileMap::TileMap(const TileSet *new_tileset) :
   tileset(new_tileset),
@@ -140,8 +143,7 @@ TileMap::TileMap(const Reader& reader) :
     log_info << "Tilemap '" << name << "', z-pos '" << z_pos << "' is empty." << std::endl;
   }
 
-  //log_warning << "Loaded tilemap " << width << " x " << height << std::endl;
-  calculateDrawRects();
+  calculateDrawRects(true);
 }
 
 TileMap::TileMap(const TileSet *new_tileset, std::string name_, int z_pos_,
@@ -499,11 +501,31 @@ TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 }
 
 void
-TileMap::calculateDrawRects(void)
+TileMap::calculateDrawRects(bool useCache)
 {
   //log_warning << "TileMap::calculateDrawRects long" << std::endl;
   fill(tilesDrawRects.begin(), tilesDrawRects.end(), 0);
   tilesDrawRects.resize(tiles.size() * 2, 0);
+
+  std::string fname;
+  if (useCache)
+  {
+    MD5 md5hash;
+    md5hash.update((unsigned char *) tiles.data(), tiles.size() * sizeof(tiles[0]));
+    fname = "tilecache/" + md5hash.hex_digest();
+
+    PHYSFS_file* file = PHYSFS_openRead(fname.c_str());
+    if (file)
+    {
+      int status = PHYSFS_read(file, (void *) tilesDrawRects.data(), tiles.size() * 2, 1);
+      PHYSFS_close(file);
+      if (status == 1)
+      {
+        return;
+      }
+    }
+  }
+
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (uint32_t tileid = 0; tileid < tileset->get_max_tileid(); tileid++) {
     bool skip = true;
@@ -517,6 +539,20 @@ TileMap::calculateDrawRects(void)
     if (!skip) {
       FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
       fill(inputRects.begin(), inputRects.end(), 0);
+    }
+  }
+
+  if (useCache)
+  {
+    if (!PHYSFS_exists("tilecache"))
+    {
+      PHYSFS_mkdir("tilecache");
+    }
+    PHYSFS_file* file = PHYSFS_openWrite(fname.c_str());
+    if (file)
+    {
+      PHYSFS_write(file, (void *) tilesDrawRects.data(), tiles.size() * 2, 1);
+      PHYSFS_close(file);
     }
   }
 }

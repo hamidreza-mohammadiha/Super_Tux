@@ -204,7 +204,7 @@ private:
   TileMap(const TileMap&);
   TileMap& operator=(const TileMap&);
 
-  void calculateDrawRects(void);
+  void calculateDrawRects(bool useCache = false);
   void calculateDrawRects(uint32_t oldtile, uint32_t newtile);
 };
 
