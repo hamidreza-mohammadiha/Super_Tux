@@ -388,22 +388,27 @@ ScreenManager::draw_loading_screen()
     return;
   }
 
+  DrawingContext& context = *m_loading_screen_context;
+
   if (!m_screen_stack.empty())
   {
-    draw(*m_loading_screen_context);
+    m_screen_stack.back()->draw(context);
+    m_menu_manager->draw(context);
+    if (m_screen_fade)
+    {
+      m_screen_fade->draw(context);
+    }
   }
   else
   {
-    m_loading_screen_context->draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
+    context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
   }
 
   LevelLoadingAnimation anim;
-
   real_time += 0.2;
   game_time += 0.2;
-
-  anim.draw(*m_loading_screen_context);
-  m_loading_screen_context->do_drawing();
+  anim.draw(context);
+  context.do_drawing();
 }
 
 /* EOF */
