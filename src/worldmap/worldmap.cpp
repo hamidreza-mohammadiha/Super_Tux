@@ -63,6 +63,7 @@
 #include "supertux/tile_set.hpp"
 #include "supertux/world.hpp"
 #include "supertux/levelloadinganimation.hpp"
+#include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "util/gettext.hpp"
 #include "util/log.hpp"
@@ -476,6 +477,7 @@ WorldMap::finished_level(Level* gamelevel)
   }
 
   save_state();
+  LevelSaveState::save(LevelSaveState(levels_path));
 
   if (old_level_state != level->solved) {
     // Try to detect the next direction to which we should walk

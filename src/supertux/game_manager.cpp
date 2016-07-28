@@ -30,9 +30,12 @@
 #include "supertux/screen_fade.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/world.hpp"
+#include "supertux/levelsavestate.hpp"
+#include "control/input_manager.hpp"
 #include "util/file_system.hpp"
 #include "util/log.hpp"
 #include "worldmap/worldmap.hpp"
+#include "worldmap/level.hpp"
 
 GameManager::GameManager() :
   m_world(),
@@ -65,10 +68,37 @@ GameManager::start_worldmap(std::unique_ptr<World> world)
     m_world = std::move(world);
     m_savegame.reset(new Savegame(m_world->get_savegame_filename()));
     m_savegame->load();
+    LevelSaveState::save(LevelSaveState(m_world->get_basedir()));
 
-    ScreenManager::current()->push_screen(std::unique_ptr<Screen>(
-                                    new worldmap::WorldMap(m_world->get_worldmap_filename(),
-                                                           *m_savegame)));
+    worldmap::WorldMap *wmap = new worldmap::WorldMap(m_world->get_worldmap_filename(), *m_savegame);
+    ScreenManager::current()->push_screen(std::unique_ptr<Screen>(wmap));
+
+    if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "")
+    {
+      log_warning << "Loading level from worldmap" << std::endl;
+      wmap->setup();
+      worldmap::LevelTile* level = wmap->at_level();
+      if (!level)
+      {
+        log_warning << "No level to enter at worldmap" << std::endl;
+      }
+      else
+      {
+        std::string levelfile = m_world->get_basedir() + "/" + level->get_name();
+        if (LevelSaveState::get().level != levelfile)
+        {
+          log_warning << "Saved level " << LevelSaveState::get().level << " does not match worlmap level " << levelfile << std::endl;
+        }
+        else
+        {
+          // Hack: press a button on a controller
+          InputManager::current()->get_controller()->reset();
+          InputManager::current()->get_controller()->set_control(Controller::ACTION, true);
+          wmap->update(0.0f);
+          InputManager::current()->get_controller()->set_control(Controller::ACTION, false);
+        }
+      }
+    }
   }
   catch(std::exception& e)
   {
