@@ -78,8 +78,6 @@ TileMap::TileMap(const Reader& reader) :
   tileset = current_tileset;
   assert(tileset != NULL);
 
-  ScreenManager::current()->draw_loading_screen();
-
   reader.get("name",   name);
   reader.get("solid",  real_solid);
   reader.get("speed",  speed_x);
@@ -524,6 +522,7 @@ TileMap::calculateDrawRects(bool useCache)
         return;
       }
     }
+    ScreenManager::current()->draw_loading_screen();
   }
 
   std::vector<unsigned char> inputRects(tiles.size(), 0);
