@@ -405,8 +405,6 @@ ScreenManager::draw_loading_screen()
   */
 
   LevelLoadingAnimation anim;
-  real_time += 0.2;
-  game_time += 0.2;
   anim.draw(context);
   context.do_drawing();
 }
