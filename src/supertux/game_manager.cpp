@@ -75,7 +75,6 @@ GameManager::start_worldmap(std::unique_ptr<World> world)
 
     if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "")
     {
-      log_warning << "Loading level from worldmap" << std::endl;
       wmap->setup();
       worldmap::LevelTile* level = wmap->at_level();
       if (!level)
