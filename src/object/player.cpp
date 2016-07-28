@@ -955,7 +955,6 @@ Player::handle_input()
           grabbed_object->ungrab(*this, dir);
         }
         grabbed_object = NULL;
-        log_warning << "released_object = true" << std::endl;
         released_object = true;
       }
     } else {
@@ -964,7 +963,6 @@ Player::handle_input()
   }
 
   if (!controller->hold(Controller::ACTION) && released_object) {
-    log_warning << "released_object = false" << std::endl;
     released_object = false;
   }
 
