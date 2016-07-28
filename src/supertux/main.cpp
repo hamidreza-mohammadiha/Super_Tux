@@ -373,14 +373,6 @@ Main::run(int argc, char** argv)
   {
     CommandLineArguments args;
 
-    // Copy over old savegames
-    struct stat st;
-    if (stat(".supertux2/profile1", &st) != 0)
-    {
-      system("mkdir -p .supertux2/profile1");
-      system("cp $SDCARD/app-data/org.lethargik.supertux2/.supertux2/profile1/* .supertux2/profile1/");
-    }
-
     try
     {
       args.parse_args(argc, argv);
