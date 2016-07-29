@@ -282,7 +282,7 @@ GLRenderer::apply_video_mode()
   //SCREEN_WIDTH = SDL_GetVideoInfo()->current_w;
   //SCREEN_HEIGHT = SDL_GetVideoInfo()->current_h;
 #ifdef ANDROID
-  SDL_SetVideoMode(m_desktop_size.width, m_desktop_size.height, 16, SDL_OPENGL | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+  SDL_SetVideoMode(m_desktop_size.width, m_desktop_size.height, SDL_GetVideoInfo()->vfmt->BitsPerPixel, SDL_OPENGL | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 #else
   //m_desktop_size.width = 1280;
   //m_desktop_size.height = 800;

@@ -86,7 +86,11 @@ GLTexture::GLTexture(SDL_Surface* image) :
   m_image_height = image->h;
 
   SDL_Surface* convert;
-  if (image->flags & SDL_SRCCOLORKEY) {
+  if (SDL_GetVideoInfo()->vfmt->BitsPerPixel >= 24) {
+    convert = SDL_CreateRGBSurface(0,
+                                   m_texture_width, m_texture_height, 32,
+                                   0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+  } else if (image->flags & SDL_SRCCOLORKEY) {
     // Palette image with colorkey transparency - RGBA5551
     convert = SDL_CreateRGBSurface(0,
                                    m_image_width, m_image_height, 16,
