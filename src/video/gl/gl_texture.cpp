@@ -132,18 +132,22 @@ void GLTexture::reupload()
   glGenTextures(1, &m_handle);
 
   try {
-    GLenum sdl_format = GL_RGBA;
-    GLenum pixel_packing = GL_UNSIGNED_BYTE;
+    GLenum sdl_format = GL_RGB;
+    GLenum pixel_packing = SDL_GetVideoInfo()->vfmt->BitsPerPixel >= 24 ? GL_UNSIGNED_BYTE : GL_UNSIGNED_SHORT_5_6_5;
 
     if (m_pixels) {
       if (m_pixels->format->Amask == 0)
         sdl_format = GL_RGB;
+      else
+        sdl_format = GL_RGBA;
       if (m_pixels->format->Gmask == 0x000007c0)
         pixel_packing = GL_UNSIGNED_SHORT_5_5_5_1;
-      if (m_pixels->format->Gmask == 0x00000f00)
+      else if (m_pixels->format->Gmask == 0x00000f00)
         pixel_packing = GL_UNSIGNED_SHORT_4_4_4_4;
-      if (m_pixels->format->Gmask == 0x000007e0)
+      else if (m_pixels->format->Gmask == 0x000007e0)
         pixel_packing = GL_UNSIGNED_SHORT_5_6_5;
+      else
+        pixel_packing = GL_UNSIGNED_BYTE;
     }
 
     glBindTexture(GL_TEXTURE_2D, m_handle);
