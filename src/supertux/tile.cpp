@@ -147,6 +147,7 @@ Tile::draw(DrawingContext& context, const Vector& pos, int z_pos, Color color, S
         }
       }
     }
+  }
 }
 
 void

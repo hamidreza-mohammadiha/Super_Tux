@@ -158,7 +158,6 @@ public:
 
   void find_datadir()
   {
-<<<<<<< HEAD
     std::string datadir;
 #ifdef __ANDROID__
     datadir = getenv("ANDROID_MY_OWN_APP_FILE");
@@ -174,9 +173,13 @@ public:
     else
     {
       // check if we run from source dir
+#if SDL_VERSION_ATLEAST(2,0,0)
       char* basepath_c = SDL_GetBasePath();
       std::string basepath = basepath_c ? basepath_c : "./";
       SDL_free(basepath_c);
+#else
+      std::string basepath = "./";
+#endif
 
       if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
       {
@@ -196,7 +199,7 @@ public:
 
     if (!PHYSFS_mount(datadir.c_str(), NULL, 1))
     {
-      log_warning << "Couldn't add " << dataPath << " to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
+      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
     }
   }
 

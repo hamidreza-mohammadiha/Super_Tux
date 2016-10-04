@@ -661,8 +661,8 @@ WorldMap::update(float delta)
 
       if (level_->pos == tux->get_tile_pos()) {
         try {
-          Vector shrinkpos = Vector(level_->pos.x*32 + 16 - camera_offset.x,
-                                    level_->pos.y*32 +  8 - camera_offset.y);
+          //Vector shrinkpos = Vector(level_->pos.x*32 + 16 - camera_offset.x,
+          //                          level_->pos.y*32 +  8 - camera_offset.y);
           std::string levelfile = levels_path + level_->get_name();
 
           // update state and savegame

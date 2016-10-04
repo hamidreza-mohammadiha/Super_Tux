@@ -20,9 +20,9 @@
 #include "supertux/levelsavestate.hpp"
 
 #include "physfs/ifile_streambuf.hpp"
-#include "lisp/lisp.hpp"
-#include "lisp/parser.hpp"
-#include "lisp/writer.hpp"
+#include "util/reader_mapping.hpp"
+#include "util/reader_document.hpp"
+#include "util/writer.hpp"
 #include "util/log.hpp"
 
 bool LevelSaveState::loading = true;
@@ -39,17 +39,17 @@ const LevelSaveState & LevelSaveState::get()
     {
       try
       {
-        lisp::Parser parser;
-        const lisp::Lisp* root = parser.parse(filename);
-        const lisp::Lisp* lisp = root->get_lisp("last-level");
-        if(lisp == NULL)
+        auto doc = ReaderDocument::parse(filename);
+        auto root = doc.get_root();
+        if(root.get_name() != "last-level")
         {
           throw std::runtime_error("file is not a supertux-savegame file");
         }
-        lisp->get("level", saved.level);
-        lisp->get("sector", saved.sector);
-        lisp->get("x", saved.pos.x);
-        lisp->get("y", saved.pos.y);
+        auto lisp = root.get_mapping();
+        lisp.get("level", saved.level);
+        lisp.get("sector", saved.sector);
+        lisp.get("x", saved.pos.x);
+        lisp.get("y", saved.pos.y);
       }
       catch(const std::exception& e)
       {
@@ -71,7 +71,7 @@ void LevelSaveState::save(const LevelSaveState & state)
     return; // Main menu demo level, ignore it
   }
   saved = state;
-  lisp::Writer writer(filename);
+  Writer writer(filename);
   writer.start_list("last-level");
   writer.write("level", saved.level);
   writer.write("sector", saved.sector);

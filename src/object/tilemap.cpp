@@ -343,7 +343,6 @@ TileMap::draw(DrawingContext& context)
         context.get_translation() + Vector(SCREEN_WIDTH, SCREEN_HEIGHT));
   Rect t_draw_rect = get_tiles_overlapping(draw_rect);
 
-  Vector start = get_tile_position(t_draw_rect.left, t_draw_rect.top);
   Rectf screen_edge_rect = Rectf(context.get_translation(),
         context.get_translation() + Vector(SCREEN_WIDTH, SCREEN_HEIGHT));
   Rect t_screen_edge_rect = get_tiles_overlapping(screen_edge_rect);
@@ -362,8 +361,11 @@ TileMap::draw(DrawingContext& context)
         assert (index >= 0);
         assert (index < (width * height));
 
+        if (tilesDrawRects[index * 2] == 0) continue;
+        if (tx + tilesDrawRects[index * 2] < screen_start_x || ty + tilesDrawRects[index * 2 + 1] < screen_start_y) continue;
+
         //uint32_t tile_id = tiles[index];
-        tileset->draw_tile(context, tiles[index], pos, z_pos, current_tint);
+        tileset->draw_tile(context, tiles[index], pos, z_pos, current_tint, Size(tilesDrawRects[index * 2], tilesDrawRects[index * 2 + 1]));
         /*if (tiles[index] == 0) continue;
         const Tile* tile = tileset->get(tiles[index]);
         assert(tile != 0);
@@ -407,14 +409,19 @@ TileMap::draw(DrawingContext& context)
         assert (index >= 0);
         assert (index < (width * height));
 
-        if (tilesDrawRects[index * 2] == 0) continue;
-        if (tx + tilesDrawRects[index * 2] < screen_start_x || ty + tilesDrawRects[index * 2 + 1] < screen_start_y) continue;
-
         if (tiles[index] == 0) continue;
         const Tile* tile = tileset->get(tiles[index]);
         if (!tile) continue;
 
-        tile->draw(context, pos, z_pos, current_tint, Size(tilesDrawRects[index * 2], tilesDrawRects[index * 2 + 1]));
+        SurfacePtr image = tile->get_current_image();
+        if (image) {
+          int w = image->get_width();
+          int h = image->get_height();
+          if (w <= 32 && h <= 32) continue;
+
+          if (pos.x + w > start.x && pos.y + h > start.y)
+            tile->draw(context, pos, z_pos, current_tint);
+        }
       }
     }
   }
@@ -645,6 +652,7 @@ TileMap::set_tileset(const TileSet* new_tileset)
   tileset = new_tileset;
 }
 
+void
 TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 {
   std::vector<unsigned char> inputRects(tiles.size(), 0);
