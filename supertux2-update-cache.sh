@@ -34,22 +34,21 @@ index 12ae813..7edc15c 100644
 ===END===
 
 	./configure || exit 1
-	cd build || exit 1
 	make -j4 || exit 1
-	mv -f supertux2 ../supertux2-update-cache || exit 1
-	cd ..
+	mv -f supertux2 supertux2-update-cache || exit 1
 }
 
 
 COUNT=`find data -name '*.stl' | wc -l`
 TOTAL=$COUNT
 find data -name '*.stl' | sort | {
-	PROCESS=false
+	#PROCESS=false
+	PROCESS=true
 	IDX=1
 	while read LEVEL ; do
 		echo "Level $IDX of $COUNT:"
 		echo "$LEVEL"
-		[ "$LEVEL" = "data/levels/incubator/SP33DRUN.stl" ] && PROCESS=true
+		# [ "$LEVEL" = "data/levels/incubator/SP33DRUN.stl" ] && PROCESS=true
 		$PROCESS && ./supertux2-update-cache "$LEVEL"
 		IDX=`expr $IDX '+' 1`
 	done
