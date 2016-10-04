@@ -39,6 +39,7 @@
 #include "supertux/screen_fade.hpp"
 #include "supertux/sector.hpp"
 #include "supertux/timer.hpp"
+#include "supertux/levelloadinganimation.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 
@@ -53,7 +54,7 @@ static const Uint32 TICKS_PER_FRAME = (Uint32) (1000.0 / LOGICAL_FPS);
 /** don't skip more than every 2nd frame */
 static const int MAX_FRAME_SKIP = 2;
 
-ScreenManager::ScreenManager() :
+ScreenManager::ScreenManager(DrawingContext *context) :
   m_waiting_threads(),
   m_menu_storage(new MenuStorage),
   m_menu_manager(new MenuManager),
@@ -62,7 +63,8 @@ ScreenManager::ScreenManager() :
   m_fps(0),
   m_screen_fade(),
   m_screen_stack(),
-  m_screenshot_requested(false)
+  m_screenshot_requested(false),
+  m_loading_screen_context(context)
 {
   using namespace scripting;
   TimeScheduler::instance = new TimeScheduler();
@@ -230,7 +232,7 @@ ScreenManager::update_gamelogic(float elapsed_time)
 }
 
 void
-ScreenManager::process_events()
+ScreenManager::process_events(DrawingContext &context)
 {
   InputManager::current()->update();
   SDL_Event event;
@@ -249,7 +251,7 @@ ScreenManager::process_events()
       case SDL_QUIT:
         quit();
         break;
-
+#if SDL_VERSION_ATLEAST(2,0,0)
       case SDL_WINDOWEVENT:
         switch(event.window.event)
         {
@@ -271,6 +273,11 @@ ScreenManager::process_events()
             break;
         }
         break;
+#else
+      case SDL_VIDEORESIZE:
+        VideoSystem::current()->resize(event.resize.w, event.resize.h);
+        break;
+#endif
 
       case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_F10)
@@ -285,7 +292,7 @@ ScreenManager::process_events()
           VideoSystem::current()->apply_config();
           m_menu_manager->on_window_resize();
         }
-        else if (event.key.keysym.sym == SDLK_PRINTSCREEN ||
+        else if (event.key.keysym.sym == SDLK_PRINT ||
                  event.key.keysym.sym == SDLK_F12)
         {
           take_screenshot();
@@ -412,7 +419,7 @@ ScreenManager::run(DrawingContext &context)
       timestep *= m_speed;
       game_time += timestep;
 
-      process_events();
+      process_events(context);
       update_gamelogic(timestep);
       frames += 1;
     }
@@ -432,6 +439,35 @@ void
 ScreenManager::take_screenshot()
 {
   m_screenshot_requested = true;
+}
+
+void
+ScreenManager::draw_loading_screen()
+{
+  if (m_loading_screen_context == NULL)
+  {
+    return;
+  }
+
+  DrawingContext& context = *m_loading_screen_context;
+
+  context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT), Color(0.0f, 0.0f, 0.0f, 1.0f), 0);
+  // This is buggy and sometimes crashes
+  /*
+  if (!m_screen_stack.empty())
+  {
+    m_screen_stack.back()->draw(context);
+    m_menu_manager->draw(context);
+    if (m_screen_fade)
+    {
+      m_screen_fade->draw(context);
+    }
+  }
+  */
+
+  LevelLoadingAnimation anim;
+  anim.draw(context);
+  context.do_drawing();
 }
 
 /* EOF */

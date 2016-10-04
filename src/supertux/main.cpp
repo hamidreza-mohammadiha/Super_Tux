@@ -21,6 +21,9 @@
 
 #include <SDL_image.h>
 #include <boost/filesystem.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 #include <array>
@@ -31,6 +34,9 @@
 extern "C" {
 #include <findlocale.h>
 }
+#ifdef __ANDROID__
+#include <SDL_android.h>
+#endif
 
 #include "addon/addon_manager.hpp"
 #include "audio/sound_manager.hpp"
@@ -137,7 +143,7 @@ public:
     if (!PHYSFS_init(argv0))
     {
       std::stringstream msg;
-      msg << "Couldn't initialize physfs: " << PHYSFS_getLastError();
+      msg << "Couldn't initialize physfs: " << PHYSFS_getLastError() << " argv0: " << argv0;
       throw std::runtime_error(msg.str());
     }
     else
@@ -152,7 +158,11 @@ public:
 
   void find_datadir()
   {
+<<<<<<< HEAD
     std::string datadir;
+#ifdef __ANDROID__
+    datadir = getenv("ANDROID_MY_OWN_APP_FILE");
+#else
     if (m_forced_datadir)
     {
       datadir = *m_forced_datadir;
@@ -182,10 +192,11 @@ public:
         datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
       }
     }
+#endif
 
     if (!PHYSFS_mount(datadir.c_str(), NULL, 1))
     {
-      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
+      log_warning << "Couldn't add " << dataPath << " to physfs searchpath: " << PHYSFS_getLastError() << std::endl;
     }
   }
 
@@ -292,7 +303,7 @@ class SDLSubsystem
 public:
   SDLSubsystem()
   {
-    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
       std::stringstream msg;
       msg << "Couldn't initialize SDL: " << SDL_GetError();
@@ -311,7 +322,7 @@ public:
 void
 Main::init_video()
 {
-  SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
+  //SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
 
   const char* icon_fname = "images/engine/icons/supertux-256x256.png";
   SDL_Surface* icon = IMG_Load_RW(get_physfs_SDLRWops(icon_fname), true);
@@ -321,7 +332,7 @@ Main::init_video()
   }
   else
   {
-    SDL_SetWindowIcon(VideoSystem::current()->get_renderer().get_window(), icon);
+    SDL_WM_SetIcon(icon, NULL);
     SDL_FreeSurface(icon);
   }
   SDL_ShowCursor(0);
@@ -353,6 +364,11 @@ Main::launch_game()
 
   SDLSubsystem sdl_subsystem;
   ConsoleBuffer console_buffer;
+#ifdef __ANDROID__
+  if (getenv("ANDROID_TV")) {
+    SDL_ANDROID_SetScreenKeyboardShown(0);
+  }
+#endif
 
   timelog("controller");
   InputManager input_manager(g_config->keyboard_config, g_config->joystick_config);
@@ -387,7 +403,7 @@ Main::launch_game()
   const std::unique_ptr<Savegame> default_savegame(new Savegame(std::string()));
 
   GameManager game_manager;
-  ScreenManager screen_manager;
+  ScreenManager screen_manager(&context);
 
   if(!g_config->start_level.empty()) {
     // we have a normal path specified at commandline, not a physfs path.

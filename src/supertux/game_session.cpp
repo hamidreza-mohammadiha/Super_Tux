@@ -45,6 +45,7 @@
 #include "supertux/screen_fade.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
+#include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "util/gettext.hpp"
 #include "worldmap/worldmap.hpp"
@@ -86,6 +87,9 @@ GameSession::GameSession(const std::string& levelfile_, Savegame& savegame, Stat
   active(false),
   end_seq_started(false)
 {
+  if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "" && levelfile.find("levels/misc") != 0) {
+    set_reset_point(LevelSaveState::get().sector, LevelSaveState::get().pos);
+  }
   if (restart_level() != 0)
     throw std::runtime_error ("Initializing the level failed.");
 }
@@ -285,6 +289,9 @@ GameSession::toggle_pause()
     currentsector->stop_looping_sounds();
     SoundManager::current()->pause_music();
     game_pause = true;
+  } else if (game_pause && MenuManager::instance().is_active()) {
+    MenuManager::instance().clear_menu_stack();
+    ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
   }
 
   // unpause is done in update() after the menu is processed
@@ -419,6 +426,8 @@ GameSession::check_end_conditions()
 void
 GameSession::draw(DrawingContext& context)
 {
+  if (!currentsector)
+    return;
   currentsector->draw(context);
   drawstatus(context);
 
@@ -599,6 +608,7 @@ GameSession::respawn(const std::string& sector, const std::string& spawnpoint)
 void
 GameSession::set_reset_point(const std::string& sector, const Vector& pos)
 {
+  LevelSaveState::save(LevelSaveState(levelfile, sector, pos));
   reset_sector = sector;
   reset_pos = pos;
 }

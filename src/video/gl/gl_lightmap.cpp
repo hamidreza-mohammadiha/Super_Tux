@@ -67,7 +67,6 @@ GLLightmap::GLLightmap() :
 
   m_lightmap_uv_right = static_cast<float>(m_lightmap_width) / static_cast<float>(width);
   m_lightmap_uv_bottom = static_cast<float>(m_lightmap_height) / static_cast<float>(height);
-  TextureManager::current()->register_texture(m_lightmap.get());
 }
 
 GLLightmap::~GLLightmap()
@@ -194,14 +193,14 @@ GLLightmap::get_light(const DrawingRequest& request) const
   const GetLightRequest* getlightrequest
     = static_cast<GetLightRequest*>(request.request_data);
 
-  float pixels[3];
-  for( int i = 0; i<3; i++)
-    pixels[i] = 0.0f; //set to black
+  unsigned char pixels[4];
+  for( int i = 0; i < 4; i++)
+    pixels[i] = 0; //set to black
 
   float posX = request.pos.x * m_lightmap_width / SCREEN_WIDTH + m_old_viewport[0];
   float posY = m_old_viewport[3] + m_old_viewport[1] - request.pos.y * m_lightmap_height / SCREEN_HEIGHT;
-  glReadPixels((GLint) posX, (GLint) posY , 1, 1, GL_RGB, GL_FLOAT, pixels);
-  *(getlightrequest->color_ptr) = Color( pixels[0], pixels[1], pixels[2]);
+  glReadPixels((GLint) posX, (GLint) posY , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  *(getlightrequest->color_ptr) = Color(pixels[0] / 255.0f, pixels[1] / 255.0f, pixels[2] / 255.0f);
 }
 
 /* EOF */

@@ -17,13 +17,18 @@
 #ifndef HEADER_SUPERTUX_VIDEO_GL_GL_PAINTER_HPP
 #define HEADER_SUPERTUX_VIDEO_GL_GL_PAINTER_HPP
 
+#ifndef GL_VERSION_ES_CM_1_0
 #ifdef USE_GLBINDING
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #else
 #include <GL/glew.h>
 
-#include "SDL_opengl.h"
+//#include "SDL_opengl.h"
+#endif
+#else
+#include <GLES/gl.h>
+#include <GLES/glext.h>
 #endif
 
 struct DrawingRequest;
@@ -32,6 +37,8 @@ class GLPainter
 {
 private:
   static GLuint s_last_texture;
+  static GLenum s_blend_sfactor;
+  static GLenum s_blend_dfactor;
 
 public:
   GLPainter();
@@ -43,6 +50,7 @@ public:
   static void draw_inverse_ellipse(const DrawingRequest& request);
   static void draw_line(const DrawingRequest& request);
   static void draw_triangle(const DrawingRequest& request);
+  static void reset_last_texture();
 
 private:
   GLPainter(const GLPainter&) = delete;

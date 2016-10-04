@@ -248,6 +248,7 @@ private:
 
   void handle_horizontal_input();
   void handle_vertical_input();
+  void handle_jump_helper();
 
   void do_jump_apex();
   void early_jump_apex();
@@ -318,10 +319,20 @@ public:
   bool visible;
 
   Portable* grabbed_object;
+  bool released_object;
 
   SpritePtr sprite; /**< The main sprite representing Tux */
 
   SurfacePtr airarrow; /**< arrow indicating Tux' position when he's above the camera */
+
+
+  SurfacePtr jumparrow; /**< arrow indicating wherer Tux' will jump */
+  bool jump_helper;     /**< Jump helper for touchscreens to perform precise jumps */
+  bool jump_helper_jump;
+  bool jump_helper_move_left;
+  bool jump_helper_move_right;
+  bool jump_helper_draw;
+  float jump_helper_x;
 
   Vector floor_normal;
   void position_grabbed_object();

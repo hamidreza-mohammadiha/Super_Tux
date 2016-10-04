@@ -103,6 +103,10 @@ public:
   void draw_surface_part(SurfacePtr surface,
                          const Rectf& srcrect, const Rectf& dstrect,
                          int layer);
+  /// Adds a drawing request for part of a surface.
+  void draw_surface_part(SurfacePtr surface,
+                         const Rectf& srcrect, const Rectf& dstrect,
+                         const Color& color, const Blend& blend, int layer);
   /// Draws a text.
   void draw_text(FontPtr font, const std::string& text,
                  const Vector& position, FontAlignment alignment, int layer, Color color = Color(1.0,1.0,1.0));

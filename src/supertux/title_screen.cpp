@@ -37,6 +37,8 @@
 #include "util/gettext.hpp"
 #include "util/reader_mapping.hpp"
 #include "video/drawing_context.hpp"
+#include "supertux/game_manager.hpp"
+#include "supertux/levelsavestate.hpp"
 
 #include <sstream>
 #include <version.h>
@@ -146,6 +148,24 @@ TitleScreen::update(float elapsed_time)
   if(!MenuManager::instance().is_active() && !ScreenManager::current()->has_pending_fadeout())
   {
     MenuManager::instance().set_menu(MenuStorage::MAIN_MENU);
+  }
+
+  if (LevelSaveState::getLoading())
+  {
+    std::string worldname = LevelSaveState::get().getWorld();
+    if (worldname != "")
+    {
+      try
+      {
+        std::unique_ptr<World> world = World::load(worldname);
+        GameManager::current()->start_worldmap(std::move(world));
+      }
+      catch(const std::exception& e)
+      {
+        log_fatal << "Couldn't load world " << worldname << ": " << e.what() << std::endl;
+      }
+    }
+    LevelSaveState::finishLoading();
   }
 }
 

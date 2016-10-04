@@ -41,38 +41,17 @@
 
 #ifdef GL_VERSION_ES_CM_1_0
 #  define glOrtho glOrthof
+bool GLEW_ARB_texture_non_power_of_two = false;
 #endif
 
 GLRenderer::GLRenderer() :
-  m_window(),
-  m_glcontext(),
+  //m_window(),
+  //m_glcontext(),
   m_viewport(),
   m_desktop_size(0, 0),
   m_fullscreen_active(false)
 {
-  SDL_DisplayMode mode;
-  SDL_GetCurrentDisplayMode(0, &mode);
-  m_desktop_size = Size(mode.w, mode.h);
-
-  if(g_config->try_vsync) {
-    /* we want vsync for smooth scrolling */
-    if (SDL_GL_SetSwapInterval(-1) != 0)
-    {
-      log_info << "no support for late swap tearing vsync: " << SDL_GetError() << std::endl;
-      if (SDL_GL_SetSwapInterval(1))
-      {
-        log_info << "no support for vsync: " << SDL_GetError() << std::endl;
-      }
-    }
-  }
-
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  5);
-
-  apply_video_mode();
+  m_desktop_size = Size(SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h);
 
 #ifdef USE_GLBINDING
 
@@ -108,15 +87,6 @@ GLRenderer::GLRenderer() :
 
 #endif
 
-  // setup opengl state and transform
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   // Init the projection matrix, viewport and stuff
   apply_config();
 
@@ -132,13 +102,21 @@ GLRenderer::GLRenderer() :
   log_info << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
   log_info << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
 #  endif
+#else
+  const char * extensions = (const char *) glGetString(GL_EXTENSIONS);
+  if (extensions && (strstr(extensions, "GL_OES_texture_npot") || strstr(extensions, "GL_NV_texture_npot_2D_mipmap") || strstr(extensions, "GL_ARB_texture_non_power_of_two")))
+  {
+    GLEW_ARB_texture_non_power_of_two = true;
+  }
+  log_warning << "GLEW_ARB_texture_non_power_of_two: " << static_cast<int>(GLEW_ARB_texture_non_power_of_two) << std::endl;
+  log_warning << "GLES extensions: " << extensions << std::endl;
 #endif
 }
 
 GLRenderer::~GLRenderer()
 {
-  SDL_GL_DeleteContext(m_glcontext);
-  SDL_DestroyWindow(m_window);
+  //SDL_GL_DeleteContext(m_glcontext);
+  //SDL_DestroyWindow(m_window);
 }
 
 void
@@ -214,7 +192,14 @@ void
 GLRenderer::flip()
 {
   assert_gl("drawing");
-  SDL_GL_SwapWindow(m_window);
+  SDL_GL_SwapBuffers();
+  GLPainter::reset_last_texture();
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glColor4f(1, 1, 1, 1);
 }
 
 void
@@ -230,9 +215,17 @@ GLRenderer::apply_config()
 {
   apply_video_mode();
 
-  Size target_size = g_config->use_fullscreen ?
-    ((g_config->fullscreen_size == Size(0, 0)) ? m_desktop_size : g_config->fullscreen_size) :
-    g_config->window_size;
+  // setup opengl state and transform
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+  Size target_size = m_desktop_size;
 
   float pixel_aspect_ratio = 1.0f;
   if (g_config->aspect_size != Size(0, 0))
@@ -265,9 +258,9 @@ GLRenderer::apply_config()
   {
     // Clear both buffers so that we get a clean black border without junk
     glClear(GL_COLOR_BUFFER_BIT);
-    SDL_GL_SwapWindow(m_window);
+    SDL_GL_SwapBuffers();
     glClear(GL_COLOR_BUFFER_BIT);
-    SDL_GL_SwapWindow(m_window);
+    SDL_GL_SwapBuffers();
   }
 
   glViewport(m_viewport.x, m_viewport.y, m_viewport.w, m_viewport.h);
@@ -286,102 +279,17 @@ GLRenderer::apply_config()
 void
 GLRenderer::apply_video_mode()
 {
-  if (m_window)
-  {
-    if (!g_config->use_fullscreen)
-    {
-      SDL_SetWindowFullscreen(m_window, 0);
-    }
-    else
-    {
-      if (g_config->fullscreen_size.width == 0 &&
-          g_config->fullscreen_size.height == 0)
-      {
-        if (SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
-        {
-          log_warning << "failed to switch to desktop fullscreen mode: "
-                      << SDL_GetError() << std::endl;
-        }
-        else
-        {
-          log_info << "switched to desktop fullscreen mode" << std::endl;
-        }
-      }
-      else
-      {
-        SDL_DisplayMode mode;
-        mode.format = SDL_PIXELFORMAT_RGB888;
-        mode.w = g_config->fullscreen_size.width;
-        mode.h = g_config->fullscreen_size.height;
-        mode.refresh_rate = g_config->fullscreen_refresh_rate;
-        mode.driverdata = 0;
-
-        if (SDL_SetWindowDisplayMode(m_window, &mode) != 0)
-        {
-          log_warning << "failed to set display mode: "
-                      << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
-                      << SDL_GetError() << std::endl;
-        }
-        else
-        {
-          if (SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN) != 0)
-          {
-            log_warning << "failed to switch to fullscreen mode: "
-                        << mode.w << "x" << mode.h << "@" << mode.refresh_rate << ": "
-                        << SDL_GetError() << std::endl;
-          }
-          else
-          {
-            log_info << "switched to fullscreen mode: "
-                     << mode.w << "x" << mode.h << "@" << mode.refresh_rate << std::endl;
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
-    Size size;
-    if (g_config->use_fullscreen)
-    {
-      if (g_config->fullscreen_size == Size(0, 0))
-      {
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-        size = m_desktop_size;
-      }
-      else
-      {
-        flags |= SDL_WINDOW_FULLSCREEN;
-        size.width  = g_config->fullscreen_size.width;
-        size.height = g_config->fullscreen_size.height;
-      }
-    }
-    else
-    {
-      size = g_config->window_size;
-    }
-
-    m_window = SDL_CreateWindow("SuperTux",
-                              SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                              size.width, size.height,
-                              flags);
-    if (!m_window)
-    {
-      std::ostringstream msg;
-      msg << "Couldn't set video mode " << size.width << "x" << size.height << ": " << SDL_GetError();
-      throw std::runtime_error(msg.str());
-    }
-    else
-    {
-      m_glcontext = SDL_GL_CreateContext(m_window);
-
-      SCREEN_WIDTH = size.width;
-      SCREEN_HEIGHT = size.height;
-
-      m_fullscreen_active = g_config->use_fullscreen;
-    }
-  }
+  //SCREEN_WIDTH = SDL_GetVideoInfo()->current_w;
+  //SCREEN_HEIGHT = SDL_GetVideoInfo()->current_h;
+#ifdef ANDROID
+  SDL_SetVideoMode(m_desktop_size.width, m_desktop_size.height, SDL_GetVideoInfo()->vfmt->BitsPerPixel, SDL_OPENGL | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+#else
+  //m_desktop_size.width = 1280;
+  //m_desktop_size.height = 800;
+  m_desktop_size.width = 640;
+  m_desktop_size.height = 480;
+  SDL_SetVideoMode(m_desktop_size.width, m_desktop_size.height, 16, SDL_OPENGL | SDL_DOUBLEBUF);
+#endif
 }
 
 void
@@ -446,9 +354,9 @@ GLRenderer::to_logical(int physical_x, int physical_y) const
 void
 GLRenderer::set_gamma(float gamma)
 {
-  Uint16 ramp[256];
-  SDL_CalculateGammaRamp(gamma, ramp);
-  SDL_SetWindowGammaRamp(m_window, ramp, ramp, ramp);
+  //Uint16 ramp[256];
+  //SDL_CalculateGammaRamp(gamma, ramp);
+  //SDL_SetWindowGammaRamp(m_window, ramp, ramp, ramp);
 }
 
 /* EOF */

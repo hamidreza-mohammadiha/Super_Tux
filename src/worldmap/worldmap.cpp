@@ -59,6 +59,8 @@
 #include "supertux/tile_manager.hpp"
 #include "supertux/tile_set.hpp"
 #include "supertux/world.hpp"
+#include "supertux/levelloadinganimation.hpp"
+#include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "util/gettext.hpp"
 #include "util/log.hpp"
@@ -462,6 +464,7 @@ WorldMap::finished_level(Level* gamelevel)
   }
 
   save_state();
+  LevelSaveState::save(LevelSaveState(levels_path));
 
   if (old_level_state != level->solved) {
     // Try to detect the next direction to which we should walk
@@ -664,8 +667,7 @@ WorldMap::update(float delta)
 
           // update state and savegame
           save_state();
-          ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new GameSession(levelfile, m_savegame, &level_->statistics)),
-                                                std::unique_ptr<ScreenFade>(new ShrinkFade(shrinkpos, 1.0f)));
+          ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new GameSession(levelfile, m_savegame, &level_->statistics)));
           in_level = true;
         } catch(std::exception& e) {
           log_fatal << "Couldn't load level: " << e.what() << std::endl;
@@ -745,6 +747,14 @@ WorldMap::at_teleporter(const Vector& pos) const
 void
 WorldMap::draw(DrawingContext& context)
 {
+  if (in_level)
+  {
+    //ScreenManager::current()->draw_loading_screen();
+    LevelLoadingAnimation anim;
+    anim.draw(context);
+    return;
+  }
+
   if (int(get_width()*32) < SCREEN_WIDTH || int(get_height()*32) < SCREEN_HEIGHT)
     context.draw_filled_rect(Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT),
                              Color(0.0f, 0.0f, 0.0f, 1.0f), LAYER_BACKGROUND0);
