@@ -20,7 +20,9 @@
 #include <version.h>
 
 #include <SDL_image.h>
+#ifndef __ANDROID__
 #include <boost/filesystem.hpp>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -218,6 +220,10 @@ public:
     {
 		userdir = PHYSFS_getPrefDir("SuperTux","supertux2");
     }
+#ifdef __ANDROID__
+	userdir = getenv("HOME");
+	userdir += "/.supertux2";
+#else
 	//Kept for backwards-compatability only, hence the silence
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -264,7 +270,7 @@ public:
 	    log_info << "Moved old config dir " << olduserdir << " to " << userdir << std::endl;
 	  }
 	}
-
+#endif
     if (!FileSystem::is_directory(userdir))
     {
 	  FileSystem::mkdir(userdir);
