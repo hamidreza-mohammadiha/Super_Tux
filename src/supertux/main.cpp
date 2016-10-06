@@ -208,6 +208,10 @@ public:
   void find_userdir()
   {
     std::string userdir;
+#ifdef __ANDROID__
+	userdir = getenv("HOME");
+	userdir += "/.supertux2";
+#else
     if (m_forced_userdir)
     {
       userdir = *m_forced_userdir;
@@ -220,10 +224,6 @@ public:
     {
 		userdir = PHYSFS_getPrefDir("SuperTux","supertux2");
     }
-#ifdef __ANDROID__
-	userdir = getenv("HOME");
-	userdir += "/.supertux2";
-#else
 	//Kept for backwards-compatability only, hence the silence
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
