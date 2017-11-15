@@ -912,8 +912,6 @@ Player::handle_input()
   if( backflipping && ( !controller->hold(Controller::JUMP) && !backflip_timer.started()) ){
     stop_backflipping();
   }
-
-  exit(0);
 }
 
 void
@@ -968,8 +966,6 @@ Player::try_grab()
       }
     }
   }
-
-  exit(0);
 }
 
 void
