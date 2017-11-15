@@ -540,9 +540,7 @@ Menu::event(const SDL_Event& ev)
   items[active_item]->event(ev);
   switch(ev.type) {
     case SDL_KEYDOWN:
-    case SDL_TEXTINPUT:
-      if(((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE) ||
-         ev.type == SDL_TEXTINPUT) && items[active_item]->changes_width())
+      if(((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE)))
       {
         // Changed item value? Let's recalculate width:
         calculate_width();
