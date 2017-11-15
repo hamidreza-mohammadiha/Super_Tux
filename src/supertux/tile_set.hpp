@@ -54,7 +54,7 @@ public:
   void add_tile(int id, std::unique_ptr<Tile> tile);
 
   void draw_tile(DrawingContext& context, uint32_t id, const Vector& pos,
-                 int z_pos, Color color = Color(1, 1, 1)) const;
+                 int z_pos, Color color = Color(1, 1, 1), Size span = Size(1, 1)) const;
 
   const Tile* get(const uint32_t id) const;
 

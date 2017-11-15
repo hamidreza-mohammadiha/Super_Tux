@@ -20,7 +20,7 @@
 #include <stdexcept>
 
 #include "util/log.hpp"
-#include "video/sdl/sdl_video_system.hpp"
+//#include "video/sdl/sdl_video_system.hpp"
 
 #ifdef HAVE_OPENGL
 #include "video/gl/gl_video_system.hpp"
@@ -32,32 +32,14 @@ VideoSystem::create(VideoSystem::Enum video_system)
   switch(video_system)
   {
     case AUTO_VIDEO:
-#ifdef HAVE_OPENGL
-      try
-      {
-        return std::unique_ptr<VideoSystem>(new GLVideoSystem);
-      }
-      catch(std::exception& err)
-      {
-        log_warning << "Error creating GLVideoSystem, using SDL fallback: "  << err.what() << std::endl;
-        return std::unique_ptr<VideoSystem>(new SDLVideoSystem);
-      }
-#else
-      log_info << "new SDL renderer\n";
-      return std::unique_ptr<VideoSystem>(new SDLVideoSystem);
-#endif
-
     case OPENGL:
+    case PURE_SDL:
 #ifdef HAVE_OPENGL
       return std::unique_ptr<VideoSystem>(new GLVideoSystem);
 #else
-      log_warning << "OpenGL requested, but missing using SDL fallback" << std::endl;
-      return std::unique_ptr<VideoSystem>(new SDLVideoSystem);
+      //log_warning << "OpenGL requested, but missing using SDL fallback" << std::endl;
+      //return std::unique_ptr<VideoSystem>(new SDLVideoSystem);
 #endif
-
-    case PURE_SDL:
-      log_info << "new SDL renderer\n";
-      return std::unique_ptr<VideoSystem>(new SDLVideoSystem);
 
     default:
       assert(!"invalid video system in config");

@@ -56,9 +56,11 @@ ItemTextField::get_width() const {
 
 void
 ItemTextField::event(const SDL_Event& ev) {
+#if SDL_VERSION_ATLEAST(2,0,0)
   if (ev.type == SDL_TEXTINPUT) {
     *input += ev.text.text;
   }
+#endif
 }
 
 void

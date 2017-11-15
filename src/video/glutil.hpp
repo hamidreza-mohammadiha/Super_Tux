@@ -86,7 +86,7 @@ static inline void check_gl_error(const char* message)
         msg << "Unknown error (code " << error << ")";
     }
 
-    throw std::runtime_error(msg.str());
+    //throw std::runtime_error(msg.str());
   }
 }
 

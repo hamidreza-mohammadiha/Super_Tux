@@ -73,7 +73,7 @@ public:
 
   enum CameraMode
   {
-    NORMAL, MANUAL, AUTOSCROLL, SCROLLTO
+    NORMAL, AUTOSCROLL, MANUAL, SCROLLTO
   };
   CameraMode mode;
 

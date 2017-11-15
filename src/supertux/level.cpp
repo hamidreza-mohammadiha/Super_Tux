@@ -28,6 +28,9 @@
 #include "util/file_system.hpp"
 #include "util/log.hpp"
 #include "util/writer.hpp"
+#include "supertux/screen_manager.hpp"
+#include "supertux/levelloadinganimation.hpp"
+#include "supertux/screen_fade.hpp"
 
 #include <sstream>
 #include <stdexcept>
@@ -60,6 +63,7 @@ Level::save(const std::string& filepath, bool retry)
 {
   //FIXME: It tests for directory in supertux/data, but saves into .supertux2.
 
+  ScreenManager::current()->draw_loading_screen();
   try {
 
     { // make sure the level directory exists

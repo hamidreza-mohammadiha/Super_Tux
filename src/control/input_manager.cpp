@@ -19,8 +19,8 @@
 
 #include <iostream>
 
-#include "control/game_controller_manager.hpp"
-#include "control/joystick_manager.hpp"
+//#include "control/game_controller_manager.hpp"
+//#include "control/joystick_manager.hpp"
 #include "control/keyboard_manager.hpp"
 #include "gui/menu_manager.hpp"
 #include "supertux/gameconfig.hpp"
@@ -32,9 +32,9 @@ InputManager::InputManager(KeyboardConfig& keyboard_config,
                            JoystickConfig& joystick_config) :
   controller(new Controller),
   m_use_game_controller(joystick_config.use_game_controller),
-  keyboard_manager(new KeyboardManager(this, keyboard_config)),
-  joystick_manager(new JoystickManager(this, joystick_config)),
-  game_controller_manager(new GameControllerManager(this))
+  keyboard_manager(new KeyboardManager(this, keyboard_config))
+  //joystick_manager(new JoystickManager(this, joystick_config)),
+  //game_controller_manager(new GameControllerManager(this))
 {
 }
 
@@ -70,15 +70,25 @@ void
 InputManager::process_event(const SDL_Event& event)
 {
   switch(event.type) {
-    case SDL_TEXTINPUT:
-      keyboard_manager->process_text_input_event(event.text);
-      break;
+    //case SDL_TEXTINPUT:
+    //  keyboard_manager->process_text_input_event(event.text);
+    //  break;
 
     case SDL_KEYUP:
     case SDL_KEYDOWN:
       keyboard_manager->process_key_event(event.key);
       break;
 
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      keyboard_manager->process_mouse_event(event.button);
+      break;
+
+    case SDL_MOUSEMOTION:
+      keyboard_manager->process_mouse_event(event.motion);
+      break;
+
+#if 0
     case SDL_JOYAXISMOTION:
       if (!m_use_game_controller) joystick_manager->process_axis_event(event.jaxis);
       break;
@@ -125,7 +135,7 @@ InputManager::process_event(const SDL_Event& event)
     case SDL_CONTROLLERDEVICEREMAPPED:
       log_debug << "SDL_CONTROLLERDEVICEREMAPPED" << std::endl;
       break;
-
+#endif
     default:
       break;
   }

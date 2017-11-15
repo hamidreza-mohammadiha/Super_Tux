@@ -14,6 +14,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <math.h>
+#include <SDL_video.h>
+
 #include "video/gl/gl_painter.hpp"
 
 #include <algorithm>
@@ -23,6 +26,8 @@
 #include "video/gl/gl_texture.hpp"
 
 GLuint GLPainter::s_last_texture = static_cast<GLuint>(-1);
+GLenum GLPainter::s_blend_sfactor = -1;
+GLenum GLPainter::s_blend_dfactor = -1;
 
 namespace {
 
@@ -40,7 +45,13 @@ inline void intern_draw(float left, float top, float right, float bottom,
   if(effect & VERTICAL_FLIP)
     std::swap(uv_top, uv_bottom);
 
-  glBlendFunc(blend.sfactor, blend.dfactor);
+  bool restoreBlendMode = false;
+  if (blend.sfactor != GL_SRC_ALPHA || blend.dfactor != GL_ONE_MINUS_SRC_ALPHA) {
+    glBlendFunc(blend.sfactor, blend.dfactor);
+    restoreBlendMode = true;
+    //s_blend_sfactor = blend.sfactor;
+    //s_blend_dfactor = blend.dfactor;
+  }
   glColor4f(color.red, color.green, color.blue, color.alpha * alpha);
 
   // unrotated blit
@@ -97,7 +108,8 @@ inline void intern_draw(float left, float top, float right, float bottom,
 
   // FIXME: find a better way to restore the blend mode
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  if (restoreBlendMode)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 } // namespace
@@ -172,7 +184,7 @@ GLPainter::draw_surface_part(const DrawingRequest& request)
               0.0,
               request.alpha,
               request.color,
-              Blend(),
+              request.blend,
               request.drawing_effect);
 }
 
@@ -447,6 +459,13 @@ GLPainter::draw_triangle(const DrawingRequest& request)
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnable(GL_TEXTURE_2D);
   glColor4f(1, 1, 1, 1);
+}
+
+void GLPainter::reset_last_texture()
+{
+  s_last_texture = static_cast<GLuint>(-1);
+  s_blend_sfactor = -1;
+  s_blend_dfactor = -1;
 }
 
 /* EOF */

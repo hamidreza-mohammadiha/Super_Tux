@@ -24,7 +24,7 @@
 
 #include "util/log.hpp"
 
-static Sint64 funcSeek(struct SDL_RWops* context, Sint64 offset, int whence)
+static int funcSeek(struct SDL_RWops* context, int offset, int whence)
 {
   PHYSFS_file* file = (PHYSFS_file*) context->hidden.unknown.data1;
   int res;
@@ -51,7 +51,7 @@ static Sint64 funcSeek(struct SDL_RWops* context, Sint64 offset, int whence)
   return (int) PHYSFS_tell(file);
 }
 
-static size_t  funcRead(struct SDL_RWops* context, void* ptr, size_t  size, size_t  maxnum)
+static int funcRead(struct SDL_RWops* context, void* ptr, int size, int maxnum)
 {
   PHYSFS_file* file = (PHYSFS_file*) context->hidden.unknown.data1;
 

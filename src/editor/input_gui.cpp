@@ -406,25 +406,6 @@ EditorInputGui::event(SDL_Event& ev) {
     }
     break;
 
-    case SDL_WINDOWEVENT:
-      if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
-        resize();
-      }
-      return false;
-    case SDL_MOUSEWHEEL:
-    {
-      if (hovered_item != HI_NONE)
-      {
-        if (ev.wheel.y > 0) {
-          tile_scrolling = TS_UP;
-        }
-        else {
-          tile_scrolling = TS_DOWN;
-        }
-        using_scroll_wheel = true;
-        wheel_scroll_amount = ev.wheel.y;
-      }
-    }
     default:
       return false;
       break;

@@ -24,6 +24,7 @@
 #include "util/writer.hpp"
 
 class ReaderMapping;
+typedef SDLKey SDL_Keycode;
 
 class KeyboardConfig
 {

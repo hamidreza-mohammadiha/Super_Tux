@@ -32,6 +32,7 @@ protected:
   unsigned int m_texture_height;
   unsigned int m_image_width;
   unsigned int m_image_height;
+  SDL_Surface* m_pixels;
 
 public:
   GLTexture(unsigned int width, unsigned int height);
@@ -76,9 +77,18 @@ public:
     m_image_height = height;
   }
 
+  void reupload();
+
 private:
   void set_texture_params();
+
+  GLTexture(const GLTexture&);
+  GLTexture& operator=(const GLTexture&);
 };
+
+#ifdef GL_VERSION_ES_CM_1_0
+extern bool GLEW_ARB_texture_non_power_of_two;
+#endif
 
 #endif
 

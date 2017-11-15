@@ -69,6 +69,7 @@ void
 GLVideoSystem::resize(int w, int h)
 {
   m_renderer->resize(w, h);
+  TextureManager::current()->reload_textures();
   m_lightmap.reset(new GLLightmap);
 }
 

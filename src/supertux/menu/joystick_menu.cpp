@@ -56,6 +56,7 @@ JoystickMenu::recreate_menu()
              &m_auto_joystick_cfg)
     ->set_help(_("Use manual configuration instead of SDL2's automatic GameController support"));
 
+#if 0
   if (m_input_manager.use_game_controller())
   {
     m_joysticks_available = false;
@@ -92,13 +93,14 @@ JoystickMenu::recreate_menu()
       add_toggle(MNID_JUMP_WITH_UP, _("Jump with Up"), &g_config->joystick_config.jump_with_up_joy);
     }
     else
+#endif
     {
       m_joysticks_available = false;
 
       add_inactive(_("No Joysticks found"));
       add_entry(MNID_SCAN_JOYSTICKS, _("Scan for Joysticks"));
     }
-  }
+//  }
 
   add_hl();
   add_back(_("Back"));
@@ -130,7 +132,7 @@ JoystickMenu::menu_action(MenuItem* item)
       return;
     }
     micf->change_input(_("Press Button"));
-    m_input_manager.joystick_manager->bind_next_event_to(static_cast<Controller::Control>(item->id));
+    //m_input_manager.joystick_manager->bind_next_event_to(static_cast<Controller::Control>(item->id));
   }
   else if (item->id == MNID_AUTO_JOYSTICK_CFG)
   {

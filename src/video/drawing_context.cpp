@@ -117,6 +117,14 @@ DrawingContext::draw_surface_part(SurfacePtr surface,
                                   const Rectf& srcrect, const Rectf& dstrect,
                                   int layer)
 {
+  draw_surface_part(surface, srcrect, dstrect, Color(1.0f, 1.0f, 1.0f), Blend(), layer);
+}
+
+void
+DrawingContext::draw_surface_part(SurfacePtr surface,
+                                  const Rectf& srcrect, const Rectf& dstrect,
+                                  const Color& color, const Blend& blend, int layer)
+{
   assert(surface != 0);
 
   auto request = new(obst) DrawingRequest();
@@ -127,6 +135,8 @@ DrawingContext::draw_surface_part(SurfacePtr surface,
   request->layer = layer;
   request->drawing_effect = transform.drawing_effect;
   request->alpha = transform.alpha;
+  request->color = color;
+  request->blend = blend;
 
   auto surfacepartrequest = new(obst) SurfacePartRequest();
   surfacepartrequest->srcrect = srcrect;

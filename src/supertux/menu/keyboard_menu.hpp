@@ -21,6 +21,8 @@
 #include "control/input_manager.hpp"
 #include "gui/menu_item.hpp"
 
+typedef SDLKey SDL_Keycode;
+
 class KeyboardMenu : public Menu
 {
 private:

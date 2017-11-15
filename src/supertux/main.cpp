@@ -20,7 +20,12 @@
 #include <version.h>
 
 #include <SDL_image.h>
+#ifndef __ANDROID__
 #include <boost/filesystem.hpp>
+#endif
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 #include <boost/locale.hpp>
@@ -32,6 +37,9 @@
 extern "C" {
 #include <findlocale.h>
 }
+#ifdef __ANDROID__
+#include <SDL_android.h>
+#endif
 
 #ifdef WIN32
 #include <codecvt>
@@ -165,6 +173,9 @@ public:
   void find_datadir() const
   {
     std::string datadir;
+#ifdef __ANDROID__
+    datadir = getenv("ANDROID_MY_OWN_APP_FILE");
+#else
     if (m_forced_datadir)
     {
       datadir = *m_forced_datadir;
@@ -176,9 +187,13 @@ public:
     else
     {
       // check if we run from source dir
+#if SDL_VERSION_ATLEAST(2,0,0)
       char* basepath_c = SDL_GetBasePath();
       std::string basepath = basepath_c ? basepath_c : "./";
       SDL_free(basepath_c);
+#else
+      std::string basepath = "./";
+#endif
 
       if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
       {
@@ -194,6 +209,7 @@ public:
         datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
       }
     }
+#endif
 
     if (!PHYSFS_mount(boost::filesystem::canonical(datadir).string().c_str(), NULL, 1))
     {
@@ -204,6 +220,10 @@ public:
   void find_userdir() const
   {
     std::string userdir;
+#ifdef __ANDROID__
+	userdir = getenv("HOME");
+	userdir += "/.supertux2";
+#else
     if (m_forced_userdir)
     {
       userdir = *m_forced_userdir;
@@ -262,7 +282,7 @@ public:
 	    log_info << "Moved old config dir " << olduserdir << " to " << userdir << std::endl;
 	  }
 	}
-
+#endif
     if (!FileSystem::is_directory(userdir))
     {
 	  FileSystem::mkdir(userdir);
@@ -304,7 +324,7 @@ class SDLSubsystem
 public:
   SDLSubsystem()
   {
-    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+    if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
       std::stringstream msg;
       msg << "Couldn't initialize SDL: " << SDL_GetError();
@@ -323,7 +343,7 @@ public:
 void
 Main::init_video()
 {
-  SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
+  //SDL_SetWindowTitle(VideoSystem::current()->get_renderer().get_window(), PACKAGE_NAME " " PACKAGE_VERSION);
 
   const char* icon_fname = "images/engine/icons/supertux-256x256.png";
   SDL_Surface* icon = IMG_Load_RW(get_physfs_SDLRWops(icon_fname), true);
@@ -333,7 +353,7 @@ Main::init_video()
   }
   else
   {
-    SDL_SetWindowIcon(VideoSystem::current()->get_renderer().get_window(), icon);
+    SDL_WM_SetIcon(icon, NULL);
     SDL_FreeSurface(icon);
   }
   SDL_ShowCursor(0);
@@ -365,6 +385,11 @@ Main::launch_game()
 
   SDLSubsystem sdl_subsystem;
   ConsoleBuffer console_buffer;
+#ifdef __ANDROID__
+  if (getenv("ANDROID_TV")) {
+    SDL_ANDROID_SetScreenKeyboardShown(0);
+  }
+#endif
 
   timelog("controller");
   InputManager input_manager(g_config->keyboard_config, g_config->joystick_config);
@@ -399,7 +424,7 @@ Main::launch_game()
   const std::unique_ptr<Savegame> default_savegame(new Savegame(std::string()));
 
   GameManager game_manager;
-  ScreenManager screen_manager;
+  ScreenManager screen_manager(&context);
 
   if(!g_config->start_level.empty()) {
     // we have a normal path specified at commandline, not a physfs path.

@@ -17,7 +17,7 @@
 #ifndef HEADER_SUPERTUX_VIDEO_UTIL_HPP
 #define HEADER_SUPERTUX_VIDEO_UTIL_HPP
 
-#include "SDL_rect.h"
+#include "SDL_video.h"
 
 class Size;
 class Vector;

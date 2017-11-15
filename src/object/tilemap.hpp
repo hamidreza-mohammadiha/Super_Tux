@@ -194,7 +194,9 @@ private:
   const TileSet *tileset;
 
   typedef std::vector<uint32_t> Tiles;
+  typedef std::vector<unsigned char> TilesDrawRects;
   Tiles tiles;
+  TilesDrawRects tilesDrawRects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
 
   /* read solid: In *general*, is this a solid layer?
    * effective solid: is the layer *currently* solid? A generally solid layer
@@ -237,6 +239,9 @@ private:
 private:
   TileMap(const TileMap&);
   TileMap& operator=(const TileMap&);
+
+  void calculateDrawRects(bool useCache = false);
+  void calculateDrawRects(uint32_t oldtile, uint32_t newtile);
 };
 
 #endif /*SUPERTUX_TILEMAP_H*/

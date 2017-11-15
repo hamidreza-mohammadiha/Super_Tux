@@ -117,7 +117,6 @@ Tile::get_current_image() const
       return editor_images[0];
     }
   }
-
   if (images.size() > 1) {
     size_t frame = size_t(game_time * fps) % images.size();
     return images[frame];
@@ -129,11 +128,25 @@ Tile::get_current_image() const
 }
 
 void
-Tile::draw(DrawingContext& context, const Vector& pos, int z_pos, Color color) const
+Tile::draw(DrawingContext& context, const Vector& pos, int z_pos, Color color, Size span) const
 {
   SurfacePtr surface = get_current_image();
-  if (surface) {
+  if (!surface) {
+    return;
+  }
+  if (span.width == 1 && span.height == 1) {
     context.draw_surface(surface, pos, 0, color, Blend(), z_pos);
+  } else {
+    if (surface->get_width() == 32 && surface->get_height() == 32) {
+      Vector spansize(surface->get_width() * span.width, surface->get_height() * span.height);
+      context.draw_surface_part(surface, Rectf(Vector(0, 0), spansize), Rectf(pos, pos + spansize), color, Blend(), z_pos);
+    } else {
+      for (int y = 0; y < span.height; y++) {
+        for (int x = 0; x < span.width; x++) {
+          context.draw_surface(surface, Vector(pos.x + x * surface->get_width(), pos.y + y * surface->get_height()), 0, color, Blend(), z_pos);
+        }
+      }
+    }
   }
 }
 

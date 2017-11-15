@@ -199,12 +199,6 @@ EditorLayersGui::event(SDL_Event& ev) {
       }
     }
     break;
-
-    case SDL_WINDOWEVENT:
-      if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
-        resize();
-      }
-      return false;
     default:
       return false;
   }

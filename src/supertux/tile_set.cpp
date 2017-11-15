@@ -134,7 +134,7 @@ TileSet::get(const uint32_t id) const
 
 void
 TileSet::draw_tile(DrawingContext& context, uint32_t id, const Vector& pos,
-                   int z_pos, Color color) const
+                   int z_pos, Color color, Size span) const
 {
   if (id == 0) return;
   Tile* tile;
@@ -146,7 +146,7 @@ TileSet::draw_tile(DrawingContext& context, uint32_t id, const Vector& pos,
 
   if (tile) {
     tile->load_images();
-    tile->draw(context, pos, z_pos, color);
+    tile->draw(context, pos, z_pos, color, span);
   } else if (Editor::is_active()) { // Draw a notile sign
     context.draw_surface(notile_surface, pos, 0, color, Blend(), z_pos);
     context.draw_text(Resources::small_font, std::to_string(id),

@@ -30,6 +30,7 @@
 #include "supertux/globals.hpp"
 #include "supertux/resources.hpp"
 #include "supertux/screen_manager.hpp"
+#include "supertux/screen_fade.hpp"
 #include "supertux/timer.hpp"
 #include "util/gettext.hpp"
 #include "video/color.hpp"
@@ -375,6 +376,9 @@ Menu::process_action(const MenuAction& menuaction)
     case MENU_ACTION_BACK:
       if(on_back_action()) {
         MenuManager::instance().pop_menu();
+        if (!MenuManager::instance().is_active()) {
+          ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
+        }
       }
       return;
       break;
@@ -506,7 +510,9 @@ Menu::get_item_by_id(int id)
     }
   }
 
-  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
+  char c[32];
+  sprintf(c, "%d", id);
+  throw std::runtime_error(std::string("MenuItem not found: ") + c);
 }
 
 const MenuItem&
