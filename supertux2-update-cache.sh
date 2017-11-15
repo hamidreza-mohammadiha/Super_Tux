@@ -34,8 +34,10 @@ index 12ae813..7edc15c 100644
 ===END===
 
 	./configure || exit 1
+	cd build || exit 1
 	make -j4 || exit 1
-	mv -f supertux2 supertux2-update-cache || exit 1
+	mv -f supertux2 ../supertux2-update-cache || exit 1
+	cd ..
 }
 
 

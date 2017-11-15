@@ -103,6 +103,10 @@ LevelIntro::update(float elapsed_time)
     player_sprite_jump_timer.start(graphicsRandom.randf(2,3));
   }
 
+  static int x = 0;
+  x++;
+  if (x > 30)
+    exit(0);
 }
 
 void LevelIntro::draw_stats_line(DrawingContext& context, int& py, const std::string& name, const std::string& stat)
