@@ -35,6 +35,7 @@
 #include "supertux/sector.hpp"
 #include "supertux/tile.hpp"
 #include "trigger/climbable.hpp"
+#include "video/renderer.hpp"
 
 #include <math.h>
 
@@ -1782,13 +1783,14 @@ Player::handle_jump_helper()
   if (!Sector::current() || !Sector::current()->camera)
     return;
 
-  if (controller->mouse_pressed() && can_jump && !jump_helper)
+  Vector screen = VideoSystem::current()->get_renderer().to_logical(SCREEN_WIDTH, SCREEN_HEIGHT);
+  if (controller->mouse_pressed() && can_jump && !jump_helper && controller->mouse_pos().y < screen.y / 2)
   { // Select a target to jump
     jump_helper_draw = true;
     jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
   }
 
-  if (!controller->mouse_pressed() && can_jump && !jump_helper && jump_helper_draw)
+  if (!controller->mouse_pressed() && can_jump && !jump_helper && jump_helper_draw && controller->mouse_pos().y < screen.y / 2)
   { // Initiate the jump
     jump_helper = true;
     jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
@@ -1834,6 +1836,11 @@ Player::handle_jump_helper()
       jump_helper_move_left = false;
       jump_helper_move_right = false;
     }
+  }
+
+  if (!jump_helper && (!controller->mouse_pressed() || controller->mouse_pos().y >= screen.y / 2))
+  {
+    jump_helper_draw = false;
   }
 }
 
