@@ -873,7 +873,7 @@ Player::handle_input()
   /* grabbing */
   try_grab();
 
-  if(!controller->hold(Controller::ACTION) && grabbed_object) {
+  if(controller->pressed(Controller::ACTION) && grabbed_object) {
     auto moving_object = dynamic_cast<MovingObject*> (grabbed_object);
     if(moving_object) {
       // move the grabbed object a bit away from tux
