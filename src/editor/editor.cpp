@@ -17,6 +17,7 @@
 #include "editor/editor.hpp"
 
 #include <limits>
+#include <physfs.h>
 
 //#include "addon/addon_manager.hpp"
 #include "audio/sound_manager.hpp"
@@ -33,7 +34,7 @@
 #include "object/camera.hpp"
 #include "object/player.hpp"
 #include "object/tilemap.hpp"
-#include "physfs/physfs_file_system.cpp"
+#include "physfs/physfs_file_system.hpp"
 #include "supertux/game_manager.hpp"
 #include "supertux/level.hpp"
 #include "supertux/level_parser.hpp"
