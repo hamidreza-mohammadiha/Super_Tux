@@ -378,6 +378,7 @@ EditorInputGui::event(SDL_Event& ev) {
     }
     break;
 
+#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_WINDOWEVENT:
       if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
         resize();
@@ -396,6 +397,7 @@ EditorInputGui::event(SDL_Event& ev) {
         wheel_scroll_amount = ev.wheel.y;
       }
       return false;
+#endif // SDL_VERSION_ATLEAST(2,0,0)
     default:
       return false;
   }
