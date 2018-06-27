@@ -118,6 +118,9 @@
     (class "totem")
     (icon "images/creatures/totem/walking1.png"))
   (object
+    (class "walking_candle")
+    (icon "images/creatures/mr_candle/mr-candle-left-1.png"))
+  (object
     (class "walkingleaf")
     (icon "images/creatures/walkingleaf/left-0.png"))
   (object
@@ -140,9 +143,6 @@
   (object
     (class "leafshot")
     (icon "images/creatures/leafshot/left-1.png"))
-  (object
-    (class "mole_rock")
-    (icon "images/creatures/mole/mole-rock.png"))
   (object
     (class "skydive")
     (icon "images/creatures/skydive/skydive.png"))
@@ -229,9 +229,6 @@
     (class "trampoline")
     (icon "images/objects/trampoline/trampoline1-0.png"))
   (object
-    (class "torch")
-    (icon "images/objects/torch/torch1.png"))
-  (object
     (class "unstable_tile")
     (icon "images/objects/unstable_tile/snow-3.png"))
   (object
@@ -254,6 +251,9 @@
   (object
     (class "candle")
     (icon "images/objects/candle/candle-1.png"))
+  (object
+    (class "torch")
+    (icon "images/objects/torch/torch1.png"))
   (object
     (class "lantern")
     (icon "images/objects/lantern/lantern-1.png"))
@@ -319,6 +319,9 @@
   (object
     (class "#node")
     (icon "images/engine/editor/path_node.png"))
+  (object
+    (class "leveltime")
+    (icon "images/engine/editor/clock.png"))
  )
 
  (objectgroup

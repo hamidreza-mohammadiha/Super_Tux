@@ -25,9 +25,6 @@ TileMap::TileMap(::TileMap* tilemap_)
   : tilemap(tilemap_)
 { }
 
-TileMap::~TileMap()
-{ }
-
 void TileMap::goto_node(int node_no)
 {
   tilemap->goto_node(node_no);
@@ -81,6 +78,11 @@ void TileMap::set_alpha(float alpha)
 float TileMap::get_alpha() const
 {
   return tilemap->get_alpha();
+}
+
+void TileMap::set_solid(bool solid)
+{
+  tilemap->set_solid(solid);
 }
 
 }

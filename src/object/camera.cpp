@@ -120,7 +120,7 @@ public:
 void
 Camera::save(Writer& writer){
   GameObject::save(writer);
-  if (defaultmode == AUTOSCROLL && !autoscroll_path->is_valid()) {
+  if (defaultmode == AUTOSCROLL && !path->is_valid()) {
     defaultmode = NORMAL;
   }
   switch (defaultmode) {
@@ -128,7 +128,7 @@ Camera::save(Writer& writer){
     case MANUAL: writer.write("mode", "manual", false); break;
     case AUTOSCROLL:
       writer.write("mode", "autoscroll", false);
-      autoscroll_path->save(writer);
+      path->save(writer);
     case SCROLLTO: break;
   }
 }
@@ -143,8 +143,8 @@ Camera::get_settings() {
   moo.select.push_back(_("manual"));
   result.options.push_back(moo);
 
-  if (autoscroll_walker.get() && autoscroll_path->is_valid()) {
-    result.options.push_back( Path::get_mode_option(&autoscroll_path->mode) );
+  if (walker.get() && path->is_valid()) {
+    result.options.push_back( Path::get_mode_option(&path->mode) );
   }
 
   return result;
@@ -152,14 +152,14 @@ Camera::get_settings() {
 
 void
 Camera::after_editor_set() {
-  if (autoscroll_walker.get() && autoscroll_path->is_valid()) {
+  if (walker.get() && path->is_valid()) {
     if (defaultmode != AUTOSCROLL) {
-      autoscroll_path->nodes.clear();
+      path->nodes.clear();
     }
   } else {
     if (defaultmode == AUTOSCROLL) {
-      autoscroll_path.reset(new Path(Vector(0,0)));
-      autoscroll_walker.reset(new PathWalker(autoscroll_path.get()));
+      path.reset(new Path(Vector(0,0)));
+      walker.reset(new PathWalker(path.get()));
     }
   }
 }
@@ -174,8 +174,6 @@ Camera::Camera(Sector* newsector, const std::string& name_) :
   lookahead_pos(),
   peek_pos(),
   cached_translation(),
-  autoscroll_path(),
-  autoscroll_walker(),
   shaketimer(),
   shakespeed(),
   shakedepth_x(),
@@ -222,9 +220,9 @@ Camera::parse(const ReaderMapping& reader)
       log_warning << "No path specified in autoscroll camera." << std::endl;
       mode = NORMAL;
     } else {
-      autoscroll_path.reset(new Path());
-      autoscroll_path->read(path_mapping);
-      autoscroll_walker.reset(new PathWalker(autoscroll_path.get()));
+      path.reset(new Path());
+      path->read(path_mapping);
+      walker.reset(new PathWalker(path.get()));
     }
   } else if(modename == "manual") {
     mode = MANUAL;
@@ -342,8 +340,8 @@ Camera::shake()
 void
 Camera::update_scroll_normal(float elapsed_time)
 {
-  const CameraConfig& config_ = *(this->config);
-  Player* player = sector->player;
+  const auto& config_ = *(this->config);
+  auto player = sector->player;
   // TODO: co-op mode needs a good camera
   Vector player_pos(player->get_bbox().get_middle().x,
                                     player->get_bbox().get_bottom());
@@ -645,11 +643,11 @@ Camera::update_scroll_normal(float elapsed_time)
 void
 Camera::update_scroll_autoscroll(float elapsed_time)
 {
-  Player* player = sector->player;
+  auto player = sector->player;
   if(player->is_dying())
     return;
 
-  translation = autoscroll_walker->advance(elapsed_time);
+  translation = walker->advance(elapsed_time);
 
   keep_in_bounds(translation);
 }
@@ -678,14 +676,8 @@ Camera::move(const int dx, const int dy) {
   translation.y += dy;
 }
 
-
-Path*
-Camera::get_path() const {
-  return autoscroll_path.get();
-}
-
 bool
-Camera::do_save() const {
+Camera::is_saveable() const {
   return !Editor::is_active() || !Editor::current()->get_worldmap_mode();
 }
 /* EOF */

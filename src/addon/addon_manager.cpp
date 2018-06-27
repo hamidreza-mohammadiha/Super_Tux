@@ -39,6 +39,7 @@
 #include "util/reader_collection.hpp"
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
+#include "util/string_util.hpp"
 #include "util/writer.hpp"
 
 namespace {
@@ -75,14 +76,6 @@ MD5 md5_from_file(const std::string& filename)
   }
 }
 
-bool has_suffix(const std::string& str, const std::string& suffix)
-{
-  if (str.length() >= suffix.length())
-    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
-  else
-    return false;
-}
-
 static Addon& get_addon(const AddonManager::AddonList& list, const AddonId& id,
                         bool installed)
 {
@@ -98,7 +91,7 @@ static Addon& get_addon(const AddonManager::AddonList& list, const AddonId& id,
   }
   else
   {
-    auto type = std::string(installed ? "installed" : "repository");
+    std::string type = installed ? "installed" : "repository";
     throw std::runtime_error("Couldn't find " + type + " addon with id: " + id);
   }
 }
@@ -118,7 +111,7 @@ static std::vector<AddonId> get_addons(const AddonManager::AddonList& list)
 
 static PHYSFS_EnumerateCallbackResult add_to_dictionary_path(void *data, const char *origdir, const char *fname)
 {
-    std::string full_path = std::string(origdir) + "/" + std::string(fname);
+    std::string full_path = FileSystem::join(origdir, fname);
     if(PhysFSFileSystem::is_directory(full_path))
     {
         log_debug << "Adding \"" << full_path << "\" to dictionary search path" << std::endl;
@@ -130,7 +123,7 @@ static PHYSFS_EnumerateCallbackResult add_to_dictionary_path(void *data, const c
 
 static PHYSFS_EnumerateCallbackResult remove_from_dictionary_path(void *data, const char *origdir, const char *fname)
 {
-    std::string full_path = std::string(origdir) + "/" + std::string(fname);
+    std::string full_path = FileSystem::join(origdir, fname);
     if(PhysFSFileSystem::is_directory(full_path))
     {
         g_dictionary_manager->remove_directory(full_path);
@@ -498,13 +491,19 @@ AddonManager::disable_addon(const AddonId& addon_id)
 }
 
 bool
+AddonManager::is_old_enabled_addon(const std::unique_ptr<Addon>& addon) const
+{
+  return addon->get_format() == Addon::ORIGINAL &&
+         addon->get_type() != Addon::LANGUAGEPACK &&
+         addon->is_enabled();
+}
+
+bool
 AddonManager::is_old_addon_enabled() const {
   auto it = std::find_if(m_installed_addons.begin(), m_installed_addons.end(),
-                         [](const std::unique_ptr<Addon>& addon)
+                         [this](const std::unique_ptr<Addon>& addon)
                          {
-                           return addon->get_format() == Addon::ORIGINAL &&
-                                  addon->get_type() != Addon::LANGUAGEPACK &&
-                                  addon->is_enabled();
+                           return is_old_enabled_addon(addon);
                          });
 
   return it != m_installed_addons.end();
@@ -514,9 +513,7 @@ void
 AddonManager::disable_old_addons()
 {
   for (auto& addon : m_installed_addons) {
-    if (addon->get_format() == Addon::ORIGINAL &&
-        addon->get_type() != Addon::LANGUAGEPACK &&
-        addon->is_enabled()) {
+    if (is_old_enabled_addon(addon)) {
       disable_addon(addon->get_id());
     }
   }
@@ -527,9 +524,7 @@ AddonManager::mount_old_addons()
 {
   std::string mountpoint;
   for (auto& addon : m_installed_addons) {
-    if (addon->get_format() == Addon::ORIGINAL &&
-        addon->get_type() != Addon::LANGUAGEPACK &&
-        addon->is_enabled()) {
+    if (is_old_enabled_addon(addon)) {
       if (PHYSFS_mount(addon->get_install_filename().c_str(), mountpoint.c_str(), 0) == 0)
       {
         log_warning << "Could not add " << addon->get_install_filename() << " to search path: "
@@ -543,9 +538,7 @@ void
 AddonManager::unmount_old_addons()
 {
   for (auto& addon : m_installed_addons) {
-    if (addon->get_format() == Addon::ORIGINAL &&
-        addon->get_type() != Addon::LANGUAGEPACK &&
-        addon->is_enabled()) {
+    if (is_old_enabled_addon(addon)) {
       if (PHYSFS_unmount(addon->get_install_filename().c_str()) == 0)
       {
         log_warning << "Could not remove " << addon->get_install_filename() << " from search path: "
@@ -560,8 +553,7 @@ AddonManager::is_from_old_addon(const std::string& filename) const
 {
   std::string real_path = PHYSFS_getRealDir(filename.c_str());
   for (auto& addon : m_installed_addons) {
-    if (addon->get_format() == Addon::ORIGINAL &&
-        addon->is_enabled() &&
+    if (is_old_enabled_addon(addon) &&
         addon->get_install_filename() == real_path) {
       return true;
     }
@@ -580,7 +572,7 @@ AddonManager::scan_for_archives() const
        PHYSFS_freeList);
   for(char** i = rc.get(); *i != 0; ++i)
   {
-    if (has_suffix(*i, ".zip"))
+    if (StringUtil::has_suffix(*i, ".zip"))
     {
       std::string archive = FileSystem::join(m_addon_directory, *i);
       if (PHYSFS_exists(archive.c_str()))
@@ -601,7 +593,7 @@ AddonManager::scan_for_info(const std::string& archive_os_path) const
         PHYSFS_freeList);
   for(char** j = rc2.get(); *j != 0; ++j)
   {
-    if (has_suffix(*j, ".nfo"))
+    if (StringUtil::has_suffix(*j, ".nfo"))
     {
       std::string nfo_filename = FileSystem::join("/", *j);
 

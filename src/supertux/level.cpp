@@ -35,8 +35,6 @@
 #include <sstream>
 #include <stdexcept>
 
-using namespace std;
-
 Level* Level::_current = 0;
 
 Level::Level() :
@@ -187,10 +185,9 @@ Level::get_total_coins() const
         {
           total_coins += block->hit_counter;
           continue;
-        } else if (block->contents == BonusBlock::CONTENT_RAIN) {
-          total_coins += 10;
-          continue;
-        } else if (block->contents == BonusBlock::CONTENT_EXPLODE) {
+        } else if (block->contents == BonusBlock::CONTENT_RAIN ||
+                   block->contents == BonusBlock::CONTENT_EXPLODE)
+        {
           total_coins += 10;
           continue;
         }

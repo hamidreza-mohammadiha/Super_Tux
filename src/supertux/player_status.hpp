@@ -30,7 +30,7 @@ static const float BORDER_X = 10;
 static const float BORDER_Y = 10;
 
 enum BonusType {
-  NO_BONUS, GROWUP_BONUS, FIRE_BONUS, ICE_BONUS, AIR_BONUS, EARTH_BONUS
+  NO_BONUS = 0, GROWUP_BONUS, FIRE_BONUS, ICE_BONUS, AIR_BONUS, EARTH_BONUS
 };
 class DrawingContext;
 
@@ -43,7 +43,6 @@ class PlayerStatus
   static Color text_color;
 public:
   PlayerStatus();
-  ~PlayerStatus();
   void reset();
   void add_coins(int count, bool play_sound = true);
 

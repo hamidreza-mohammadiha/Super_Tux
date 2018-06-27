@@ -1,5 +1,6 @@
 //  SuperTux
-//  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmail.com>
+//  Copyright (C) 2006 Matthias Braun <matze@braunis.de>
+//  Copyright (C) 2017 M. Teufel <mteufel@supertux.org>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -14,14 +15,25 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "math/rectf.hpp"
+#include "object/torch.hpp"
+#include "scripting/torch.hpp"
 
-#include "math/sizef.hpp"
+namespace scripting {
 
-Rectf::Rectf(const Vector& p1_, const Sizef& size) :
-  p1(p1_),
-  p2(p1_.x + size.width, p1_.y + size.height)
+Torch::Torch(::Torch* torch_)
+  : torch(torch_)
+{ }
+
+bool Torch::get_burning() const
 {
+  return torch->get_burning();
+}
+
+void Torch::set_burning(bool burning)
+{
+  torch->set_burning(burning);
+}
+
 }
 
 /* EOF */

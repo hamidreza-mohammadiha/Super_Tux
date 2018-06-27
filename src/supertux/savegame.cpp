@@ -116,10 +116,6 @@ Savegame::Savegame(const std::string& filename) :
 {
 }
 
-Savegame::~Savegame()
-{
-}
-
 void
 Savegame::load()
 {
@@ -207,12 +203,7 @@ Savegame::clear_state_table()
   sq_pushroottable(vm);
   {
     // create a new empty state table
-    sq_pushstring(vm, "state", -1);
-    sq_newtable(vm);
-    if(SQ_FAILED(sq_createslot(vm, -3)))
-    {
-      throw scripting::SquirrelError(vm, "Couldn't create state table");
-    }
+    scripting::create_empty_table(vm, "state");
   }
   sq_pop(vm, 1);
 }
@@ -273,13 +264,16 @@ Savegame::save()
   writer.start_list("state");
 
   sq_pushroottable(vm);
-  sq_pushstring(vm, "state", -1);
-  if(SQ_SUCCEEDED(sq_get(vm, -2)))
+  try
   {
+    scripting::get_table_entry(vm, "state"); // Push "state"
     scripting::save_squirrel_table(vm, -1, writer);
-    sq_pop(vm, 1);
+    sq_pop(vm, 1); // Pop "state"
   }
-  sq_pop(vm, 1);
+  catch(const std::exception& ex)
+  {
+  }
+  sq_pop(vm, 1); // Pop root table
   writer.end_list("state");
 
   writer.end_list("supertux-savegame");

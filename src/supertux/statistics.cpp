@@ -63,10 +63,6 @@ Statistics::Statistics() :
   WMAP_INFO_TOP_Y2 = WMAP_INFO_TOP_Y1 + 16;
 }
 
-Statistics::~Statistics()
-{
-}
-
 void
 Statistics::calculate_max_caption_length()
 {
@@ -91,11 +87,7 @@ Statistics::calculate_max_caption_length()
 void
 Statistics::serialize_to_squirrel(HSQUIRRELVM vm)
 {
-  // TODO: there's some bug in the unserialization routines that breaks stuff when an empty statistics table is written, so -- as a workaround -- let's make sure we will actually write something first
-  if (!((coins != nv_coins) || (total_coins != nv_coins) || (badguys != nv_badguys) || (total_badguys != nv_badguys) || (time != nv_time) || (secrets != nv_secrets) || (total_secrets != nv_secrets))) return;
-
-  sq_pushstring(vm, "statistics", -1);
-  sq_newtable(vm);
+  scripting::begin_table(vm, "statistics");
   if (coins != nv_coins) scripting::store_int(vm, "coins-collected", coins);
   if (total_coins != nv_coins) scripting::store_int(vm, "coins-collected-total", total_coins);
   if (badguys != nv_badguys) scripting::store_int(vm, "badguys-killed", badguys);
@@ -103,25 +95,27 @@ Statistics::serialize_to_squirrel(HSQUIRRELVM vm)
   if (time != nv_time) scripting::store_float(vm, "time-needed", time);
   if (secrets != nv_secrets) scripting::store_int(vm, "secrets-found", secrets);
   if (total_secrets != nv_secrets) scripting::store_int(vm, "secrets-found-total", total_secrets);
-  if(SQ_FAILED(sq_createslot(vm, -3)))
-    throw scripting::SquirrelError(vm, "Couldn't create statistics table");
+  scripting::end_table(vm, "statistics");
 }
 
 void
 Statistics::unserialize_from_squirrel(HSQUIRRELVM vm)
 {
-  sq_pushstring(vm, "statistics", -1);
-  if(SQ_FAILED(sq_get(vm, -2))) {
-    return;
+  try
+  {
+    scripting::get_table_entry(vm, "statistics");
+    scripting::get_int(vm, "coins-collected", coins);
+    scripting::get_int(vm, "coins-collected-total", total_coins);
+    scripting::get_int(vm, "badguys-killed", badguys);
+    scripting::get_int(vm, "badguys-killed-total", total_badguys);
+    scripting::get_float(vm, "time-needed", time);
+    scripting::get_int(vm, "secrets-found", secrets);
+    scripting::get_int(vm, "secrets-found-total", total_secrets);
+    sq_pop(vm, 1);
   }
-  scripting::get_int(vm, "coins-collected", coins);
-  scripting::get_int(vm, "coins-collected-total", total_coins);
-  scripting::get_int(vm, "badguys-killed", badguys);
-  scripting::get_int(vm, "badguys-killed-total", total_badguys);
-  scripting::get_float(vm, "time-needed", time);
-  scripting::get_int(vm, "secrets-found", secrets);
-  scripting::get_int(vm, "secrets-found-total", total_secrets);
-  sq_pop(vm, 1);
+  catch(const std::exception& ex)
+  {
+  }
 }
 
 void

@@ -69,10 +69,6 @@ GLLightmap::GLLightmap() :
   m_lightmap_uv_bottom = static_cast<float>(m_lightmap_height) / static_cast<float>(height);
 }
 
-GLLightmap::~GLLightmap()
-{
-}
-
 void
 GLLightmap::start_draw(const Color &ambient_color)
 {

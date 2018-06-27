@@ -49,6 +49,11 @@ extern "C" {
 #include "audio/sound_manager.hpp"
 #include "control/input_manager.hpp"
 #include "editor/editor.hpp"
+#include "editor/layer_icon.hpp"
+#include "editor/object_input.hpp"
+#include "editor/tile_selection.hpp"
+#include "editor/tip.hpp"
+#include "editor/tool_icon.hpp"
 #include "gui/menu_manager.hpp"
 #include "math/random_generator.hpp"
 #include "object/player.hpp"
@@ -57,6 +62,7 @@ extern "C" {
 #include "physfs/physfs_sdl.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "scripting/scripting.hpp"
+#include "sprite/sprite_data.hpp"
 #include "sprite/sprite_manager.hpp"
 #include "supertux/command_line_arguments.hpp"
 #include "supertux/game_manager.hpp"
@@ -70,6 +76,7 @@ extern "C" {
 #include "supertux/screen_manager.hpp"
 #include "supertux/title_screen.hpp"
 #include "supertux/sector.hpp"
+#include "supertux/world.hpp"
 #include "util/file_system.hpp"
 #include "util/gettext.hpp"
 #include "video/drawing_context.hpp"
@@ -300,7 +307,7 @@ public:
     PHYSFS_mount(userdir.c_str(), NULL, 0);
   }
 
-  void print_search_path()
+  static void print_search_path()
   {
     const char* writedir = PHYSFS_getWriteDir();
     log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << std::endl;

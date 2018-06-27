@@ -28,11 +28,10 @@ class BrokenBrick : public GameObject
 {
 public:
   BrokenBrick(SpritePtr sprite, const Vector& pos, const Vector& movement);
-  ~BrokenBrick();
 
   virtual void update(float elapsed_time);
   virtual void draw(DrawingContext& context);
-  virtual bool do_save() const {
+  virtual bool is_saveable() const {
     return false;
   }
 

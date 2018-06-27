@@ -40,13 +40,12 @@ WillOWisp::WillOWisp(const ReaderMapping& reader) :
   BadGuy(reader, "images/creatures/willowisp/willowisp.sprite", LAYER_FLOATINGOBJECTS,
          "images/objects/lightmap_light/lightmap_light-small.sprite"),
   ExposedObject<WillOWisp, scripting::WillOWisp>(this),
+  PathObject(),
   mystate(STATE_IDLE),
   target_sector(),
   target_spawnpoint(),
   hit_script(),
   sound_source(),
-  path(),
-  walker(),
   flyspeed(),
   track_range(),
   vanish_range()
@@ -128,6 +127,7 @@ WillOWisp::active_update(float elapsed_time)
       if(sprite->animation_done()) {
         remove_me();
       }
+      break;
 
     case STATE_VANISHING: {
       Vector dir_ = dist.unit();

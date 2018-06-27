@@ -17,13 +17,10 @@
 #include "editor/object_menu.hpp"
 
 #include "editor/editor.hpp"
-#include "editor/object_settings.hpp"
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
 #include "supertux/moving_object.hpp"
 #include "supertux/game_object.hpp"
-#include "util/gettext.hpp"
-#include "video/color.hpp"
 
 ObjectMenu::ObjectMenu(GameObject *go) :
   object(go)
@@ -84,6 +81,9 @@ ObjectMenu::~ObjectMenu()
   object->after_editor_set();
 
   auto editor = Editor::current();
+  if(editor == NULL) {
+    return;
+  }
   editor->reactivate_request = true;
   if (! dynamic_cast<MovingObject*>(object)) {
     editor->sort_layers();

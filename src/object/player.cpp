@@ -156,6 +156,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   ability_timer(),
   cooldown_timer(),
   dying_timer(),
+  second_growup_sound_timer(),
   growing(false),
   backflip_timer(),
   physic(),
@@ -193,6 +194,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   SoundManager::current()->preload("sounds/flip.wav");
   SoundManager::current()->preload("sounds/invincible_start.ogg");
   SoundManager::current()->preload("sounds/splash.wav");
+  SoundManager::current()->preload("sounds/grow.wav");
   set_size(TUX_WIDTH, is_big() ? BIG_TUX_HEIGHT : SMALL_TUX_HEIGHT);
 
   sprite->set_angle(0.0f);
@@ -380,6 +382,12 @@ Player::update(float elapsed_time)
     }
     if (player_status->bonus == AIR_BONUS)
       ability_time = player_status->max_air_time * GLIDE_TIME_PER_FLOWER;
+
+    if(second_growup_sound_timer.check())
+    {
+      SoundManager::current()->play("sounds/grow.wav");
+      second_growup_sound_timer.stop();
+    }
   }
 
   // calculate movement for this frame
@@ -1131,6 +1139,13 @@ Player::set_bonus(BonusType type, bool animate)
   if (type == AIR_BONUS) player_status->max_air_time++;
   if (type == EARTH_BONUS) player_status->max_earth_time++;
 
+  if(!second_growup_sound_timer.started() &&
+     (type > player_status->bonus || type > GROWUP_BONUS) &&
+     (type != player_status->bonus))
+  {
+    second_growup_sound_timer.start(0.5);
+  }
+
   player_status->bonus = type;
   return true;
 }
@@ -1235,7 +1250,7 @@ Player::draw(DrawingContext& context)
     sprite->set_action(sa_prefix+"-kick"+sa_postfix);
   }
   else if ((wants_buttjump || does_buttjump) && is_big()) {
-    sprite->set_action(sa_prefix+"-buttjump"+sa_postfix);
+    sprite->set_action(sa_prefix+"-buttjump"+sa_postfix, 1);
   }
   else if (!on_ground() || fall_mode != ON_GROUND) {
     if(physic.get_velocity_x() != 0 || fall_mode != ON_GROUND) {
@@ -1442,8 +1457,6 @@ Player::collision(GameObject& other, const CollisionHit& hit)
       return FORCE_MOVE;
     if(stone)
       return ABORT_MOVE;
-
-    return CONTINUE;
   }
 
   return CONTINUE;

@@ -27,6 +27,7 @@
 
 #include "supertux/game_object.hpp"
 #include "supertux/script_interface.hpp"
+#include "util/log.hpp"
 
 namespace scripting {
 
@@ -311,6 +312,16 @@ void compile_and_run(HSQUIRRELVM vm, std::istream& in,
   }
 }
 
+void release_scripts(HSQUIRRELVM vm, ScriptList& scripts, HSQOBJECT& root_table)
+{
+  for(auto& script: scripts)
+  {
+    sq_release(vm, &script);
+  }
+  sq_release(vm, &root_table);
+  sq_collectgarbage(vm);
+}
+
 HSQOBJECT create_thread(HSQUIRRELVM vm)
 {
   HSQUIRRELVM new_vm = sq_newthread(vm, 64);
@@ -348,6 +359,24 @@ HSQUIRRELVM object_to_vm(HSQOBJECT object)
 
 // begin: serialization functions
 
+void begin_table(HSQUIRRELVM vm, const char* name)
+{
+  sq_pushstring(vm, name, -1);
+  sq_newtable(vm);
+}
+
+void end_table(HSQUIRRELVM vm, const char* name)
+{
+  if(SQ_FAILED(sq_createslot(vm, -3)))
+    throw scripting::SquirrelError(vm, "Failed to create '" + std::string(name) + "' table entry");
+}
+
+void create_empty_table(HSQUIRRELVM vm, const char* name)
+{
+  begin_table(vm, name);
+  end_table(vm, name);
+}
+
 void store_float(HSQUIRRELVM vm, const char* name, float val)
 {
   sq_pushstring(vm, name, -1);
@@ -380,7 +409,15 @@ void store_bool(HSQUIRRELVM vm, const char* name, bool val)
     throw scripting::SquirrelError(vm, "Couldn't add float value to table");
 }
 
-bool has_float(HSQUIRRELVM vm, const char* name)
+void store_object(HSQUIRRELVM vm, const char* name, const HSQOBJECT& val)
+{
+  sq_pushstring(vm, name, -1);
+  sq_pushobject(vm, val);
+  if(SQ_FAILED(sq_createslot(vm, -3)))
+    throw scripting::SquirrelError(vm, "Couldn't add object value to table");
+}
+
+bool has_property(HSQUIRRELVM vm, const char* name)
 {
   sq_pushstring(vm, name, -1);
   if (SQ_FAILED(sq_get(vm, -2))) return false;
@@ -388,29 +425,9 @@ bool has_float(HSQUIRRELVM vm, const char* name)
   return true;
 }
 
-bool has_int(HSQUIRRELVM vm, const char* name)
-{
-  return has_float(vm, name);
-}
-
-bool has_string(HSQUIRRELVM vm, const char* name)
-{
-  return has_float(vm, name);
-}
-
-bool has_bool(HSQUIRRELVM vm, const char* name)
-{
-  return has_float(vm, name);
-}
-
 float read_float(HSQUIRRELVM vm, const char* name)
 {
-  sq_pushstring(vm, name, -1);
-  if(SQ_FAILED(sq_get(vm, -2))) {
-    std::ostringstream msg;
-    msg << "Couldn't get float value for '" << name << "' from table";
-    throw scripting::SquirrelError(vm, msg.str());
-  }
+  get_table_entry(vm, name);
 
   float result;
   if(SQ_FAILED(sq_getfloat(vm, -1, &result))) {
@@ -425,12 +442,7 @@ float read_float(HSQUIRRELVM vm, const char* name)
 
 int read_int(HSQUIRRELVM vm, const char* name)
 {
-  sq_pushstring(vm, name, -1);
-  if(SQ_FAILED(sq_get(vm, -2))) {
-    std::ostringstream msg;
-    msg << "Couldn't get int value for '" << name << "' from table";
-    throw scripting::SquirrelError(vm, msg.str());
-  }
+  get_table_entry(vm, name);
 
   SQInteger result;
   if(SQ_FAILED(sq_getinteger(vm, -1, &result))) {
@@ -445,12 +457,7 @@ int read_int(HSQUIRRELVM vm, const char* name)
 
 std::string read_string(HSQUIRRELVM vm, const char* name)
 {
-  sq_pushstring(vm, name, -1);
-  if(SQ_FAILED(sq_get(vm, -2))) {
-    std::ostringstream msg;
-    msg << "Couldn't get string value for '" << name << "' from table";
-    throw scripting::SquirrelError(vm, msg.str());
-  }
+  get_table_entry(vm, name);
 
   const char* result;
   if(SQ_FAILED(sq_getstring(vm, -1, &result))) {
@@ -465,12 +472,7 @@ std::string read_string(HSQUIRRELVM vm, const char* name)
 
 bool read_bool(HSQUIRRELVM vm, const char* name)
 {
-  sq_pushstring(vm, name, -1);
-  if(SQ_FAILED(sq_get(vm, -2))) {
-    std::ostringstream msg;
-    msg << "Couldn't get bool value for '" << name << "' from table";
-    throw scripting::SquirrelError(vm, msg.str());
-  }
+  get_table_entry(vm, name);
 
   SQBool result;
   if(SQ_FAILED(sq_getbool(vm, -1, &result))) {
@@ -484,25 +486,25 @@ bool read_bool(HSQUIRRELVM vm, const char* name)
 }
 
 bool get_float(HSQUIRRELVM vm, const char* name, float& val) {
-  if (!has_float(vm, name)) return false;
+  if (!has_property(vm, name)) return false;
   val = read_float(vm, name);
   return true;
 }
 
 bool get_int(HSQUIRRELVM vm, const char* name, int& val) {
-  if (!has_int(vm, name)) return false;
+  if (!has_property(vm, name)) return false;
   val = read_int(vm, name);
   return true;
 }
 
 bool get_string(HSQUIRRELVM vm, const char* name, std::string& val) {
-  if (!has_string(vm, name)) return false;
+  if (!has_property(vm, name)) return false;
   val = read_string(vm, name);
   return true;
 }
 
 bool get_bool(HSQUIRRELVM vm, const char* name, bool& val) {
-  if (!has_bool(vm, name)) return false;
+  if (!has_property(vm, name)) return false;
   val = read_bool(vm, name);
   return true;
 }
@@ -526,25 +528,24 @@ void get_table_entry(HSQUIRRELVM vm, const std::string& name)
 
 void get_or_create_table_entry(HSQUIRRELVM vm, const std::string& name)
 {
-  sq_pushstring(vm, name.c_str(), -1);
-  if(SQ_FAILED(sq_get(vm, -2)))
+  try
   {
-    sq_pushstring(vm, name.c_str(), -1);
-    sq_newtable(vm);
-    if(SQ_FAILED(sq_createslot(vm, -3)))
-    {
-      std::ostringstream msg;
-      msg << "failed to create '" << name << "' table entry";
-      throw scripting::SquirrelError(vm, msg.str());
-    }
-    else
-    {
-      get_table_entry(vm, name);
-    }
+    get_table_entry(vm, name);
   }
-  else
+  catch(std::exception& e)
   {
-    // successfully placed result on stack
+    create_empty_table(vm, name.c_str());
+    get_table_entry(vm, name);
+  }
+}
+
+void delete_table_entry(HSQUIRRELVM vm, const char* name)
+{
+  sq_pushstring(vm, name, -1);
+  if(SQ_FAILED(sq_deleteslot(vm, -2, false)))
+  {
+    // Something failed while deleting the table entry.
+    // Key doesn't exist?
   }
 }
 

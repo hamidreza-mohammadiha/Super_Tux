@@ -52,6 +52,15 @@ void compile_script(HSQUIRRELVM vm, std::istream& in,
 void compile_and_run(HSQUIRRELVM vm, std::istream& in,
                      const std::string& sourcename);
 
+/**
+ * Deletes the provided scripts from memory, freeing any resources
+ * used by them.
+ * @param v Squirrel VM to release objects from
+ * @param scripts Lists of scripts to be released
+ * @param root_table Root table these scripts belong to
+ */
+void release_scripts(HSQUIRRELVM vm, ScriptList& scripts, HSQOBJECT& root_table);
+
 template<typename T>
 void expose_object(HSQUIRRELVM v, SQInteger table_idx, T* object,
                    const std::string& name, bool free = false)
@@ -86,15 +95,22 @@ static inline void unexpose_object(HSQUIRRELVM v, SQInteger table_idx,
 }
 
 // begin serialization functions
+void begin_table(HSQUIRRELVM vm, const char* name);
+void end_table(HSQUIRRELVM vm, const char* name);
+/**
+ * Creates an empty table with given name
+ * @param vm VM to create table on
+ * @param name Name of the table to create
+ */
+void create_empty_table(HSQUIRRELVM vm, const char* name);
+
 void store_float(HSQUIRRELVM vm, const char* name, float val);
 void store_int(HSQUIRRELVM vm, const char* name, int val);
 void store_string(HSQUIRRELVM vm, const char* name, const std::string& val);
 void store_bool(HSQUIRRELVM vm, const char* name, bool val);
+void store_object(HSQUIRRELVM vm, const char* name, const HSQOBJECT& val);
 
-bool has_float(HSQUIRRELVM vm, const char* name);
-bool has_int(HSQUIRRELVM vm, const char* name);
-bool has_string(HSQUIRRELVM vm, const char* name);
-bool has_bool(HSQUIRRELVM vm, const char* name);
+bool has_property(HSQUIRRELVM vm, const char* name);
 
 bool get_float(HSQUIRRELVM vm, const char* name, float& val);
 bool get_int(HSQUIRRELVM vm, const char* name, int& val);
@@ -109,6 +125,7 @@ bool read_bool(HSQUIRRELVM vm, const char* name);
 
 void get_table_entry(HSQUIRRELVM vm, const std::string& name);
 void get_or_create_table_entry(HSQUIRRELVM vm, const std::string& name);
+void delete_table_entry(HSQUIRRELVM vm, const char* name);
 std::vector<std::string> get_table_keys(HSQUIRRELVM vm);
 }
 

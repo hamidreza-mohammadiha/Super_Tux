@@ -26,13 +26,12 @@ class Bullet : public MovingObject
 {
 public:
   Bullet(const Vector& pos, float xm, int dir, BonusType type);
-  ~Bullet();
 
   void update(float elapsed_time);
   void draw(DrawingContext& context);
   void collision_solid(const CollisionHit& hit);
   HitResponse collision(GameObject& other, const CollisionHit& hit);
-  virtual bool do_save() const {
+  virtual bool is_saveable() const {
     return false;
   }
 

@@ -31,7 +31,8 @@ GameSessionRecorder::GameSessionRecorder() :
   capture_demo_stream(0),
   capture_file(),
   playback_demo_stream(0),
-  demo_controller(0)
+  demo_controller(0),
+  m_playing(false)
 {
 }
 
@@ -100,6 +101,7 @@ GameSessionRecorder::get_demo_random_seed(const std::string& filename) const
 void
 GameSessionRecorder::play_demo(const std::string& filename)
 {
+  m_playing = true;
   delete playback_demo_stream;
   delete demo_controller;
 
@@ -110,9 +112,7 @@ GameSessionRecorder::play_demo(const std::string& filename)
     throw std::runtime_error(msg.str());
   }
 
-  Player& tux = *GameSession::current()->get_current_sector()->player;
-  demo_controller = new CodeController();
-  tux.set_controller(demo_controller);
+  reset_demo_controller();
 
   // skip over random seed, if it exists in the file
   char buf[30];                            // ascii decimal seed
@@ -121,6 +121,20 @@ GameSessionRecorder::play_demo(const std::string& filename)
     playback_demo_stream->get(buf[i]);
   if (sscanf(buf, "random_seed=%010d", &seed) != 1)
     playback_demo_stream->seekg(0);     // old style w/o seed, restart at beg
+
+  m_playing = false;
+}
+
+void
+GameSessionRecorder::reset_demo_controller()
+{
+  if(demo_controller == NULL)
+  {
+    demo_controller = new CodeController();
+  }
+  auto game_session = GameSession::current();
+  auto player = game_session->get_current_sector()->player;
+  player->set_controller(demo_controller);
 }
 
 void
@@ -151,7 +165,7 @@ GameSessionRecorder::process_events()
 
   // save input for demo?
   if(capture_demo_stream != 0) {
-    Controller *controller = InputManager::current()->get_controller();
+    auto controller = InputManager::current()->get_controller();
     capture_demo_stream ->put(controller->hold(Controller::LEFT));
     capture_demo_stream ->put(controller->hold(Controller::RIGHT));
     capture_demo_stream ->put(controller->hold(Controller::UP));

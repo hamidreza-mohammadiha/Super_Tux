@@ -38,6 +38,7 @@
 
 TileMap::TileMap(const TileSet *new_tileset) :
   ExposedObject<TileMap, scripting::TileMap>(this),
+  PathObject(),
   editor_active(true),
   tileset(new_tileset),
   tiles(),
@@ -58,8 +59,7 @@ TileMap::TileMap(const TileSet *new_tileset) :
   tint(1, 1, 1),
   current_tint(1, 1, 1),
   remaining_tint_fade_time(0),
-  path(),
-  walker(),
+  running(false),
   draw_target(DrawingContext::NORMAL),
   new_size_x(0),
   new_size_y(0),
@@ -69,6 +69,7 @@ TileMap::TileMap(const TileSet *new_tileset) :
 
 TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   ExposedObject<TileMap, scripting::TileMap>(this),
+  PathObject(),
   editor_active(true),
   tileset(tileset_),
   tiles(),
@@ -89,8 +90,7 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   tint(1, 1, 1),
   current_tint(1, 1, 1),
   remaining_tint_fade_time(0),
-  path(),
-  walker(),
+  running(false),
   draw_target(DrawingContext::NORMAL),
   new_size_x(0),
   new_size_y(0),
@@ -113,9 +113,10 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
 
   ReaderMapping path_mapping;
   if (reader.get("path", path_mapping)) {
+    reader.get("running", running, false);
     path.reset(new Path());
     path->read(path_mapping);
-    walker.reset(new PathWalker(path.get(), /*running*/false));
+    walker.reset(new PathWalker(path.get(), running));
     Vector v = path->get_base();
     set_offset(v);
   }
@@ -237,6 +238,7 @@ TileMap::get_settings() {
 
   if (walker.get() && path->is_valid()) {
     result.options.push_back( Path::get_mode_option(&path->mode) );
+    result.options.push_back(ObjectOption(MN_TOGGLE, _("Running"), &running, "running"));
   }
 
   if (!editor_active) {
@@ -258,7 +260,7 @@ TileMap::after_editor_set() {
   } else {
     if (add_path) {
       path.reset(new Path(offset));
-      walker.reset(new PathWalker(path.get()));
+      walker.reset(new PathWalker(path.get(), running));
     }
   }
 }

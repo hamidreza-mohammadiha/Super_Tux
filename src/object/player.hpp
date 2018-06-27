@@ -50,7 +50,7 @@ public:
   //Tux can only go this fast. If set to 0 no special limit is used, only the default limits.
   void set_speedlimit(float newlimit);
   float get_speedlimit() const;
-  virtual bool do_save() const {
+  virtual bool is_saveable() const {
     return false;
   }
 
@@ -317,6 +317,7 @@ public:
   Timer ability_timer;  // maximum lengh of time that special abilities can last
   Timer cooldown_timer; // minimum time period between successive uses of a special ability
   Timer dying_timer;
+  Timer second_growup_sound_timer;
   bool growing;
   Timer backflip_timer;
 

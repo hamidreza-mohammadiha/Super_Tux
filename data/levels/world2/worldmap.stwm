@@ -425,7 +425,7 @@ underground_front.fade(0, 1);")
       (x 74)
       (y 61)
       (name "main")
-      (auto-dir "none")
+      (auto-dir "north")
     )
     (level
       (x 38)
