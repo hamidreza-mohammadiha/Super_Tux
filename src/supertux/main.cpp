@@ -182,7 +182,11 @@ public:
     std::string datadir;
 #ifdef __ANDROID__
     datadir = getenv("ANDROID_MY_OWN_APP_FILE");
-#else
+    if (!PHYSFS_mount(datadir.c_str(), NULL, 1))
+    {
+      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
+    }
+#else // __ANDROID__
     if (m_forced_datadir)
     {
       datadir = *m_forced_datadir;
@@ -216,12 +220,12 @@ public:
         datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
       }
     }
-#endif
 
     if (!PHYSFS_mount(boost::filesystem::canonical(datadir).string().c_str(), NULL, 1))
     {
       log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
     }
+#endif // __ANDROID__
   }
 
   void find_userdir() const
@@ -512,10 +516,12 @@ Main::run(int argc, char** argv)
 	_wfreopen(w_errpath.c_str(), L"a", stderr);
 #endif
 
+#ifndef __ANDROID__
   // Create and install global locale
   std::locale::global(boost::locale::generator().generate(""));
   // Make boost.filesystem use it
   boost::filesystem::path::imbue(std::locale());
+#endif // __ANDROID__
 
   int result = 0;
 

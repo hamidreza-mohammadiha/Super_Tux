@@ -17,7 +17,7 @@
 #ifndef HEADER_SUPERTUX_VIDEO_GL_GL_PAINTER_HPP
 #define HEADER_SUPERTUX_VIDEO_GL_GL_PAINTER_HPP
 
-#ifndef GL_VERSION_ES_CM_1_0
+#ifndef SUPERTUX_GLES
 #ifdef USE_GLBINDING
 #include <glbinding/gl/gl.h>
 using namespace gl;

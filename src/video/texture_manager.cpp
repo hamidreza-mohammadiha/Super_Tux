@@ -293,7 +293,7 @@ TextureManager::save_texture(GLTexture* texture)
   glBindTexture(GL_TEXTURE_2D, texture->get_handle());
 
   //this doesn't work with OpenGL ES (but we don't need it on the GP2X anyway)
-#ifndef GL_VERSION_ES_CM_1_0
+#ifndef SUPERTUX_GLES
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,
                            &saved_texture.width);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT,

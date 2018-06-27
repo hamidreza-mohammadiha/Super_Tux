@@ -39,7 +39,7 @@
 
 #define LIGHTMAP_DIV 5
 
-#ifdef GL_VERSION_ES_CM_1_0
+#ifdef SUPERTUX_GLES
 #  define glOrtho glOrthof
 bool GLEW_ARB_texture_non_power_of_two = false;
 #endif
@@ -90,7 +90,7 @@ GLRenderer::GLRenderer() :
   // Init the projection matrix, viewport and stuff
   apply_config();
 
-#ifndef GL_VERSION_ES_CM_1_0
+#ifndef SUPERTUX_GLES
   #ifndef USE_GLBINDING
   GLenum err = glewInit();
   #ifdef GLEW_ERROR_NO_GLX_DISPLAY

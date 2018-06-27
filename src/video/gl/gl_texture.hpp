@@ -86,7 +86,7 @@ private:
   GLTexture& operator=(const GLTexture&);
 };
 
-#ifdef GL_VERSION_ES_CM_1_0
+#ifdef SUPERTUX_GLES
 extern bool GLEW_ARB_texture_non_power_of_two;
 #endif
 

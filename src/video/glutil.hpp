@@ -32,14 +32,14 @@ using namespace gl;
 
 #else
 
-#ifndef GL_VERSION_ES_CM_1_0
+#ifndef SUPERTUX_GLES
 #  include <GL/glew.h>
 #endif
 
 #if defined(MACOSX)
 #  include <OpenGL/gl.h>
 #  include <OpenGL/glext.h>
-#elif defined(GL_VERSION_ES_CM_1_0)
+#elif defined(SUPERTUX_GLES)
 #  include <GLES/gl.h>
 #  include <GLES/glext.h>
 #else
