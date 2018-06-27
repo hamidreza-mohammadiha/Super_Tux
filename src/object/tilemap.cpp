@@ -74,6 +74,7 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   tileset(tileset_),
   tiles(),
   tilesDrawRects(),
+  draw_rects_update(true),
   real_solid(false),
   effective_solid(false),
   speed_x(1),
@@ -655,6 +656,9 @@ TileMap::set_tileset(const TileSet* new_tileset)
 void
 TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 {
+  if (!draw_rects_update) {
+    return;
+  }
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
     if (tiles[i] == newtile || tiles[i] == oldtile) {
@@ -675,6 +679,9 @@ TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
 void
 TileMap::calculateDrawRects(bool useCache)
 {
+  if (!draw_rects_update) {
+    return;
+  }
   //log_warning << "TileMap::calculateDrawRects long" << std::endl;
   fill(tilesDrawRects.begin(), tilesDrawRects.end(), 0);
   tilesDrawRects.resize(tiles.size() * 2, 0);

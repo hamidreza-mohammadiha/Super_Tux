@@ -142,6 +142,14 @@ public:
   /// changes all tiles with the given ID
   void change_all(uint32_t oldtile, uint32_t newtile);
 
+  void draw_rects_update_enabled(bool enabled)
+  {
+      draw_rects_update = enabled;
+      if (enabled) {
+          calculateDrawRects(true);
+      }
+  }
+
   void set_drawing_effect(DrawingEffect effect)
   {
     drawing_effect = effect;
@@ -193,6 +201,7 @@ private:
   typedef std::vector<unsigned char> TilesDrawRects;
   Tiles tiles;
   TilesDrawRects tilesDrawRects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
+  bool draw_rects_update;
 
   /* read solid: In *general*, is this a solid layer?
    * effective solid: is the layer *currently* solid? A generally solid layer
