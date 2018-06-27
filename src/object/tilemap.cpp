@@ -42,7 +42,8 @@ TileMap::TileMap(const TileSet *new_tileset) :
   editor_active(true),
   tileset(new_tileset),
   tiles(),
-  tilesDrawRects(),
+  tiles_draw_rects(),
+  draw_rects_update(true),
   real_solid(false),
   effective_solid(false),
   speed_x(1),
@@ -73,7 +74,7 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   editor_active(true),
   tileset(tileset_),
   tiles(),
-  tilesDrawRects(),
+  tiles_draw_rects(),
   draw_rects_update(true),
   real_solid(false),
   effective_solid(false),
@@ -362,11 +363,11 @@ TileMap::draw(DrawingContext& context)
         assert (index >= 0);
         assert (index < (width * height));
 
-        if (tilesDrawRects[index * 2] == 0) continue;
-        if (tx + tilesDrawRects[index * 2] < screen_start_x || ty + tilesDrawRects[index * 2 + 1] < screen_start_y) continue;
+        if (tiles_draw_rects[index * 2] == 0) continue;
+        if (tx + tiles_draw_rects[index * 2] < screen_start_x || ty + tiles_draw_rects[index * 2 + 1] < screen_start_y) continue;
 
         //uint32_t tile_id = tiles[index];
-        tileset->draw_tile(context, tiles[index], pos, z_pos, current_tint, Size(tilesDrawRects[index * 2], tilesDrawRects[index * 2 + 1]));
+        tileset->draw_tile(context, tiles[index], pos, z_pos, current_tint, Size(tiles_draw_rects[index * 2], tiles_draw_rects[index * 2 + 1]));
         /*if (tiles[index] == 0) continue;
         const Tile* tile = tileset->get(tiles[index]);
         assert(tile != 0);
@@ -662,18 +663,18 @@ TileMap::calculateDrawRects(uint32_t oldtile, uint32_t newtile)
   std::vector<unsigned char> inputRects(tiles.size(), 0);
   for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
     if (tiles[i] == newtile || tiles[i] == oldtile) {
-      tilesDrawRects[i * 2] = 0;
-      tilesDrawRects[i * 2 + 1] = 0;
+      tiles_draw_rects[i * 2] = 0;
+      tiles_draw_rects[i * 2 + 1] = 0;
     }
     if (tiles[i] == newtile) {
       inputRects[i] = 1;
     }
   }
-  FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+  FindRects::findAll(inputRects.data(), width, height, 1, tiles_draw_rects.data());
   for (Tiles::size_type i = 0; i < tiles.size(); ++i) {
     inputRects[i] = (tiles[i] == oldtile) ? 1 : 0;
   }
-  FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+  FindRects::findAll(inputRects.data(), width, height, 1, tiles_draw_rects.data());
 }
 
 void
@@ -683,8 +684,8 @@ TileMap::calculateDrawRects(bool useCache)
     return;
   }
   //log_warning << "TileMap::calculateDrawRects long" << std::endl;
-  fill(tilesDrawRects.begin(), tilesDrawRects.end(), 0);
-  tilesDrawRects.resize(tiles.size() * 2, 0);
+  fill(tiles_draw_rects.begin(), tiles_draw_rects.end(), 0);
+  tiles_draw_rects.resize(tiles.size() * 2, 0);
 
   std::string fname;
   if (useCache)
@@ -696,7 +697,7 @@ TileMap::calculateDrawRects(bool useCache)
     PHYSFS_file* file = PHYSFS_openRead(fname.c_str());
     if (file)
     {
-      int status = PHYSFS_read(file, (void *) tilesDrawRects.data(), tiles.size() * 2, 1);
+      int status = PHYSFS_read(file, (void *) tiles_draw_rects.data(), tiles.size() * 2, 1);
       PHYSFS_close(file);
       if (status == 1)
       {
@@ -717,7 +718,7 @@ TileMap::calculateDrawRects(bool useCache)
       }
     }
     if (!skip) {
-      FindRects::findAll(inputRects.data(), width, height, 1, tilesDrawRects.data());
+      FindRects::findAll(inputRects.data(), width, height, 1, tiles_draw_rects.data());
       fill(inputRects.begin(), inputRects.end(), 0);
     }
   }
@@ -731,7 +732,7 @@ TileMap::calculateDrawRects(bool useCache)
     PHYSFS_file* file = PHYSFS_openWrite(fname.c_str());
     if (file)
     {
-      PHYSFS_write(file, (void *) tilesDrawRects.data(), tiles.size() * 2, 1);
+      PHYSFS_write(file, (void *) tiles_draw_rects.data(), tiles.size() * 2, 1);
       PHYSFS_close(file);
     }
   }

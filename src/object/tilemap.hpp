@@ -200,7 +200,7 @@ private:
   typedef std::vector<uint32_t> Tiles;
   typedef std::vector<unsigned char> TilesDrawRects;
   Tiles tiles;
-  TilesDrawRects tilesDrawRects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
+  TilesDrawRects tiles_draw_rects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
   bool draw_rects_update;
 
   /* read solid: In *general*, is this a solid layer?
