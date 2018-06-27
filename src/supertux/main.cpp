@@ -20,9 +20,7 @@
 #include <version.h>
 
 #include <SDL_image.h>
-#ifndef __ANDROID__
 #include <boost/filesystem.hpp>
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -181,11 +179,8 @@ public:
   {
     std::string datadir;
 #ifdef __ANDROID__
-    datadir = getenv("ANDROID_MY_OWN_APP_FILE");
-    if (!PHYSFS_mount(datadir.c_str(), NULL, 1))
-    {
-      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
-    }
+    datadir = getenv("ANDROID_OBB_DIR");
+    datadir += "/main.5117.org.lethargik.supertux2.obb";
 #else // __ANDROID__
     if (m_forced_datadir)
     {
@@ -220,12 +215,12 @@ public:
         datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
       }
     }
+#endif // __ANDROID__
 
     if (!PHYSFS_mount(boost::filesystem::canonical(datadir).string().c_str(), NULL, 1))
     {
       log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
     }
-#endif // __ANDROID__
   }
 
   void find_userdir() const
