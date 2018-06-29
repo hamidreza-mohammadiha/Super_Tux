@@ -246,7 +246,11 @@ GLRenderer::apply_config()
                                                       target_size);
   }
 
+#if defined(__ANDROID__)
+  Size max_size(800, 600);
+#else
   Size max_size(3840, 2160);
+#endif
   Size min_size(640, 480);
 
   Vector scale;
