@@ -127,6 +127,12 @@ EditorLayersGui::event(SDL_Event& ev) {
               break;
             }
             if ( layers[hovered_layer]->is_tilemap ) {
+              if (selected_tilemap == layers[hovered_layer]->layer) {
+                std::unique_ptr<Menu> om(new ObjectMenu(layers[hovered_layer]->layer));
+                editor->deactivate_request = true;
+                MenuManager::instance().push_menu(move(om));
+                break;
+              }
               if (selected_tilemap) {
                 ((TileMap*)selected_tilemap)->editor_active = false;
               }
@@ -139,6 +145,9 @@ EditorLayersGui::event(SDL_Event& ev) {
               if (cam) {
                 editor->edit_path(cam->get_path(), cam);
               }
+              std::unique_ptr<Menu> om(new ObjectMenu(layers[hovered_layer]->layer));
+              editor->deactivate_request = true;
+              MenuManager::instance().push_menu(move(om));
             }
             break;
           default:
