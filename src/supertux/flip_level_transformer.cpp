@@ -33,11 +33,11 @@ FlipLevelTransformer::transform_sector(Sector* sector)
   float height = sector->get_height();
 
   // This is lenghtly operation, because it will recalculate tiles draw cache, so show some visual feedback
-  ScreenManager::current()->draw_loading_screen();
+  //ScreenManager::current()->draw_loading_screen();
   for(auto& object : sector->gameobjects) {
     auto tilemap = dynamic_cast<TileMap*>(object.get());
     if(tilemap) {
-      ScreenManager::current()->draw_loading_screen();
+      //ScreenManager::current()->draw_loading_screen();
       transform_tilemap(height, *tilemap);
     }
     auto player = dynamic_cast<Player*>(object.get());
@@ -98,6 +98,7 @@ FlipLevelTransformer::transform_path(float height, float obj_height, Path& path)
 void
 FlipLevelTransformer::transform_tilemap(float height, TileMap& tilemap)
 {
+  tilemap.draw_rects_update_enabled(false);
   for(size_t x = 0; x < tilemap.get_width(); ++x) {
     for(size_t y = 0; y < tilemap.get_height()/2; ++y) {
       // swap tiles
@@ -115,6 +116,7 @@ FlipLevelTransformer::transform_tilemap(float height, TileMap& tilemap)
   auto path = tilemap.get_path();
   if (path)
     transform_path(height, tilemap.get_bbox().get_height(), *path);
+  tilemap.draw_rects_update_enabled(true);
 }
 
 void
