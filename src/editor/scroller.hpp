@@ -31,7 +31,8 @@ class EditorScroller
     void update(float elapsed_time);
     bool event(SDL_Event& ev);
 
-    static bool rendered;
+    enum { SCROLLER_NONE, SCROLLER_TOP, SCROLLER_BOTTOM, };
+    static int rendered;
 
   private:
     bool scrolling;

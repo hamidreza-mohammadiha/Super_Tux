@@ -34,6 +34,11 @@ EditorMenu::EditorMenu()
   snap_grid_sizes.push_back("1/2 tile (16px)");
   snap_grid_sizes.push_back("1 tile (32px)");
 
+  std::vector<std::string> show_scroller_options;
+  show_scroller_options.push_back("Hidden");
+  show_scroller_options.push_back("Top");
+  show_scroller_options.push_back("Bottom");
+
   add_label(_("Level Editor"));
   add_hl();
   add_entry(MNID_RETURNTOEDITOR, _("Return to editor"));
@@ -59,7 +64,8 @@ EditorMenu::EditorMenu()
   add_toggle(-1, _("Snap objects to grid (F7)"), &EditorInputCenter::snap_to_grid);
   add_toggle(-1, _("Show grid (F8)"), &EditorInputCenter::render_grid);
   add_toggle(-1, _("Render background"), &EditorInputCenter::render_background);
-  add_toggle(-1, _("Show scroller (F9)"), &EditorScroller::rendered);
+
+  add_string_select(-1, _("Show scroller (F9)"), &EditorScroller::rendered, show_scroller_options);
 
   add_submenu(worldmap ? _("Worldmap properties") : _("Level properties"),
               MenuStorage::EDITOR_LEVEL_MENU);
@@ -85,6 +91,7 @@ EditorMenu::menu_action(MenuItem* item)
   {
     case MNID_RETURNTOEDITOR:
       MenuManager::instance().clear_menu_stack();
+      editor->resize();
       break;
 
     case MNID_SAVELEVEL:

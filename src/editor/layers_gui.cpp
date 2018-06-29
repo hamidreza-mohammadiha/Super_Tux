@@ -49,10 +49,14 @@ EditorLayersGui::draw(DrawingContext& context) {
 
   if (object_tip) {
     auto position = get_layer_coords(hovered_layer);
-    object_tip->draw_up(context, position);
+    if (Ypos > 240) {
+      object_tip->draw_up(context, position);
+    } else {
+      object_tip->draw(context, position);
+    }
   }
 
-  context.draw_filled_rect(Rectf(Vector(0, Ypos), Vector(Width, SCREEN_HEIGHT)),
+  context.draw_filled_rect(Rectf(Vector(0, Ypos), Vector(Width, Ypos + 32)),
                            Color(0.9f, 0.9f, 1.0f, 0.6f),
                            0.0f,
                            LAYER_GUI-10);
@@ -61,10 +65,10 @@ EditorLayersGui::draw(DrawingContext& context) {
   bool draw_rect = true;
   switch (hovered_item) {
     case HI_SPAWNPOINTS:
-      target_rect = Rectf(Vector(0, Ypos), Vector(Xpos, SCREEN_HEIGHT));
+      target_rect = Rectf(Vector(0, Ypos), Vector(Xpos, Ypos + 32));
       break;
     case HI_SECTOR:
-      target_rect = Rectf(Vector(Xpos, Ypos), Vector(sector_text_width + Xpos, SCREEN_HEIGHT));
+      target_rect = Rectf(Vector(Xpos, Ypos), Vector(sector_text_width + Xpos, Ypos + 32));
       break;
     case HI_LAYERS: {
       Vector coords = get_layer_coords(hovered_layer);
@@ -170,7 +174,7 @@ EditorLayersGui::event(SDL_Event& ev) {
       Vector mouse_pos = VideoSystem::current()->get_renderer().to_logical(ev.motion.x, ev.motion.y);
       float x = mouse_pos.x - Xpos;
       float y = mouse_pos.y - Ypos;
-      if (y < 0 || x > Width) {
+      if (y < 0 || x > Width || y > 32) {
         hovered_item = HI_NONE;
         object_tip = NULL;
         return false;
@@ -202,7 +206,7 @@ EditorLayersGui::event(SDL_Event& ev) {
 
 void
 EditorLayersGui::resize() {
-  Ypos = SCREEN_HEIGHT - 32;
+  Ypos = (EditorScroller::rendered == EditorScroller::SCROLLER_BOTTOM) ? 0 : SCREEN_HEIGHT - 32;
   Width = SCREEN_WIDTH - 128;
 }
 

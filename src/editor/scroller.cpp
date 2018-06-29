@@ -32,7 +32,7 @@ const float SIZE = 96;
 
 }
 
-bool EditorScroller::rendered = true;
+int EditorScroller::rendered = EditorScroller::SCROLLER_TOP;
 
 EditorScroller::EditorScroller() :
   scrolling(),
@@ -43,17 +43,19 @@ EditorScroller::EditorScroller() :
 
 bool
 EditorScroller::can_scroll() const {
-  return scrolling && mouse_pos.x < SIZE && mouse_pos.y < SIZE;
+  int ypos = (rendered == SCROLLER_TOP) ? 0 : SCREEN_HEIGHT - SIZE;
+  return scrolling && mouse_pos.x < SIZE && mouse_pos.y < SIZE + ypos && mouse_pos.y >= ypos;
 }
 
 void
 EditorScroller::draw(DrawingContext& context) {
-  if (!rendered) return;
+  if (rendered == SCROLLER_NONE) return;
 
-  context.draw_filled_rect(Rectf(Vector(0, 0), Vector(SIZE, SIZE)),
+  int ypos = rendered == SCROLLER_TOP ? 0 : SCREEN_HEIGHT - SIZE;
+  context.draw_filled_rect(Rectf(Vector(0, ypos), Vector(SIZE, SIZE + ypos)),
                            Color(0.9f, 0.9f, 1.0f, 0.6f),
                            MIDDLE, LAYER_GUI-10);
-  context.draw_filled_rect(Rectf(Vector(40, 40), Vector(56, 56)),
+  context.draw_filled_rect(Rectf(Vector(40, 40 + ypos), Vector(56, 56 + ypos)),
                            Color(0.9f, 0.9f, 1.0f, 0.6f),
                            8, LAYER_GUI-20);
   if (can_scroll()) {
@@ -68,19 +70,20 @@ EditorScroller::draw(DrawingContext& context) {
 
 void
 EditorScroller::draw_arrow(DrawingContext& context, const Vector& pos) {
+  Vector ypos = Vector(0, rendered == SCROLLER_TOP ? 0 : SCREEN_HEIGHT - SIZE);
   Vector dir = pos - Vector(MIDDLE, MIDDLE);
   if (dir.x != 0 || dir.y != 0) {
     // draw a triangle
     dir = dir.unit() * 8;
     Vector dir2 = Vector(-dir.y, dir.x);
-    context.draw_triangle(pos + dir, pos - dir + dir2, pos - dir - dir2,
+    context.draw_triangle(pos + dir + ypos, pos - dir + dir2 + ypos, pos - dir - dir2 + ypos,
                           Color(1, 1, 1, 0.5), LAYER_GUI-20);
   }
 }
 
 void
 EditorScroller::update(float elapsed_time) {
-  if (!rendered) return;
+  if (rendered == SCROLLER_NONE) return;
   if (!can_scroll()) return;
 
   float horiz_scroll = scrolling_vec.x * elapsed_time;
@@ -104,9 +107,10 @@ EditorScroller::event(SDL_Event& ev) {
     case SDL_MOUSEBUTTONDOWN:
     {
       if(ev.button.button == SDL_BUTTON_LEFT) {
-        if (!rendered) return false;
+        if (rendered == SCROLLER_NONE) return false;
 
-        if (mouse_pos.x < SIZE && mouse_pos.y < SIZE) {
+        int ypos = (rendered == SCROLLER_TOP) ? 0 : SCREEN_HEIGHT - SIZE;
+        if (mouse_pos.x < SIZE && mouse_pos.y < SIZE + ypos && mouse_pos.y >= ypos) {
           scrolling = true;
         } else {
           return false;
@@ -123,11 +127,12 @@ EditorScroller::event(SDL_Event& ev) {
 
     case SDL_MOUSEMOTION:
     {
-      if (!rendered) return false;
+      if (rendered == SCROLLER_NONE) return false;
 
+      int ypos = (rendered == SCROLLER_TOP) ? 0 : SCREEN_HEIGHT - SIZE;
       mouse_pos = VideoSystem::current()->get_renderer().to_logical(ev.motion.x, ev.motion.y);
-      if (mouse_pos.x < SIZE && mouse_pos.y < SIZE) {
-        scrolling_vec = mouse_pos - Vector(MIDDLE, MIDDLE);
+      if (mouse_pos.x < SIZE && mouse_pos.y < SIZE + ypos && mouse_pos.y >= ypos) {
+        scrolling_vec = mouse_pos - Vector(MIDDLE, MIDDLE + ypos);
         if (scrolling_vec.x != 0 || scrolling_vec.y != 0) {
           float norm = scrolling_vec.norm();
           scrolling_vec *= pow(M_E, norm/16 - 1);
