@@ -247,7 +247,7 @@ GLRenderer::apply_config()
   }
 
 #if defined(__ANDROID__)
-  Size max_size(800, 600);
+  Size max_size(1500, 600);
 #else
   Size max_size(3840, 2160);
 #endif
