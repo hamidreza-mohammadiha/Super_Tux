@@ -16,6 +16,10 @@
 
 #include "gui/item_textfield.hpp"
 
+#ifdef __ANDROID__
+#include <SDL_screenkeyboard.h>
+#endif
+
 #include "gui/menu_action.hpp"
 #include "math/vector.hpp"
 #include "supertux/colorscheme.hpp"
@@ -26,6 +30,8 @@
 #include "video/font.hpp"
 #include "video/renderer.hpp"
 #include "video/video_system.hpp"
+
+static char s_text_input_buffer[256];
 
 ItemTextField::ItemTextField(const std::string& text_, std::string* input_, int id_) :
   MenuItem(text_, id_),
@@ -47,6 +53,13 @@ ItemTextField::draw(DrawingContext& context, const Vector& pos, int menu_width, 
   context.draw_text(Resources::normal_font, text,
                     Vector(pos.x + 16, pos.y - int(Resources::normal_font->get_height()/2)),
                     ALIGN_LEFT, LAYER_GUI, active ? ColorScheme::Menu::active_color : get_color());
+#ifdef __ANDROID__
+  if ( active && SDL_IsScreenKeyboardShown(NULL) ) {
+    if ( SDL_ANDROID_GetScreenKeyboardTextInputAsync(s_text_input_buffer, sizeof(s_text_input_buffer)) == SDL_ANDROID_TEXTINPUT_ASYNC_FINISHED ) {
+      *input = s_text_input_buffer;
+    }
+  }
+#endif
 }
 
 int
@@ -79,4 +92,11 @@ ItemTextField::process_action(const MenuAction& action) {
       invalid_remove();
     }
   }
+#ifdef __ANDROID__
+  if (action == MENU_ACTION_HIT && !SDL_IsScreenKeyboardShown(NULL)) {
+    // strncpy() is not safe, as it's not guaranteed to be zero-terminated, so use safe snprintf() instead
+    snprintf(s_text_input_buffer, sizeof(s_text_input_buffer), "%s", input->c_str());
+    SDL_ANDROID_GetScreenKeyboardTextInputAsync(s_text_input_buffer, sizeof(s_text_input_buffer));
+  }
+#endif
 }
