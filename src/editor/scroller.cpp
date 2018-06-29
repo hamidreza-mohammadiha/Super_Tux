@@ -25,7 +25,7 @@
 
 namespace {
 
-#ifded __ANDROID__
+#ifdef __ANDROID__
 const float TOPLEFT = 24;
 const float MIDDLE = 72;
 const float BOTTOMRIGHT = 120;
@@ -39,7 +39,7 @@ const float SIZE = 96;
 
 }
 
-#ifded __ANDROID__
+#ifdef __ANDROID__
 int EditorScroller::rendered = EditorScroller::SCROLLER_BOTTOM;
 #else
 int EditorScroller::rendered = EditorScroller::SCROLLER_TOP;
