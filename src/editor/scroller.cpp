@@ -68,7 +68,7 @@ EditorScroller::draw(DrawingContext& context) {
   context.draw_filled_rect(Rectf(Vector(0, ypos), Vector(SIZE, SIZE + ypos)),
                            Color(0.9f, 0.9f, 1.0f, 0.6f),
                            MIDDLE, LAYER_GUI-10);
-  context.draw_filled_rect(Rectf(Vector(40, 40 + ypos), Vector(56, 56 + ypos)),
+  context.draw_filled_rect(Rectf(Vector(MIDDLE - 8, MIDDLE - 8 + ypos), Vector(MIDDLE + 8, MIDDLE + 8 + ypos)),
                            Color(0.9f, 0.9f, 1.0f, 0.6f),
                            8, LAYER_GUI-20);
   if (can_scroll()) {
