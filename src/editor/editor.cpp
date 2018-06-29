@@ -18,6 +18,9 @@
 
 #include <limits>
 #include <physfs.h>
+#ifdef __ANDROID__
+#include <SDL_screenkeyboard.h>
+#endif
 
 //#include "addon/addon_manager.hpp"
 #include "audio/sound_manager.hpp"
@@ -96,6 +99,10 @@ void Editor::draw(DrawingContext& context)
 
 void Editor::update(float elapsed_time)
 {
+#ifdef __ANDROID__
+  SDL_ANDROID_SetScreenKeyboardShown(MenuManager::instance().is_active());
+#endif
+
   // Pass all requests
   if (reload_request) {
     reload_level();
