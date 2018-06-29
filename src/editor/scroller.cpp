@@ -26,15 +26,17 @@
 namespace {
 
 #ifdef __ANDROID__
-const float TOPLEFT = 24;
-const float MIDDLE = 72;
-const float BOTTOMRIGHT = 120;
-const float SIZE = 144;
+const float TOPLEFT = 16 * 2;
+const float MIDDLE = 48 * 2;
+const float BOTTOMRIGHT = 80 * 2;
+const float SIZE = 96 * 2;
+const float SPEED = 0.2;
 #else
 const float TOPLEFT = 16;
 const float MIDDLE = 48;
 const float BOTTOMRIGHT = 80;
 const float SIZE = 96;
+const float SPEED = 1;
 #endif
 
 }
@@ -97,8 +99,8 @@ EditorScroller::update(float elapsed_time) {
   if (rendered == SCROLLER_NONE) return;
   if (!can_scroll()) return;
 
-  float horiz_scroll = scrolling_vec.x * elapsed_time;
-  float vert_scroll = scrolling_vec.y * elapsed_time;
+  float horiz_scroll = scrolling_vec.x * elapsed_time * SPEED;
+  float vert_scroll = scrolling_vec.y * elapsed_time * SPEED;
   auto editor = Editor::current();
 
   if (horiz_scroll < 0)
