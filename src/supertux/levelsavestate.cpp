@@ -35,7 +35,7 @@ const LevelSaveState & LevelSaveState::get()
   if (!initialized)
   {
     initialized = true;
-    if(PHYSFS_exists(filename))
+    if (PHYSFS_exists(filename))
     {
       try
       {
@@ -78,6 +78,14 @@ void LevelSaveState::save(const LevelSaveState & state)
   writer.write("x", saved.pos.x);
   writer.write("y", saved.pos.y);
   writer.end_list("last-level");
+}
+
+void LevelSaveState::erase()
+{
+  if (PHYSFS_exists(filename))
+  {
+    PHYSFS_delete(filename);
+  }
 }
 
 std::string LevelSaveState::getWorld() const

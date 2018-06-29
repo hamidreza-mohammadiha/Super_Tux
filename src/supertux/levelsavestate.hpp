@@ -39,6 +39,7 @@ public:
 
   static const LevelSaveState & get();
   static void save(const LevelSaveState & state);
+  static void erase();
 
   static bool getLoading();
   static void finishLoading();
