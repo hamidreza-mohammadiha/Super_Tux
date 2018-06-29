@@ -110,6 +110,9 @@ void Editor::update(float elapsed_time)
 
   if (quit_request) {
     quit_editor();
+#ifdef __ANDROID__
+    SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
   }
 
   if (newlevel_request) {
