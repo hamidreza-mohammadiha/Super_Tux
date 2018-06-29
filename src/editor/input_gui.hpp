@@ -80,7 +80,7 @@ class EditorInputGui
     Vector drag_start;
 
     int Xpos;
-    const int Ypos = 60;
+    const int Ypos = 96;
 
     Vector get_tile_coords(const int pos) const;
     int get_tile_pos(const Vector& coords) const;

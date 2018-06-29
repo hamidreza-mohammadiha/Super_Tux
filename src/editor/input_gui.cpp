@@ -78,10 +78,10 @@ EditorInputGui::draw(DrawingContext& context) {
   }
 
   context.draw_text(Resources::normal_font, _("Tilegroups"),
-                    Vector(SCREEN_WIDTH, 0),
+                    Vector(SCREEN_WIDTH, 6),
                     ALIGN_RIGHT, LAYER_GUI, ColorScheme::Menu::default_color);
   context.draw_text(Resources::normal_font, _("Objects"),
-                    Vector(SCREEN_WIDTH, 24),
+                    Vector(SCREEN_WIDTH, 32 + 6),
                     ALIGN_RIGHT, LAYER_GUI, ColorScheme::Menu::default_color);
 
   rubber->draw(context);
@@ -349,9 +349,9 @@ EditorInputGui::event(SDL_Event& ev) {
         return false;
       }
       if (y < 0) {
-        if (y < -38) {
+        if (y < -64) {
           hovered_item = HI_TILEGROUP;
-        } else if (y < -16) {
+        } else if (y < -32) {
           hovered_item = HI_OBJECTS;
         } else {
           hovered_item = HI_TOOL;
@@ -366,10 +366,10 @@ EditorInputGui::event(SDL_Event& ev) {
           update_selection();
         }
       }
-      if (y < 16) {
+      if (y < 32) {
         tile_scrolling = TS_UP;
         using_scroll_wheel = false;
-      }else if (y > SCREEN_HEIGHT - 16 - Ypos) {
+      } else if (y > (SCREEN_HEIGHT - Ypos) / 32 * 32 - 32) {
         tile_scrolling = TS_DOWN;
         using_scroll_wheel = false;
       } else {
@@ -407,10 +407,10 @@ EditorInputGui::event(SDL_Event& ev) {
 void
 EditorInputGui::resize() {
   Xpos = SCREEN_WIDTH - 128;
-  rubber->pos        = Vector(Xpos     , 44);
-  select_mode->pos   = Vector(Xpos + 32, 44);
-  move_mode->pos     = Vector(Xpos + 64, 44);
-  settings_mode->pos = Vector(Xpos + 96, 44);
+  rubber->pos        = Vector(Xpos     , 64 + 8);
+  select_mode->pos   = Vector(Xpos + 32, 64 + 8);
+  move_mode->pos     = Vector(Xpos + 64, 64 + 8);
+  settings_mode->pos = Vector(Xpos + 96, 64 + 8);
 }
 
 void
@@ -463,13 +463,13 @@ Vector
 EditorInputGui::get_tool_coords(const int pos) const {
   int x = pos%4;
   int y = pos/4;
-  return Vector( x * 32 + Xpos, y * 16 + 44);
+  return Vector( x * 32 + Xpos, y * 32 + 64);
 }
 
 int
 EditorInputGui::get_tool_pos(const Vector& coords) const {
   int x = (coords.x - Xpos) / 32;
-  int y = (coords.y - 44)   / 16;
+  int y = (coords.y - 64)   / 32;
   return y*4 + x;
 }
 
@@ -478,8 +478,8 @@ EditorInputGui::get_item_rect(const HoveredItem& item) const
 {
   switch(item)
   {
-    case HI_TILEGROUP: return Rectf(Vector(Xpos, 0), Vector(SCREEN_WIDTH, 22));
-    case HI_OBJECTS:   return Rectf(Vector(Xpos, 22), Vector(SCREEN_WIDTH, 44));
+    case HI_TILEGROUP: return Rectf(Vector(Xpos, 0), Vector(SCREEN_WIDTH, 32));
+    case HI_OBJECTS:   return Rectf(Vector(Xpos, 32), Vector(SCREEN_WIDTH, 64));
     case HI_TILE:
     {
       auto coords = get_tile_coords(hovered_tile);
@@ -488,7 +488,7 @@ EditorInputGui::get_item_rect(const HoveredItem& item) const
     case HI_TOOL:
     {
       auto coords = get_tool_coords(hovered_tile);
-      return Rectf(coords, coords + Vector(32, 16));
+      return Rectf(coords, coords + Vector(32, 32));
     }
     case HI_NONE:
     default:
