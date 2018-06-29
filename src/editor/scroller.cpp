@@ -25,14 +25,25 @@
 
 namespace {
 
+#ifded __ANDROID__
+const float TOPLEFT = 24;
+const float MIDDLE = 72;
+const float BOTTOMRIGHT = 120;
+const float SIZE = 144;
+#else
 const float TOPLEFT = 16;
 const float MIDDLE = 48;
 const float BOTTOMRIGHT = 80;
 const float SIZE = 96;
+#endif
 
 }
 
+#ifded __ANDROID__
+int EditorScroller::rendered = EditorScroller::SCROLLER_BOTTOM;
+#else
 int EditorScroller::rendered = EditorScroller::SCROLLER_TOP;
+#endif
 
 EditorScroller::EditorScroller() :
   scrolling(),
