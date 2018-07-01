@@ -49,6 +49,7 @@ private:
   float m_lightmap_uv_right;
   float m_lightmap_uv_bottom;
   GLfloat m_old_viewport[4]; //holds vieport before redefining in start_draw - returned from glGet
+  GLuint m_framebuffer;
 
 private:
   GLLightmap(const GLLightmap&);
