@@ -26,6 +26,16 @@
 #include <physfs.h>
 #include <sstream>
 
+#if defined(SUPERTUX_GLES)
+#define glGenFramebuffers        glGenFramebuffersOES
+#define glBindFramebuffer        glBindFramebufferOES
+#define glFramebufferTexture2D   glFramebufferTexture2DOES
+#define glCheckFramebufferStatus glCheckFramebufferStatusOES
+#define GL_FRAMEBUFFER           GL_FRAMEBUFFER_OES
+#define GL_COLOR_ATTACHMENT0     GL_COLOR_ATTACHMENT0_OES
+#define GL_FRAMEBUFFER_COMPLETE  GL_FRAMEBUFFER_COMPLETE_OES
+#endif
+
 #include "supertux/gameconfig.hpp"
 #include "supertux/globals.hpp"
 #include "util/obstackpp.hpp"
@@ -41,12 +51,6 @@
 #include "video/renderer.hpp"
 #include "video/surface.hpp"
 #include "video/texture_manager.hpp"
-
-#if defined(SUPERTUX_GLES)
-#define glGenFramebuffers glGenFramebuffersOES
-#define glBindFramebuffer glBindFramebufferOES
-#define glFramebufferTexture2D glFramebufferTexture2DOES
-#endif
 
 inline int next_po2(int val)
 {

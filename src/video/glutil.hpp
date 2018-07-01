@@ -40,6 +40,7 @@ using namespace gl;
 #  include <OpenGL/gl.h>
 #  include <OpenGL/glext.h>
 #elif defined(SUPERTUX_GLES)
+#  define GL_GLEXT_PROTOTYPES 1
 #  include <GLES/gl.h>
 #  include <GLES/glext.h>
 #else
