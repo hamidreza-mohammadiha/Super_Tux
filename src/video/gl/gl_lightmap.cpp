@@ -66,8 +66,6 @@ GLLightmap::GLLightmap() :
 {
   m_lightmap_width = SCREEN_WIDTH / s_LIGHTMAP_DIV;
   m_lightmap_height = SCREEN_HEIGHT / s_LIGHTMAP_DIV;
-  m_lightmap_width = SCREEN_WIDTH;
-  m_lightmap_height = SCREEN_HEIGHT;
   unsigned int width = next_po2(m_lightmap_width);
   unsigned int height = next_po2(m_lightmap_height);
 
@@ -83,15 +81,18 @@ void
 GLLightmap::start_draw(const Color &ambient_color)
 {
   glGetFloatv(GL_VIEWPORT, m_old_viewport); //save viewport
-  glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_lightmap->get_handle(), 0);
-  //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-  //  printf("GL_FRAMEBUFFER error\n");
-  //glBindTexture(GL_TEXTURE_2D, m_lightmap->get_handle());
-  //glViewport(m_old_viewport[0], m_old_viewport[3] - m_lightmap_height + m_old_viewport[1], m_lightmap_width, m_lightmap_height);
-  printf("start_draw: Viewport %f %f %d %d\n", m_old_viewport[0], m_old_viewport[3] - m_lightmap_height + m_old_viewport[1], m_lightmap_width, m_lightmap_height);
-  printf("start_draw: old viewport %f %f %f %f lightmap w h %d %d\n", m_old_viewport[0], m_old_viewport[1], m_old_viewport[2], m_old_viewport[3], m_lightmap_width, m_lightmap_height);
+  if (m_framebuffer != 0) {
+    glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_lightmap->get_handle(), 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+      m_framebuffer = 0; // switch back to old rendering method
+    }
+    glViewport(0, 0, m_lightmap_width, m_lightmap_height);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, m_lightmap->get_handle());
+    glViewport(m_old_viewport[0], m_old_viewport[3] - m_lightmap_height + m_old_viewport[1], m_lightmap_width, m_lightmap_height);
+  }
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 #ifdef SUPERTUX_GLES
@@ -109,10 +110,14 @@ GLLightmap::start_draw(const Color &ambient_color)
 void
 GLLightmap::end_draw()
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  //glDisable(GL_BLEND);
-  //glBindTexture(GL_TEXTURE_2D, m_lightmap->get_handle());
-  //glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_old_viewport[0], m_old_viewport[3] - m_lightmap_height + m_old_viewport[1], m_lightmap_width, m_lightmap_height);
+  if (m_framebuffer != 0) {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  } else {
+    glDisable(GL_BLEND);
+    glBindTexture(GL_TEXTURE_2D, m_lightmap->get_handle());
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_old_viewport[0], m_old_viewport[3] - m_lightmap_height + m_old_viewport[1], m_lightmap_width, m_lightmap_height);
+    glEnable(GL_BLEND);
+  }
   glViewport(m_old_viewport[0], m_old_viewport[1], m_old_viewport[2], m_old_viewport[3]);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -123,10 +128,11 @@ GLLightmap::end_draw()
 #endif
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  //glEnable(GL_BLEND);
 
-  //glClearColor(0, 0, 0, 1 );
-  //glClear(GL_COLOR_BUFFER_BIT);
+  if (m_framebuffer == 0) {
+    glClearColor(0, 0, 0, 1 );
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
 }
 
 void
