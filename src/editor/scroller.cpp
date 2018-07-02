@@ -19,6 +19,7 @@
 #include <math.h>
 
 #include "editor/editor.hpp"
+#include "gui/menu_manager.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 #include "video/video_system.hpp"
@@ -63,6 +64,7 @@ EditorScroller::can_scroll() const {
 void
 EditorScroller::draw(DrawingContext& context) {
   if (rendered == SCROLLER_NONE) return;
+  if (MenuManager::instance().is_active()) return;
 
   int ypos = rendered == SCROLLER_TOP ? 0 : SCREEN_HEIGHT - SIZE;
   context.draw_filled_rect(Rectf(Vector(0, ypos), Vector(SIZE, SIZE + ypos)),

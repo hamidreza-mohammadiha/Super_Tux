@@ -134,6 +134,9 @@ void Editor::update(float elapsed_time)
   if (test_request) {
     test_request = false;
     MouseCursor::current()->set_icon(NULL);
+#ifdef __ANDROID__
+    SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
     test_level();
     return;
   }
