@@ -31,7 +31,7 @@ const float TOPLEFT = 16 * 2;
 const float MIDDLE = 48 * 2;
 const float BOTTOMRIGHT = 80 * 2;
 const float SIZE = 96 * 2;
-const float SPEED = 0.2;
+const float SPEED = 0.1;
 #else
 const float TOPLEFT = 16;
 const float MIDDLE = 48;
