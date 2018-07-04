@@ -86,7 +86,7 @@ Bullet::draw(DrawingContext& context)
   sprite->draw(context, get_pos(), LAYER_OBJECTS);
   //Draw the light if fire and dark
   if(type == FIRE_BONUS){
-    context.get_light( bbox.get_middle(), &light );
+    light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
     if (light.red + light.green < 2.0){
       context.push_target();
       context.set_target(DrawingContext::LIGHTMAP);

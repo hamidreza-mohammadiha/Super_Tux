@@ -21,6 +21,7 @@
 #include "object/player.hpp"
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
+#include "supertux/sector.hpp"
 
 GrowUp::GrowUp(Direction direction) :
   MovingSprite(Vector(0,0), "images/powerups/egg/egg.sprite", LAYER_OBJECTS, COLGROUP_MOVING),
@@ -57,7 +58,7 @@ GrowUp::draw(DrawingContext& context)
   //Draw shade
   shadesprite->draw(context, get_pos(), layer);
   //Draw the light when dark
-  context.get_light( get_bbox().get_middle(), &light );
+  light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
   if (light.red + light.green < 2.0){
     context.push_target();
     context.set_target(DrawingContext::LIGHTMAP);

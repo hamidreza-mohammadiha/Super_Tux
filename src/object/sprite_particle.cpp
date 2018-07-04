@@ -92,7 +92,7 @@ SpriteParticle::draw(DrawingContext& context)
 
   //Sparkles glow in the dark
   if(glow){
-    context.get_light(position, &light );
+    light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
     if (light.red + light.green + light.blue < 3.0){
       context.push_target();
       context.set_target(DrawingContext::LIGHTMAP);

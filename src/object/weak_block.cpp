@@ -163,7 +163,7 @@ WeakBlock::draw(DrawingContext& context)
   sprite->draw(context, get_pos(), LAYER_OBJECTS + 10);
   //Draw the light if burning and dark
   if(linked && (state != STATE_NORMAL)){
-    context.get_light( bbox.get_middle(), &light );
+    light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
     if (light.red + light.green + light.blue < 3.0){
       context.push_target();
       context.set_target(DrawingContext::LIGHTMAP);
