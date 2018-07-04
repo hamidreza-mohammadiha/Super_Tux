@@ -220,9 +220,15 @@ GLLightmap::get_light(const DrawingRequest& request) const
   for( int i = 0; i < 4; i++)
     pixels[i] = 0; //set to black
 
-  float posX = request.pos.x * m_lightmap_width / SCREEN_WIDTH + m_old_viewport[0];
-  float posY = m_old_viewport[3] + m_old_viewport[1] - request.pos.y * m_lightmap_height / SCREEN_HEIGHT;
-  glReadPixels((GLint) posX, (GLint) posY , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  GLint posX, posY;
+  if (m_framebuffer != 0) {
+    posX = request.pos.x / s_LIGHTMAP_DIV;
+    posY = m_lightmap_height - request.pos.y / s_LIGHTMAP_DIV;
+  } else {
+    posX = request.pos.x * m_lightmap_width / SCREEN_WIDTH + m_old_viewport[0];
+    posY = m_old_viewport[3] + m_old_viewport[1] - request.pos.y * m_lightmap_height / SCREEN_HEIGHT;
+  }
+  glReadPixels(posX, posY , 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
   *(getlightrequest->color_ptr) = Color(pixels[0] / 255.0f, pixels[1] / 255.0f, pixels[2] / 255.0f);
 }
 
