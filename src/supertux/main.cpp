@@ -180,7 +180,7 @@ public:
     std::string datadir;
 #ifdef __ANDROID__
     datadir = getenv("ANDROID_OBB_DIR");
-    datadir += "/main.5117.org.lethargik.supertux2.obb";
+    datadir += "/main.5118.org.lethargik.supertux2.obb";
     if (!boost::filesystem::exists(datadir))
     {
       datadir = getenv("ANDROID_MY_OWN_APP_FILE");
