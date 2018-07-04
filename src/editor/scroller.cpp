@@ -31,13 +31,13 @@ const float TOPLEFT = 16 * 2;
 const float MIDDLE = 48 * 2;
 const float BOTTOMRIGHT = 80 * 2;
 const float SIZE = 96 * 2;
-const float SPEED = 0.1;
+const float SPEED = 0.3;
 #else
 const float TOPLEFT = 16;
 const float MIDDLE = 48;
 const float BOTTOMRIGHT = 80;
 const float SIZE = 96;
-const float SPEED = 1;
+const float SPEED = 2;
 #endif
 
 }
@@ -101,8 +101,8 @@ EditorScroller::update(float elapsed_time) {
   if (rendered == SCROLLER_NONE) return;
   if (!can_scroll()) return;
 
-  float horiz_scroll = scrolling_vec.x * elapsed_time * SPEED;
-  float vert_scroll = scrolling_vec.y * elapsed_time * SPEED;
+  float horiz_scroll = scrolling_vec.x * elapsed_time;
+  float vert_scroll = scrolling_vec.y * elapsed_time;
   auto editor = Editor::current();
 
   if (horiz_scroll < 0)
@@ -150,7 +150,9 @@ EditorScroller::event(SDL_Event& ev) {
         scrolling_vec = mouse_pos - Vector(MIDDLE, MIDDLE + ypos);
         if (scrolling_vec.x != 0 || scrolling_vec.y != 0) {
           float norm = scrolling_vec.norm();
-          scrolling_vec *= pow(M_E, norm/16 - 1);
+          scrolling_vec /= norm;
+          norm = std::min(MIDDLE / 2, norm) * SPEED;
+          scrolling_vec *= norm;
         }
       }
       return false;
