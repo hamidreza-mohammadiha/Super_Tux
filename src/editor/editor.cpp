@@ -80,6 +80,13 @@ Editor::Editor() :
 {
 }
 
+Editor::~Editor()
+{
+#ifdef __ANDROID__
+  SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
+}
+
 void Editor::draw(DrawingContext& context)
 {
   if (levelloaded) {
