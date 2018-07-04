@@ -138,7 +138,7 @@ void
 EditorInputGui::update(float elapsed_time) {
   static float elapsed_time_sum = 0;
   elapsed_time_sum += elapsed_time;
-  if (elapsed_time_sum < 0.25) {
+  if (elapsed_time_sum < 0.15) {
     return;
   }
   elapsed_time_sum = 0;
