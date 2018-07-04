@@ -822,6 +822,9 @@ Player::handle_input()
 
   handle_jump_helper();
 
+  /* grabbing */
+  bool just_grabbed = try_grab();
+
   /* Shoot! */
   auto sector = Sector::current();
   auto active_bullets = sector->get_active_bullets();
@@ -879,10 +882,7 @@ Player::handle_input()
     do_standup();
   }
 
-  /* grabbing */
-  try_grab();
-
-  if(controller->pressed(Controller::ACTION) && grabbed_object) {
+  if (controller->pressed(Controller::ACTION) && grabbed_object && !just_grabbed) {
     auto moving_object = dynamic_cast<MovingObject*> (grabbed_object);
     if(moving_object) {
       // move the grabbed object a bit away from tux
@@ -942,7 +942,7 @@ Player::position_grabbed_object()
   grabbed_object->grab(*this, pos, dir);
 }
 
-void
+bool
 Player::try_grab()
 {
   if(controller->hold(Controller::ACTION) && !grabbed_object
@@ -971,10 +971,11 @@ Player::try_grab()
         if (climbing) stop_climbing(*climbing);
         grabbed_object = portable;
         position_grabbed_object();
-        break;
+        return true;
       }
     }
   }
+  return false;
 }
 
 void

@@ -343,7 +343,7 @@ public:
 
   Vector floor_normal;
   void position_grabbed_object();
-  void try_grab();
+  bool try_grab();
 
   bool ghost_mode; /**< indicates if Tux should float around and through solid objects */
   bool edit_mode; /**< indicates if Tux should switch to ghost mode rather than dying */
