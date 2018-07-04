@@ -23,6 +23,7 @@
 #include "object/magicblock.hpp"
 
 #include "object/camera.hpp"
+#include "object/lantern.hpp"
 #include "sprite/sprite.hpp"
 #include "supertux/constants.hpp"
 #include "supertux/globals.hpp"
@@ -170,10 +171,26 @@ MagicBlock::update(float elapsed_time)
   }
 }
 
+static const float LANTERN_LIGHT_RADIUS = 200;
+
 void
 MagicBlock::draw(DrawingContext& context){
   //Ask for update about lightmap at center of this block
-  context.get_light( center, &light );
+  // Reading a pixel from OpenGL context is SLOW, like, TERRIBLY SLOW
+  //context.get_light( center, &light );
+  // Since magic blocks are designed to be used with lanterns,
+  // check the distance to all of the lantern objects on the level
+  // This will ignore Tux stone hat light, and other light sources
+  light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
+  auto objects = Sector::current()->get_nearby_objects(center, LANTERN_LIGHT_RADIUS);
+  for (auto &obj: objects) {
+    auto lantern = dynamic_cast<Lantern *> (obj);
+    if (lantern) {
+      light = Color(std::min(1.0f, light.red + lantern->get_color().red),
+                    std::min(1.0f, light.green + lantern->get_color().green),
+                    std::min(1.0f, light.blue + lantern->get_color().blue));
+    }
+  }
 
   //Draw the Sprite.
   MovingSprite::draw(context);
