@@ -19,48 +19,48 @@
 #include "supertux/colorscheme.hpp"
 #include "supertux/game_object.hpp"
 #include "supertux/resources.hpp"
+#include "util/log.hpp"
 #include "video/drawing_context.hpp"
 
-Tip::Tip(GameObject* object) :
-  strings(),
-  header()
+Tip::Tip(GameObject& object) :
+  m_strings(),
+  m_header()
 {
-  if (!object) {
-    log_warning << "Editor/Tip: Given object doesn't exist." << std::endl;
-    return;
-  }
+  auto os = object.get_settings();
+  m_header = os.get_name();
 
-  auto os = object->get_settings();
-  header = os.name;
+  for (const auto& oo_ptr : os.get_options())
+  {
+    const auto& oo = *oo_ptr;
 
-  for(const auto& oo : os.options) {
-    if (oo.type != MN_REMOVE && (oo.flags & OPTION_VISIBLE)) {
+    if (!(oo.get_flags() & OPTION_HIDDEN)) {
       auto value = oo.to_string();
-      if(value.empty()) {
-        value = _("<empty>");
+      if (!value.empty()) {
+        m_strings.push_back(oo.get_text() + ": " + value);
       }
-      strings.push_back(oo.text + ": " + value);
     }
   }
 }
 
 void
-Tip::draw(DrawingContext& context, const Vector& pos) {
+Tip::draw(DrawingContext& context, const Vector& pos)
+{
   auto position = pos;
   position.y += 35;
-  context.draw_text(Resources::normal_font, header, position,
-                    ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::label_color);
+  context.color().draw_text(Resources::normal_font, m_header, position,
+                              ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::label_color);
 
-  for(const auto& str : strings) {
+  for (const auto& str : m_strings) {
     position.y += 22;
-    context.draw_text(Resources::normal_font, str, position,
-                      ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::default_color);
+    context.color().draw_text(Resources::normal_font, str, position,
+                                ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::default_color);
   }
 }
 
 void
-Tip::draw_up(DrawingContext& context, const Vector& pos) {
-  auto position = Vector(pos.x, pos.y - (strings.size() + 1) * 22 - 35);
+Tip::draw_up(DrawingContext& context, const Vector& pos)
+{
+  auto position = Vector(pos.x, pos.y - (static_cast<float>(m_strings.size()) + 1.0f) * 22.0f - 35.0f);
   draw(context, position);
 }
 

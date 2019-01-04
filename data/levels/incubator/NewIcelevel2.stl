@@ -1,14 +1,15 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Bad mountains"))
   (author "Esteban")
   (contact "supertuxeditor@yahoo.es")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/forest2.ogg")
-    (ambient-light 1 1 1)
-    (ambient_sound
+    (ambient-light
+      (color 1 1 1)
+    )
+    (ambient-sound
       (sample "sounds/waterfall.wav")
       (distance_factor 0.1)
       (distance_bias 200)
@@ -53,6 +54,7 @@
       (y 384)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -62,79 +64,6 @@
     (fish
       (x 9933)
       (y 416)
-    )
-    (platform
-      (name "Bloquear1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 7648)
-          (y 32)
-        )
-        (node
-          (x 7712)
-          (y 32)
-        )
-        (node
-          (x 7712)
-          (y 352)
-        )
-      )
-    )
-    (platform
-      (name "supersecreto")
-      (running #f)
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 7360)
-          (y -64)
-          (time 30)
-        )
-        (node
-          (x 160)
-          (y -32)
-        )
-        (node
-          (x 160)
-          (y 128)
-        )
-        (node
-          (x 14)
-          (y 132)
-        )
-      )
-    )
-    (platform
-      (name "bloquesecreto")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 7830.593)
-          (y -128.3846)
-        )
-        (node
-          (x 7824.593)
-          (y -672.3846)
-        )
-      )
-    )
-    (platform
-      (name "bloquesecreto2")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 7833.299)
-          (y -255.8624)
-        )
-        (node
-          (x 7828.966)
-          (y -776.5327)
-        )
-      )
     )
     (flyingsnowball
       (x 8960)
@@ -161,7 +90,133 @@
       (y 480)
     )
     (hurting_platform
+      (path-ref "0c8c49df-2e53-473b-b0c9-0f31168a7597")
       (sprite "images/objects/sawblade/goodball.sprite")
+    )
+    (hurting_platform
+      (path-ref "146d86ad-9034-4086-8412-638c511bffa1")
+      (sprite "images/objects/sawblade/goodball.sprite")
+    )
+    (hurting_platform
+      (path-ref "655d1263-e0ed-46b7-9027-c4af75ea740b")
+      (sprite "images/objects/sawblade/goodball.sprite")
+    )
+    (hurting_platform
+      (path-ref "cedba0dd-8274-4f0c-ace4-cc1c9c293fa3")
+      (sprite "images/objects/sawblade/goodball.sprite")
+    )
+    (jumpy
+      (x 4341)
+      (y 592)
+    )
+    (jumpy
+      (x 8406)
+      (y 44)
+    )
+    (jumpy
+      (x 10368)
+      (y 416)
+    )
+    (jumpy
+      (x 16661)
+      (y 392.1715)
+    )
+    (mrbomb
+      (x 1056)
+      (y 576)
+    )
+    (mrbomb
+      (x 9152)
+      (y 192)
+    )
+    (mrbomb
+      (x 7840)
+      (y 64)
+    )
+    (mrbomb
+      (x 7936)
+      (y 64)
+    )
+    (mrbomb
+      (x 18750.69)
+      (y 432.9512)
+    )
+    (mriceblock
+      (x 5760)
+      (y 576)
+    )
+    (music
+      (file "music/forest2.ogg")
+    )
+    (particles-snow
+    )
+    (path
+      (name "3f5eb051-4309-4d8e-a933-fd9495d7d81e")
+      (path
+        (node
+          (x 7648)
+          (y 32)
+        )
+        (node
+          (x 7712)
+          (y 32)
+        )
+        (node
+          (x 7712)
+          (y 352)
+        )
+      )
+    )
+    (path
+      (name "4416a1fa-5b61-4d7e-8490-2d7325d6224e")
+      (path
+        (node
+          (x 7360)
+          (y -64)
+          (time 30)
+        )
+        (node
+          (x 160)
+          (y -32)
+        )
+        (node
+          (x 160)
+          (y 128)
+        )
+        (node
+          (x 14)
+          (y 132)
+        )
+      )
+    )
+    (path
+      (name "77c75398-4a8c-4982-95d6-c8f5c622ab09")
+      (path
+        (node
+          (x 7830.593)
+          (y -128.3846)
+        )
+        (node
+          (x 7824.593)
+          (y -672.3846)
+        )
+      )
+    )
+    (path
+      (name "24e79585-9e86-43f4-b55a-b7f0d0d6da3b")
+      (path
+        (node
+          (x 7833.299)
+          (y -255.8624)
+        )
+        (node
+          (x 7828.966)
+          (y -776.5327)
+        )
+      )
+    )
+    (path
+      (name "0c8c49df-2e53-473b-b0c9-0f31168a7597")
       (path
         (node
           (x 10564.37)
@@ -225,8 +280,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/goodball.sprite")
+    (path
+      (name "146d86ad-9034-4086-8412-638c511bffa1")
       (path
         (node
           (x 11255.99)
@@ -285,8 +340,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/goodball.sprite")
+    (path
+      (name "655d1263-e0ed-46b7-9027-c4af75ea740b")
       (path
         (node
           (x 11905.94)
@@ -350,8 +405,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/goodball.sprite")
+    (path
+      (name "cedba0dd-8274-4f0c-ace4-cc1c9c293fa3")
       (path
         (node
           (x 12589.78)
@@ -475,45 +530,28 @@
         )
       )
     )
-    (jumpy
-      (x 4341)
-      (y 592)
+    (platform
+      (running #f)
+      (name "Bloquear1")
+      (path-ref "3f5eb051-4309-4d8e-a933-fd9495d7d81e")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
-    (jumpy
-      (x 8406)
-      (y 44)
+    (platform
+      (running #f)
+      (name "supersecreto")
+      (path-ref "4416a1fa-5b61-4d7e-8490-2d7325d6224e")
     )
-    (jumpy
-      (x 10368)
-      (y 416)
+    (platform
+      (running #f)
+      (name "bloquesecreto")
+      (path-ref "77c75398-4a8c-4982-95d6-c8f5c622ab09")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
-    (jumpy
-      (x 16661)
-      (y 392.1715)
-    )
-    (mrbomb
-      (x 1056)
-      (y 576)
-    )
-    (mrbomb
-      (x 9152)
-      (y 192)
-    )
-    (mrbomb
-      (x 7840)
-      (y 64)
-    )
-    (mrbomb
-      (x 7936)
-      (y 64)
-    )
-    (mrbomb
-      (x 18750.69)
-      (y 432.9512)
-    )
-    (mriceblock
-      (x 5760)
-      (y 576)
+    (platform
+      (running #f)
+      (name "bloquesecreto2")
+      (path-ref "24e79585-9e86-43f4-b55a-b7f0d0d6da3b")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
     (pushbutton
       (script "Bloquear1.goto_node(2);")
@@ -585,8 +623,6 @@ bloquesecreto2.goto_node(1);
     (snowball
       (x 1664)
       (y 160)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")
@@ -825,120 +861,99 @@ bloquesecreto2.goto_node(1);
       (y 472.9512)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 7584)
       (y 256)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 7264)
       (y 352)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 7392)
       (y 352)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 7488)
       (y 320)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4416)
       (y 672)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4512)
       (y 608)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4832)
       (y 640)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 5056)
       (y 672)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4640)
       (y 672)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4736)
       (y 608)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 4928)
       (y 672)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 18240)
       (y 256)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 16960)
       (y 448)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17120)
       (y 416)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17280)
       (y 416)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17440)
       (y 384)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17568)
       (y 448)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17728)
       (y 448)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17824)
       (y 352)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17792)
       (y 224)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 17952)
       (y 192)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 18112)
       (y 192)
     )
   )
   (sector
     (name "secret cave")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/cave2.jpg")
@@ -946,7 +961,11 @@ bloquesecreto2.goto_node(1);
       (image-bottom "images/background/cave2.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+      (file "music/cave.music")
     )
     (scripttrigger
       (script "Level.spawn( \"main\", \"exit\" )")
@@ -1058,8 +1077,9 @@ bloquesecreto2.goto_node(1);
   )
   (sector
     (name "tower of ice")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-bottom.png")
@@ -1067,7 +1087,11 @@ bloquesecreto2.goto_node(1);
       (image-bottom "images/background/bluemountain-bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+      (file "music/chipdisko.ogg")
     )
     (scripttrigger
       (script "Level.spawn( \"main\", \"salirtower\" )")
@@ -1183,8 +1207,9 @@ bloquesecreto2.goto_node(1);
   )
   (sector
     (name "topsecretarea")
-    (music "music/greatgigantic.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_dark.jpg")
@@ -1228,6 +1253,7 @@ bloquesecreto2.goto_node(1);
       (y 1642.204)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flame
@@ -1265,98 +1291,6 @@ bloquesecreto2.goto_node(1);
     (flame
       (x 2912)
       (y 1696)
-    )
-    (platform
-      (sprite "images/objects/platforms/wood-tiny.sprite")
-      (path
-        (node
-          (x 2880)
-          (y 1088)
-        )
-        (node
-          (x 2880)
-          (y 768)
-        )
-      )
-    )
-    (platform
-      (sprite "images/objects/platforms/wood-tiny.sprite")
-      (path
-        (node
-          (x 2912)
-          (y 1088)
-        )
-        (node
-          (x 2912)
-          (y 640)
-        )
-      )
-    )
-    (platform
-      (sprite "images/objects/platforms/wood-tiny.sprite")
-      (path
-        (node
-          (x 2944)
-          (y 1088)
-        )
-        (node
-          (x 2944)
-          (y 640)
-        )
-      )
-    )
-    (platform
-      (name "trampa1")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
-      (path
-        (node
-          (x 1056)
-          (y 640)
-        )
-        (node
-          (x 1056)
-          (y 1088)
-        )
-      )
-    )
-    (platform
-      (name "trampa2")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
-      (path
-        (node
-          (x 704)
-          (y 640)
-          (time 0.5)
-        )
-        (node
-          (x 704)
-          (y 1088)
-          (time 0.5)
-        )
-      )
-    )
-    (platform
-      (name "trampa3")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
-      (path
-        (node
-          (x 352)
-          (y 640)
-        )
-        (node
-          (x 352)
-          (y 1088)
-          (time 0.5)
-        )
-        (node
-          (x 256)
-          (y 1088)
-          (time 0.5)
-        )
-      )
     )
     (flyingsnowball
       (x 2816)
@@ -1425,6 +1359,125 @@ bloquesecreto2.goto_node(1);
     (mriceblock
       (x 1536)
       (y 960)
+    )
+    (music
+      (file "music/greatgigantic.music")
+    )
+    (path
+      (name "d5582ca3-b15f-430d-b5f0-5a708f1bb3d3")
+      (path
+        (node
+          (x 2880)
+          (y 1088)
+        )
+        (node
+          (x 2880)
+          (y 768)
+        )
+      )
+    )
+    (path
+      (name "50ce71fe-316b-4e95-9491-c98de4890a15")
+      (path
+        (node
+          (x 2912)
+          (y 1088)
+        )
+        (node
+          (x 2912)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "f67849de-ba71-4a15-a73d-4615a9f8516c")
+      (path
+        (node
+          (x 2944)
+          (y 1088)
+        )
+        (node
+          (x 2944)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "477bbee6-2f48-4ae8-821e-4d1b0c06a918")
+      (path
+        (node
+          (x 1056)
+          (y 640)
+        )
+        (node
+          (x 1056)
+          (y 1088)
+        )
+      )
+    )
+    (path
+      (name "124db0a9-fc9f-4330-a4a4-49f75a8dc73b")
+      (path
+        (node
+          (x 704)
+          (y 640)
+          (time 0.5)
+        )
+        (node
+          (x 704)
+          (y 1088)
+          (time 0.5)
+        )
+      )
+    )
+    (path
+      (name "ccec2381-1578-443d-873d-39b8a15d5536")
+      (path
+        (node
+          (x 352)
+          (y 640)
+        )
+        (node
+          (x 352)
+          (y 1088)
+          (time 0.5)
+        )
+        (node
+          (x 256)
+          (y 1088)
+          (time 0.5)
+        )
+      )
+    )
+    (platform
+      (path-ref "d5582ca3-b15f-430d-b5f0-5a708f1bb3d3")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (path-ref "50ce71fe-316b-4e95-9491-c98de4890a15")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (path-ref "f67849de-ba71-4a15-a73d-4615a9f8516c")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (running #f)
+      (name "trampa1")
+      (path-ref "477bbee6-2f48-4ae8-821e-4d1b0c06a918")
+      (sprite "images/objects/platforms/big.sprite")
+    )
+    (platform
+      (running #f)
+      (name "trampa2")
+      (path-ref "124db0a9-fc9f-4330-a4a4-49f75a8dc73b")
+      (sprite "images/objects/platforms/big.sprite")
+    )
+    (platform
+      (running #f)
+      (name "trampa3")
+      (path-ref "ccec2381-1578-443d-873d-39b8a15d5536")
+      (sprite "images/objects/platforms/big.sprite")
     )
     (rock
       (x 2880)
@@ -1506,10 +1559,6 @@ bloquesecreto2.goto_node(1);
       (x 704)
       (y 640)
     )
-    (sspiky
-      (x 2528)
-      (y 352)
-    )
     (snowball
       (x 1376)
       (y 320)
@@ -1530,6 +1579,10 @@ bloquesecreto2.goto_node(1);
     (spiky
       (x 736)
       (y 320)
+    )
+    (sspiky
+      (x 2528)
+      (y 352)
     )
     (tilemap
       (solid #t)

@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Obstacle Course"))
   (author "NoNotCar")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/voc-daytime2.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-top.png")
@@ -14,6 +15,7 @@
       (image-bottom "images/background/bluemountain-bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (climbable
@@ -33,8 +35,6 @@
       (height 128)
       (x 6496)
       (y 224)
-    )
-    (particles-clouds
     )
     (firefly
       (x 4096)
@@ -87,10 +87,10 @@
       (x 8743)
       (y 424)
     )
-    (smartball
-      (direction "left")
-      (x 1187)
-      (y 166)
+    (music
+      (file "music/voc-daytime2.music")
+    )
+    (particles-clouds
     )
     (powerup
       (disable-physics #t)
@@ -133,6 +133,11 @@
       (x 32)
       (y -204)
     )
+    (smartball
+      (direction "left")
+      (x 1187)
+      (y 166)
+    )
     (spawnpoint
       (name "main")
       (x 96)
@@ -153,13 +158,11 @@
     )
     (switch
       (script "Tux.kill(true)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 3779)
       (y 900)
     )
     (switch
       (script "Level.spawn(\"main\",\"secret\")")
-      (sprite "images/objects/switch/switch.sprite")
       (x 7523)
       (y 868)
     )

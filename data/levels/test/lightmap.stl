@@ -1,15 +1,18 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Unnamed"))
   (author "ingo")
   (sector
     (name "main")
-    (music "")
-    (ambient-light 0.25 0.25 0.25)
+    (ambient-light
+      (color 0.25 0.25 0.25)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (lantern
+      (color 0 0 1)
       (x 624)
       (y 712)
     )
@@ -18,34 +21,42 @@
       (y 712)
     )
     (lantern
+      (color 1 0 0)
       (x 720)
       (y 712)
     )
     (lantern
+      (color 0 1 0)
       (x 176)
       (y 648)
     )
     (magicblock
+      (color 0 1 0)
       (x 640)
       (y 640)
     )
     (magicblock
+      (color 0 0 1)
       (x 608)
       (y 640)
     )
     (magicblock
+      (color 1 0 0)
       (x 672)
       (y 640)
     )
     (magicblock
+      (color 1 1 0)
       (x 576)
       (y 640)
     )
     (magicblock
+      (color 0 1 1)
       (x 544)
       (y 640)
     )
     (magicblock
+      (color 1 0 1)
       (x 512)
       (y 640)
     )
@@ -216,6 +227,8 @@
     (magicblock
       (x 704)
       (y 512)
+    )
+    (music
     )
     (spawnpoint
       (name "main")

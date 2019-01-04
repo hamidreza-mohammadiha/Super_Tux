@@ -1,13 +1,15 @@
 (supertux-level
-  (version 2)
-  (name (_ "A Cold Day"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "A Cold Day"))
   (author "Penguinmaster")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (fish
@@ -93,6 +95,9 @@
       (x 1637)
       (y 396)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
     (snowball
       (x 2510)
       (y 711)
@@ -144,7 +149,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 183)
       (height 36)
@@ -189,7 +195,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 183)
       (height 36)

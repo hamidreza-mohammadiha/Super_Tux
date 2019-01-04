@@ -1,20 +1,21 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Kugelblitzstorm"))
   (author "Hume")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/cave.music")
     (init-script "while(true){
  wait(12)
  sector.settings.set_ambient_light(sector.settings.get_ambient_red()*5,sector.settings.get_ambient_green()*5,sector.settings.get_ambient_blue()*5)
  wait(0.1)
  sector.settings.set_ambient_light(sector.settings.get_ambient_red()/5,sector.settings.get_ambient_green()/5,sector.settings.get_ambient_blue()/5)
 }")
-    (ambient-light 0.1254902 0.1254902 0.1254902)
+    (ambient-light
+      (color 0.1254902 0.1254902 0.1254902)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (dispenser
@@ -111,7 +112,12 @@
       (top_color 0 0.3137255 1)
       (bottom_color 1 1 1)
     )
+    (music
+      (file "music/cave.music")
+    )
     (particles-rain
+    )
+    (particles-snow
     )
     (sequencetrigger
       (sequence "stoptux")
@@ -127,8 +133,6 @@
       (x 8928)
       (y -12)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 64)
@@ -139,7 +143,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 300)
       (height 35)
@@ -183,7 +188,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 300)
       (height 35)

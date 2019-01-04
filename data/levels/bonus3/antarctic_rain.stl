@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Antarctic rain"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 35)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (gradient
@@ -71,12 +73,24 @@
       (x 4096)
       (y 768)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
     (particles-rain
+    )
+    (particles-snow
+    )
+    (path
+      (name "327e44d6-7a13-47ab-b50d-34cf14191fc6")
+      (path
+        (node
+          (x 2144)
+          (y 608)
+        )
+      )
     )
     (secretarea
       (fade-tilemap "secret1")
-      (script "")
-      (message "")
       (width 360)
       (height 168)
       (x 2164)
@@ -85,8 +99,6 @@
     (snowball
       (x 352)
       (y 608)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")
@@ -129,7 +141,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 260)
       (height 36)
@@ -174,7 +187,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 260)
       (height 36)
@@ -356,12 +370,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret1")
-      (path
-        (node
-          (x 2144)
-          (y 608)
-        )
-      )
+      (path-ref "327e44d6-7a13-47ab-b50d-34cf14191fc6")
       (width 12)
       (height 5)
       (tiles

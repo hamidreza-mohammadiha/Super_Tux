@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "Bonus Dias!"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Bonus Dias!"))
   (author "SuperTux Team")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 5385)
       (y 742)
@@ -16,6 +17,7 @@
       (y 750)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -73,18 +75,26 @@
       (x 6300)
       (y 718)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "7aa10cde-5595-4c40-b4e0-a51897704b10")
+      (path
+        (node
+          (x 6848)
+          (y 480)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 124)
       (height 156)
       (x 6848)
       (y 480)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 76)
       (height 140)
       (x 4852)
@@ -149,7 +159,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 300)
       (height 36)
@@ -194,7 +205,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 300)
       (height 36)
@@ -373,12 +385,7 @@
       (solid #f)
       (z-pos 101)
       (name "secret")
-      (path
-        (node
-          (x 6848)
-          (y 480)
-        )
-      )
+      (path-ref "7aa10cde-5595-4c40-b4e0-a51897704b10")
       (width 4)
       (height 5)
       (tiles

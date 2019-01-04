@@ -16,10 +16,7 @@
 
 #include "supertux/menu/download_dialog.hpp"
 
-#include <sstream>
-
-#include "gui/menu_manager.hpp"
-#include "util/gettext.hpp"
+#include "addon/addon_manager.hpp"
 
 DownloadDialog::DownloadDialog(TransferStatusPtr status, bool auto_close, bool passive) : Dialog(passive),
   m_status(status),
@@ -88,7 +85,7 @@ DownloadDialog::on_abort()
 void
 DownloadDialog::on_download_complete()
 {
-  if(m_auto_close)
+  if (m_auto_close)
   {
     MenuManager::instance().set_dialog({});
     return;

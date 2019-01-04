@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "In Flanders Ice Field"))
   (author "Kevin")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 5626)
       (y 342)
@@ -101,8 +101,8 @@
       (y 623)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
     )
     (firefly
       (x 6984)
@@ -354,6 +354,9 @@
     (mriceblock
       (x 5712)
       (y 470)
+    )
+    (music
+      (file "music/chipdisko.ogg")
     )
     (snowball
       (x 2111)
@@ -1118,7 +1121,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 506)
       (height 36)
@@ -1163,7 +1167,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 506)
       (height 36)

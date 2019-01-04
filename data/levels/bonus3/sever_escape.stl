@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Sewer escape"))
   (author "Hume")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 70)
   (sector
     (name "main")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -55,6 +57,18 @@
       (x 192)
       (y 2304)
     )
+    (music
+      (file "music/cave.music")
+    )
+    (path
+      (name "f2973111-ce86-4540-b58f-7fc6501392ca")
+      (path
+        (node
+          (x 1152)
+          (y 1120)
+        )
+      )
+    )
     (scripttrigger
       (script "Level.spawn(\"outside\",\"main\")")
       (button #f)
@@ -65,8 +79,6 @@
     )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 64)
       (height 48)
       (x 1136)
@@ -462,12 +474,7 @@
       (solid #f)
       (z-pos 97)
       (name "secret")
-      (path
-        (node
-          (x 1152)
-          (y 1120)
-        )
-      )
+      (path-ref "f2973111-ce86-4540-b58f-7fc6501392ca")
       (width 1)
       (height 1)
       (tiles
@@ -477,9 +484,11 @@
   )
   (sector
     (name "backside")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -517,6 +526,9 @@
       (spawnpoint "5")
       (x 448)
       (y 832)
+    )
+    (music
+      (file "music/cave.music")
     )
     (spawnpoint
       (name "main")
@@ -719,9 +731,11 @@
   )
   (sector
     (name "outside")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (gradient
@@ -740,6 +754,9 @@
       (x 1408)
       (y 736)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
     (snowball
       (x 1888)
       (y 736)
@@ -755,7 +772,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 75)
       (height 50)
@@ -814,7 +832,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 75)
       (height 50)

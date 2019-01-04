@@ -53,17 +53,25 @@ LevelLoadingAnimation::update(float elapsed_time)
 }
 
 void
-LevelLoadingAnimation::draw(DrawingContext& context)
+LevelLoadingAnimation::draw(Renderer& renderer)
 {
   static int counter = -1;
   counter++;
 
   for (int i = 0; i < 12; i ++)
   {
-    float x = -cosf(i * 30 * M_PI / 180.0f) * SCREEN_HEIGHT / 12;
-    float y = sinf(i * 30 * M_PI / 180.0f) * SCREEN_HEIGHT / 12;
-    context.draw_center_text(Resources::normal_font, "*", Vector(x, SCREEN_HEIGHT / 2 + y), LAYER_FOREGROUND1,
-                             Color((i + counter) % 12 / 12.0f, (i + counter) % 12 / 12.0f, 0.5f, 1.0f));
+    float x1 = -cosf(i * 30 * M_PI / 180.0f) * renderer.get_rect().get_height() / 12;
+    float y1 = sinf(i * 30 * M_PI / 180.0f) * renderer.get_rect().get_height() / 12;
+    float x2 = -cosf((i * 30 + 5) * M_PI / 180.0f) * renderer.get_rect().get_height() / 10;
+    float y2 = sinf((i * 30 + 5) * 30 * M_PI / 180.0f) * renderer.get_rect().get_height() / 10;
+    float x3 = -cosf((i * 30 - 5) * M_PI / 180.0f) * renderer.get_rect().get_height() / 10;
+    float y3 = sinf((i * 30 - 5) * 30 * M_PI / 180.0f) * renderer.get_rect().get_height() / 10;
+    TriangleRequest tr;
+    tr.color = Color((i + counter) % 12 / 12.0f, (i + counter) % 12 / 12.0f, 0.5f, 1.0f);
+    tr.pos1 = Vector(renderer.get_rect().get_width() / 2 + x1, renderer.get_rect().get_height() / 2 + y1);
+    tr.pos2 = Vector(renderer.get_rect().get_width() / 2 + x2, renderer.get_rect().get_height() / 2 + y2);
+    tr.pos3 = Vector(renderer.get_rect().get_width() / 2 + x3, renderer.get_rect().get_height() / 2 + y3);
+    renderer.get_painter().draw_triangle(tr);
   }
 }
 

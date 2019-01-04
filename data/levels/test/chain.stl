@@ -1,12 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Chain test"))
   (author "octo")
   (contact "supertux at octo.it")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -14,7 +16,10 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (spawnpoint
       (name "main")

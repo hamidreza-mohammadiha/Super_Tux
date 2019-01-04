@@ -1,11 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Test of badguys hit from below"))
   (author "Arvid")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -13,6 +15,7 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (igel
@@ -35,14 +38,11 @@
       (x 1406.209)
       (y 28.70181)
     )
+    (music
+    )
     (poisonivy
       (x 905.2211)
       (y 73.02223)
-    )
-    (sspiky
-      (x 725.051)
-      (y 90.44006)
-      (direction "right")
     )
     (snail
       (x 1100.872)
@@ -61,13 +61,18 @@
       (x 634.6808)
       (y 89.94004)
     )
+    (sspiky
+      (direction "right")
+      (x 725.051)
+      (y 90.44006)
+    )
     (stumpy
       (x 819.2947)
       (y 56.19382)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 60)
       (height 19)
@@ -94,8 +99,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 60)
       (height 19)
@@ -122,8 +127,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
       (width 60)
       (height 19)

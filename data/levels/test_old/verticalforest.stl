@@ -1,11 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Inside The Tree (Very Annoying and Unfinished)"))
   (author "Marek Moeckel")
   (sector
     (name "main")
-    (music "music/forest.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -13,6 +14,7 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -22,6 +24,9 @@
     (firefly
       (x 543)
       (y 3655)
+    )
+    (music
+      (file "music/forest.music")
     )
     (particles-rain
     )

@@ -1,24 +1,44 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Pink Snow"))
   (author "Stuart Rynn")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 30)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_top.jpg")
       (image "images/background/arctis2.png")
       (image-bottom "images/background/arctis2.png")
-      (layer -300)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
     (particles-clouds
+    )
+    (path
+      (name "10e8a140-06d8-489a-97b4-172689ddf3d5")
+      (path
+        (node
+          (x 4384)
+          (y 128)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "Secret1")
+      (width 32)
+      (height 108)
+      (x 4512)
+      (y 244)
     )
     (smartball
       (x 963)
@@ -55,15 +75,6 @@
     (smartball
       (x 6883)
       (y 390)
-    )
-    (secretarea
-      (fade-tilemap "Secret1")
-      (script "")
-      (message "")
-      (width 32)
-      (height 108)
-      (x 4512)
-      (y 244)
     )
     (snowball
       (x 1379)
@@ -260,12 +271,7 @@
       (solid #f)
       (z-pos 100)
       (name "Secret1")
-      (path
-        (node
-          (x 4384)
-          (y 128)
-        )
-      )
+      (path-ref "10e8a140-06d8-489a-97b4-172689ddf3d5")
       (width 5)
       (height 8)
       (tiles

@@ -1,15 +1,19 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Score test"))
   (author "Hume")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
     (init-script "Level.spawn(\"main\",\"blbost\")")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (snowball
       (x 99)

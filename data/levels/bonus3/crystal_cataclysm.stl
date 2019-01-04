@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Crystal Cataclysm"))
   (author "lazure")
   (license "GPL 3+/CC-BY-SA 3.0")
   (target-time 90)
   (sector
     (name "main")
-    (music "music/greatgigantic.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -157,10 +159,10 @@
       (y 455)
     )
     (decal
+      (z-pos -1)
+      (sprite "images/tiles/goal/exitbg.png")
       (x 16640)
       (y 64)
-      (layer -1)
-      (sprite "images/tiles/goal/exitbg.png")
     )
     (dispenser
       (cycle 3)
@@ -213,7 +215,6 @@
       (bottom_color 0.1341726 0.1474327 0.4788281)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 3616)
       (y 128)
     )
@@ -249,10 +250,47 @@
       (x 10631)
       (y 40)
     )
+    (music
+      (file "music/greatgigantic.music")
+    )
+    (path
+      (name "a316a183-b33d-4f76-ae5c-2c8da5798a4f")
+      (path
+        (node
+          (x 7616)
+          (y 0)
+        )
+      )
+    )
+    (path
+      (name "12a63e70-b59a-4946-beaf-0d6ebd64c7bb")
+      (path
+        (node
+          (x 16480)
+          (y 32)
+        )
+      )
+    )
+    (path
+      (name "ff07ec80-6a96-4402-8ca6-ed4bdd0c374d")
+      (path
+        (node
+          (x 13824)
+          (y 0)
+        )
+      )
+    )
+    (path
+      (name "b25f47cf-380c-44a4-ba5a-8903d313be73")
+      (path
+        (node
+          (x 1312)
+          (y 352)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret1")
-      (script "")
-      (message "")
       (width 444)
       (height 78)
       (x 8032)
@@ -260,8 +298,6 @@
     )
     (secretarea
       (fade-tilemap "secret2")
-      (script "")
-      (message "")
       (width 264)
       (height 188)
       (x 13940)
@@ -269,8 +305,6 @@
     )
     (secretarea
       (fade-tilemap "secret3")
-      (script "")
-      (message "")
       (width 76)
       (height 92)
       (x 1332)
@@ -351,7 +385,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (alpha 0.4)
       (z-pos -100)
       (name "Background")
@@ -421,7 +456,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.7)
+      (speed-x 0.7)
+      (speed-y 0.7)
       (alpha 0.8)
       (z-pos -50)
       (name "ForeCrystals")
@@ -457,7 +493,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.1)
+      (speed-x 0.1)
+      (speed-y 0.1)
       (alpha 0.2)
       (z-pos -150)
       (name "Backlayer")
@@ -529,12 +566,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret1")
-      (path
-        (node
-          (x 7616)
-          (y 0)
-        )
-      )
+      (path-ref "a316a183-b33d-4f76-ae5c-2c8da5798a4f")
       (width 29)
       (height 10)
       (tiles
@@ -554,12 +586,7 @@
       (solid #f)
       (z-pos 100)
       (name "GoalFront")
-      (path
-        (node
-          (x 16480)
-          (y 32)
-        )
-      )
+      (path-ref "12a63e70-b59a-4946-beaf-0d6ebd64c7bb")
       (width 9)
       (height 7)
       (tiles
@@ -576,12 +603,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret2")
-      (path
-        (node
-          (x 13824)
-          (y 0)
-        )
-      )
+      (path-ref "ff07ec80-6a96-4402-8ca6-ed4bdd0c374d")
       (width 15)
       (height 7)
       (tiles
@@ -598,12 +620,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret3")
-      (path
-        (node
-          (x 1312)
-          (y 352)
-        )
-      )
+      (path-ref "b25f47cf-380c-44a4-ba5a-8903d313be73")
       (width 13)
       (height 14)
       (tiles

@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "The dark castle"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
@@ -7,40 +7,38 @@
   (target-time 45)
   (sector
     (name "main")
-    (music "music/darkforestkeep.ogg")
-    (ambient-light 0.2 0.2 0.2)
+    (ambient-light
+      (color 0.2 0.2 0.2)
+    )
     (bouncingsnowball
       (x 8353)
       (y 544)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 7008)
       (y 352)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 7104)
       (y 352)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 7104)
       (y 224)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 7008)
       (y 224)
     )
@@ -83,56 +81,48 @@
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 2432)
       (y 416)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 2528)
       (y 416)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 2528)
       (y 288)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 2432)
       (y 288)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 3936)
       (y 480)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 4032)
       (y 480)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 4032)
       (y 352)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 3936)
       (y 352)
     )
@@ -239,67 +229,54 @@
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 320)
       (y 416)
     )
     (candle
-      (color 1 1 1)
       (x 576)
       (y 416)
     )
     (candle
-      (color 1 1 1)
       (x 864)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 1312)
       (y 352)
     )
     (candle
-      (color 1 1 1)
       (x 1568)
       (y 352)
     )
     (candle
-      (color 1 1 1)
       (x 3072)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3296)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 4736)
       (y 928)
     )
     (candle
-      (color 1 1 1)
       (x 4960)
       (y 928)
     )
     (candle
-      (color 1 1 1)
       (x 5120)
       (y 352)
     )
     (candle
-      (color 1 1 1)
       (x 5280)
       (y 352)
     )
     (candle
-      (color 1 1 1)
       (x 6080)
       (y 928)
     )
     (candle
-      (color 1 1 1)
       (x 6304)
       (y 256)
     )
@@ -414,25 +391,25 @@
       (x 9409)
       (y 454)
     )
-    (smartball
-      (x 3427)
-      (y 422)
+    (music
+      (file "music/darkforestkeep.ogg")
     )
-    (smartball
-      (x 4355)
-      (y 870)
+    (particles-snow
     )
-    (smartball
-      (x 3939)
-      (y 774)
-    )
-    (smartball
-      (x 6499)
-      (y 230)
-    )
-    (smartball
-      (x 4931)
-      (y 902)
+    (path
+      (name "80cb8b52-9018-463a-a1b9-68fa72a98482")
+      (path
+        (node
+          (x 0)
+          (y 0)
+          (time 4)
+        )
+        (node
+          (x 0)
+          (y -672)
+          (time 4)
+        )
+      )
     )
     (scripttrigger
       (script "platform1.goto_node(0);
@@ -467,6 +444,26 @@ platform1.goto_node(1);")
       (x 8032)
       (y 352)
     )
+    (smartball
+      (x 3427)
+      (y 422)
+    )
+    (smartball
+      (x 4355)
+      (y 870)
+    )
+    (smartball
+      (x 3939)
+      (y 774)
+    )
+    (smartball
+      (x 6499)
+      (y 230)
+    )
+    (smartball
+      (x 4931)
+      (y 902)
+    )
     (snowball
       (x 739)
       (y 420)
@@ -483,8 +480,6 @@ platform1.goto_node(1);")
       (x 4387)
       (y 164)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 64)
@@ -500,7 +495,8 @@ platform1.goto_node(1);")
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 328)
       (height 35)
@@ -544,7 +540,8 @@ platform1.goto_node(1);")
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 328)
       (height 35)
@@ -854,18 +851,7 @@ platform1.goto_node(1);")
       (solid #t)
       (z-pos 0)
       (name "platform1")
-      (path
-        (node
-          (x 0)
-          (y 0)
-          (time 4)
-        )
-        (node
-          (x 0)
-          (y -672)
-          (time 4)
-        )
-      )
+      (path-ref "80cb8b52-9018-463a-a1b9-68fa72a98482")
       (width 328)
       (height 35)
       (tiles

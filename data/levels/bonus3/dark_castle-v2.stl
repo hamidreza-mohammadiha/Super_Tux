@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "The dark castle"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 80)
   (sector
     (name "main")
-    (music "music/darkforestkeep.ogg")
-    (ambient-light 0.1854887 0.1854887 0.1854887)
+    (ambient-light
+      (color 0.1854887 0.1854887 0.1854887)
+    )
     (background
       (speed 1)
       (image-top "images/background/snowcastle.png")
@@ -15,6 +16,7 @@
       (image-bottom "images/background/snowcastle.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -95,9 +97,8 @@
       (x 1667.601)
       (y 466.028)
     )
-    (sspiky
-      (x 320)
-      (y 672)
+    (music
+      (file "music/darkforestkeep.ogg")
     )
     (snail
       (x 5696)
@@ -112,6 +113,10 @@
       (name "fall1")
       (x 2464)
       (y 576)
+    )
+    (sspiky
+      (x 320)
+      (y 672)
     )
     (tilemap
       (solid #f)
@@ -285,8 +290,9 @@
   )
   (sector
     (name "sector2")
-    (music "music/darkforestkeep.ogg")
-    (ambient-light 0.1612879 0.1612879 0.1612879)
+    (ambient-light
+      (color 0.1612879 0.1612879 0.1612879)
+    )
     (background
       (speed 1)
       (image-top "images/background/snowcastle.png")
@@ -294,95 +300,78 @@
       (image-bottom "images/background/snowcastle.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
-      (color 1 1 1)
       (x 3392)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 1440)
       (y 416)
     )
     (candle
-      (color 1 1 1)
       (x 1152)
       (y 736)
     )
     (candle
-      (color 1 1 1)
       (x 5888)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 2656)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 2080)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 3776)
       (y 704)
     )
     (candle
-      (color 1 1 1)
       (x 4320)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 4640)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 5312)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6336)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 5824)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 5952)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6016)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6080)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6144)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6208)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 6272)
       (y 608)
     )
@@ -433,6 +422,9 @@
     (mrbomb
       (x 4352)
       (y 640)
+    )
+    (music
+      (file "music/darkforestkeep.ogg")
     )
     (spawnpoint
       (name "main")

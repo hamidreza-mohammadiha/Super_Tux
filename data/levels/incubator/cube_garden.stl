@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Mad Ysonn Cube Garden"))
   (author "Florian \"octo\" Forster")
   (contact "supertux at octo.it")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (direction "left")
       (x 7488)
@@ -19,6 +20,7 @@
       (y 992)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -32,7 +34,7 @@
     (gradient
       (top_color 0 0 0.3013504)
       (bottom_color 0 0 0)
-      (layer -210)
+      (z-pos -210)
     )
     (haywire
       (x 4581)
@@ -62,17 +64,10 @@
       (x 6400)
       (y 1056)
     )
-    (smartball
-      (x 1501)
-      (y 634)
+    (music
+      (file "music/chipdisko.ogg")
     )
-    (smartball
-      (x 6560)
-      (y 672)
-    )
-    (smartball
-      (x 7360)
-      (y 704)
+    (particles-snow
     )
     (secretarea
       (fade-tilemap "Secret")
@@ -93,6 +88,18 @@
       (x 3296)
       (y 736)
     )
+    (smartball
+      (x 1501)
+      (y 634)
+    )
+    (smartball
+      (x 6560)
+      (y 672)
+    )
+    (smartball
+      (x 7360)
+      (y 704)
+    )
     (snowball
       (x 7008)
       (y 832)
@@ -109,8 +116,6 @@
       (direction "left")
       (x 7360)
       (y 992)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")

@@ -42,7 +42,7 @@ private:
   std::vector<Button> m_buttons;
   int m_selected_button;
   int m_cancel_button;
-  int m_passive;
+  bool m_passive;
 
   Sizef m_text_size;
 
@@ -74,7 +74,7 @@ public:
 
   static void show_message(const std::string& text)
   {
-    std::unique_ptr<Dialog> dialog(new Dialog);
+    auto dialog = std::make_unique<Dialog>();
     dialog->set_text(text);
     dialog->clear_buttons();
     dialog->add_button(_("OK"), [] {});
@@ -83,7 +83,7 @@ public:
 
   static void show_confirmation(const std::string& text, const std::function<void ()>& callback)
   {
-    std::unique_ptr<Dialog> dialog(new Dialog);
+    auto dialog = std::make_unique<Dialog>();
     dialog->set_text(text);
     dialog->clear_buttons();
     dialog->add_default_button(_("Yes"), callback);

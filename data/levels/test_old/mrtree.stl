@@ -1,49 +1,49 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Mr. Tree and Mr. Cherry Test"))
   (author "SuperTux Team")
   (sector
     (name "main")
-    (music "music/forest.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/forest1.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (path
-      )
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
       (x 1136.166)
       (y 364.5148)
-      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
       (x 2110.337)
       (y 421.2635)
-      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
       (x 823.4026)
       (y 704.1062)
-      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
       (x 1329.691)
       (y 540.0574)
-      (sprite "images/creatures/mr_cherry/mr_cherry.sprite")
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
       (x 1489.719)
       (y 169.3533)
-      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
     )
     (mrbomb
+      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
       (x 460.1716)
       (y 378.6569)
-      (sprite "images/creatures/mr_cherry/mr_juicebox.sprite")
     )
     (mrtree
       (x 2363.747)
@@ -52,6 +52,9 @@
     (mrtree
       (x 296.1665)
       (y 43.94112)
+    )
+    (music
+      (file "music/forest.music")
     )
     (poisonivy
       (x 1000)
@@ -70,8 +73,8 @@
       (y 10)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (width 100)
       (height 50)
       (tiles
@@ -128,8 +131,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (width 100)
       (height 50)
       (tiles
@@ -186,8 +189,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (width 100)
       (height 50)
       (tiles

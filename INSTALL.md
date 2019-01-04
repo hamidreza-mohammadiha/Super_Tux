@@ -33,7 +33,7 @@ distributions.
   - a shell and common POSIX command line tools
   - **Note:** To get these tools, you can install `build-essential` on Debian-based distros,
     `base-devel` on Arch-based distros and the Xcode Command Line tools on OS X.
-* [CMake](http://www.cmake.org/) 2.8 or later: most package managers ship this as `cmake`
+* [CMake](http://www.cmake.org/) 3.1 or later: most package managers ship this as `cmake`
 * OpenGL headers and libraries: OpenGL libraries and headers are
   specific to your graphics card. Make sure that you have hardware
   accelerated OpenGL drivers installed. Software renderers like Mesa
@@ -47,6 +47,9 @@ distributions.
 * [Boost](http://www.boost.org) smart_ptr and format headers, along with date_time and filesystem libraries
 * [cURL](http://curl.haxx.se/libcurl/): for Add-on downloads
 * [libogg and libvorbis](https://www.xiph.org/)
+* [FreeType](https://www.freetype.org/)
+* [libraqm](https://github.com/HOST-Oman/libraqm): optional, but needed
+  to display Arabic
 
 **Note I:** for any of the above listed libraries (OpenGL, SDL2, SDL2_image,
 OpenAL, GLEW/glbinding, Boost, cURL, libogg and libvorbis), you should
@@ -155,11 +158,3 @@ For more CMake options, look at end of the Linux/UNIX build section.
 6. Build the project.
 
 7. Now you can run SuperTux using the run_supertux.bat file
-
-
-Support
--------
-
-You can contact us at [supertux-devel@lists.lethargik.org](mailto:supertux-devel@lists.lethargik.org)
-and in the [#supertux](irc://chat.freenode.net/supertux) channel on
-the chat.freenode.net IRC server. Usually someone will be around to give you a hand.

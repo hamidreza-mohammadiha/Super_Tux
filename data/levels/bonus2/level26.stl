@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "Firestorm"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Firestorm"))
   (author "Penguinmaster")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (alignment "top")
       (speed 0.5)
@@ -18,8 +19,8 @@
       (image "images/background/bridgeocean-nofade.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
     )
     (firefly
       (x 12072)
@@ -176,10 +177,12 @@
     (gradient
       (top_color 0 0 0 0)
       (bottom_color 0 0.03721675 0.2483711)
-      (layer -300)
     )
     (leveltime
       (time 600)
+    )
+    (music
+      (file "music/chipdisko.ogg")
     )
     (snowball
       (x 9519)

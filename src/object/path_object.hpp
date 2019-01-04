@@ -22,44 +22,34 @@
 
 #include "object/path.hpp"
 #include "object/path_walker.hpp"
+#include "util/uid.hpp"
 
-/**
- * A class for all objects that contain / make use of a path.
- */
+/** A class for all objects that contain / make use of a path. */
 class PathObject
 {
 public:
-  std::shared_ptr<Path> path;
-  std::shared_ptr<PathWalker> walker;
+  PathObject();
+  virtual ~PathObject();
 
-  PathObject() :
-    path(),
-    walker()
-  {
-  }
+  /** For compatibilty reasons this needs to get the GameObjects
+      main mapping, not the (path ...) mapping */
+  void init_path(const ReaderMapping& mapping, bool running_default);
+  void init_path_pos(const Vector& pos, bool running = false);
 
-  PathObject(const PathObject& other) :
-    path(other.path),
-    walker(other.walker)
-  {
-  }
+  Path* get_path() const;
+  PathWalker* get_walker() const { return m_walker.get(); }
 
-  virtual ~PathObject()
-  {
-  }
-  /**
-   * Returns this object's path
-   */
-  Path* get_path() const {
-    return path.get();
-  }
+  std::string get_path_ref() const;
 
-  /**
-   * Returns this object's path walker
-   */
-  PathWalker* get_walker() const {
-    return walker.get();
-  }
+private:
+  UID m_path_uid;
+  std::unique_ptr<PathWalker> m_walker;
+
+private:
+  PathObject(const PathObject&) = delete;
+  PathObject& operator=(const PathObject&) = delete;
 };
 
 #endif
+
+/* EOF */

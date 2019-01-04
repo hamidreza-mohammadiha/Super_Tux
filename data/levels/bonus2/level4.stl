@@ -1,19 +1,20 @@
 (supertux-level
-  (version 2)
-  (name (_ "Into The Cave"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Into The Cave"))
   (author "Jason Kleinemas")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 7171)
       (y 517)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
     )
     (firefly
       (x 8461)
@@ -154,6 +155,75 @@
       (x 10208)
       (y 524)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
+    (path
+      (name "b5dedcb2-9c6d-44b8-b8e7-1893bb0fa82c")
+      (path
+        (node
+          (x 0)
+          (y 544)
+        )
+      )
+    )
+    (path
+      (name "65024a0e-32cd-445e-abe6-a8391dc9f1b2")
+      (path
+        (node
+          (x 1696)
+          (y 576)
+        )
+      )
+    )
+    (path
+      (name "32ee6cb6-c39d-4495-8e5e-4d81f4abea72")
+      (path
+        (node
+          (x 3360)
+          (y 608)
+        )
+      )
+    )
+    (path
+      (name "c2906ef7-e6fd-43c7-a378-993fee29d8e6")
+      (path
+        (node
+          (x 12128)
+          (y 608)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "s1")
+      (width 300.2777)
+      (height 96.46375)
+      (x 31.99036)
+      (y 703.5295)
+    )
+    (secretarea
+      (fade-tilemap "s2")
+      (width 324)
+      (height 204.0247)
+      (x 1727.834)
+      (y 596)
+    )
+    (secretarea
+      (fade-tilemap "s3")
+      (width 28)
+      (height 124)
+      (x 3392)
+      (y 608)
+    )
+    (secretarea
+      (fade-tilemap "s4")
+      (width 640)
+      (height 192.345)
+      (x 12159.65)
+      (y 607.6526)
+    )
     (smartball
       (x 8035)
       (y 742)
@@ -165,42 +235,6 @@
     (smartball
       (x 10563)
       (y 614)
-    )
-    (secretarea
-      (fade-tilemap "s1")
-      (script "")
-      (message "")
-      (width 300.2777)
-      (height 96.46375)
-      (x 31.99036)
-      (y 703.5295)
-    )
-    (secretarea
-      (fade-tilemap "s2")
-      (script "")
-      (message "")
-      (width 324)
-      (height 204.0247)
-      (x 1727.834)
-      (y 596)
-    )
-    (secretarea
-      (fade-tilemap "s3")
-      (script "")
-      (message "")
-      (width 28)
-      (height 124)
-      (x 3392)
-      (y 608)
-    )
-    (secretarea
-      (fade-tilemap "s4")
-      (script "")
-      (message "")
-      (width 640)
-      (height 192.345)
-      (x 12159.65)
-      (y 607.6526)
     )
     (smartblock
       (x 8321)
@@ -286,8 +320,6 @@
       (x 11189)
       (y 620)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 100)
@@ -295,7 +327,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 500)
       (height 36)
@@ -340,7 +373,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 500)
       (height 36)
@@ -566,12 +600,7 @@
       (solid #f)
       (z-pos 100)
       (name "s1")
-      (path
-        (node
-          (x 0)
-          (y 544)
-        )
-      )
+      (path-ref "b5dedcb2-9c6d-44b8-b8e7-1893bb0fa82c")
       (width 11)
       (height 9)
       (tiles
@@ -590,12 +619,7 @@
       (solid #f)
       (z-pos 100)
       (name "s2")
-      (path
-        (node
-          (x 1696)
-          (y 576)
-        )
-      )
+      (path-ref "65024a0e-32cd-445e-abe6-a8391dc9f1b2")
       (width 12)
       (height 8)
       (tiles
@@ -613,12 +637,7 @@
       (solid #f)
       (z-pos 100)
       (name "s3")
-      (path
-        (node
-          (x 3360)
-          (y 608)
-        )
-      )
+      (path-ref "32ee6cb6-c39d-4495-8e5e-4d81f4abea72")
       (width 13)
       (height 7)
       (tiles
@@ -635,12 +654,7 @@
       (solid #f)
       (z-pos 100)
       (name "s4")
-      (path
-        (node
-          (x 12128)
-          (y 608)
-        )
-      )
+      (path-ref "c2906ef7-e6fd-43c7-a378-993fee29d8e6")
       (width 22)
       (height 7)
       (tiles

@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "Tip Of The Iceberg"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Tip Of The Iceberg"))
   (author "SuperTux Team")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 12243)
       (y 655)
@@ -40,9 +41,8 @@
       (y 661)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-    )
-    (particles-clouds
     )
     (door
       (sector "castle")
@@ -227,6 +227,11 @@
     (mrbomb
       (x 15359)
       (y 657)
+    )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
     )
     (snowball
       (x 9780)
@@ -418,13 +423,12 @@
   )
   (sector
     (name "castle")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
-    (camera
-      (mode "normal")
+    (ambient-light
+      (color 1 1 1)
     )
-    (particles-clouds
-      (z-pos -199)
+    (camera
+      (name "Camera")
+      (mode "normal")
     )
     (door
       (sector "main")
@@ -457,6 +461,12 @@
     (jumpy
       (x 1383)
       (y 488)
+    )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+      (z-pos -199)
     )
     (snowball
       (x 739)

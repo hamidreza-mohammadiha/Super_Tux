@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "...but no one can stop it..."))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 100)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 2944)
       (y 320)
@@ -25,6 +26,7 @@
       (y 352)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -53,6 +55,11 @@
       (x 1437.201)
       (y 708.9973)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
     (smartball
       (x 1711)
       (y 764)
@@ -65,8 +72,6 @@
       (x 2123)
       (y 769)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 96)
@@ -78,7 +83,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 100)
       (height 35)
@@ -122,7 +128,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 100)
       (height 35)
@@ -363,8 +370,9 @@
   )
   (sector
     (name "Cave")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/cave2.jpg")
@@ -372,22 +380,13 @@
       (image-bottom "images/background/cave2.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
       (sprite "images/objects/resetpoints/bell.sprite")
       (x 96)
       (y 192)
-    )
-    (platform
-      (name "fp1")
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 2464)
-          (y 288)
-        )
-      )
     )
     (infoblock
       (message (_ "-Sorry, this flying platform is lazy.
@@ -463,10 +462,24 @@
       (x 1888)
       (y 256)
     )
+    (music
+      (file "music/cave.music")
+    )
+    (path
+      (name "c3544fa4-b296-4b97-a3e9-4a83d26b8c9e")
+      (path
+        (node
+          (x 2464)
+          (y 288)
+        )
+      )
+    )
+    (platform
+      (name "fp1")
+      (path-ref "c3544fa4-b296-4b97-a3e9-4a83d26b8c9e")
+    )
     (secretarea
       (fade-tilemap "Secret1")
-      (script "")
-      (message "")
       (width 456)
       (height 168)
       (x 1140)

@@ -18,17 +18,18 @@
 #define HEADER_SUPERTUX_SPRITE_SPRITE_DATA_HPP
 
 #include <map>
+#include <string>
 #include <vector>
 
-#include "video/surface.hpp"
+#include "video/surface_ptr.hpp"
 
 class ReaderMapping;
 
-class SpriteData
+class SpriteData final
 {
 public:
   /** cur has to be a pointer to data in the form of ((hitbox 5 10 0 0) ...) */
-  SpriteData(const ReaderMapping& cur, const std::string& basedir);
+  SpriteData(const ReaderMapping& cur);
 
   const std::string& get_name() const
   {
@@ -54,16 +55,13 @@ private:
     /** Hitbox height */
     float hitbox_h;
 
-    /** Drawing priority in queue */
-    int z_order;
-
     /** Frames per second */
     float fps;
 
     /** Loops (-1 = looping endlessly) */
     int loops;
 
-    /** Flag that gets set to true if the action 
+    /** Flag that gets set to true if the action
         has custom loops defined */
     bool has_custom_loops;
 
@@ -72,7 +70,7 @@ private:
 
   typedef std::map <std::string, std::unique_ptr<Action> > Actions;
 
-  void parse_action(const ReaderMapping& lispreader, const std::string& basedir);
+  void parse_action(const ReaderMapping& mapping);
   /** Get an action */
   const Action* get_action(const std::string& act) const;
 

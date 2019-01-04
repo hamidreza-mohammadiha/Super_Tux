@@ -1,16 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "A good start"))
   (author "Torfi Gunnarsson")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
     )
     (flyingsnowball
       (x 1372)
@@ -59,18 +59,56 @@
       (x 4866)
       (y 661)
     )
-    (smartball
-      (x 2947)
-      (y 518)
+    (music
+      (file "music/chipdisko.ogg")
     )
-    (smartball
-      (x 3171)
-      (y 486)
+    (path
+      (name "6f1efc11-e363-4ecf-b52c-20b6bc5953db")
+      (path
+        (node
+          (x 1792)
+          (y 608)
+        )
+      )
+    )
+    (path
+      (name "9a7eaef1-c51f-472f-956b-b51e698ae523")
+      (path
+        (node
+          (x 2592)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "76322f66-d88a-4115-a5c3-a739ce9fe3d6")
+      (path
+        (node
+          (x 2880)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "95d564fc-3bd7-4bed-96f7-76484522f730")
+      (path
+        (node
+          (x 3072)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "b898e1e2-c5b4-4937-a2b7-64a74a3739cc")
+      (path
+        (node
+          (x 5344)
+          (y 576)
+        )
+      )
     )
     (secretarea
       (fade-tilemap "secretb")
-      (script "")
-      (message "")
       (width 172.02)
       (height 99.5)
       (x 2624)
@@ -78,8 +116,6 @@
     )
     (secretarea
       (fade-tilemap "secretc")
-      (script "")
-      (message "")
       (width 73.01245)
       (height 140.8944)
       (x 2905.437)
@@ -87,8 +123,6 @@
     )
     (secretarea
       (fade-tilemap "secreta")
-      (script "")
-      (message "")
       (width 41.89941)
       (height 97.99548)
       (x 1821.403)
@@ -96,8 +130,6 @@
     )
     (secretarea
       (fade-tilemap "secretd")
-      (script "")
-      (message "")
       (width 106.2463)
       (height 134.5305)
       (x 3100.868)
@@ -105,12 +137,18 @@
     )
     (secretarea
       (fade-tilemap "secrete")
-      (script "")
-      (message "")
       (width 78.23242)
       (height 115.7013)
       (x 5369.921)
       (y 628)
+    )
+    (smartball
+      (x 2947)
+      (y 518)
+    )
+    (smartball
+      (x 3171)
+      (y 486)
     )
     (snowball
       (x 447)
@@ -171,7 +209,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 200)
       (height 36)
@@ -216,7 +255,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 200)
       (height 36)
@@ -435,12 +475,7 @@
       (solid #f)
       (z-pos 102)
       (name "secreta")
-      (path
-        (node
-          (x 1792)
-          (y 608)
-        )
-      )
+      (path-ref "6f1efc11-e363-4ecf-b52c-20b6bc5953db")
       (width 3)
       (height 4)
       (tiles
@@ -454,12 +489,7 @@
       (solid #f)
       (z-pos 102)
       (name "secretb")
-      (path
-        (node
-          (x 2592)
-          (y 640)
-        )
-      )
+      (path-ref "9a7eaef1-c51f-472f-956b-b51e698ae523")
       (width 7)
       (height 5)
       (tiles
@@ -474,12 +504,7 @@
       (solid #f)
       (z-pos 102)
       (name "secretc")
-      (path
-        (node
-          (x 2880)
-          (y 640)
-        )
-      )
+      (path-ref "76322f66-d88a-4115-a5c3-a739ce9fe3d6")
       (width 4)
       (height 5)
       (tiles
@@ -494,12 +519,7 @@
       (solid #f)
       (z-pos 102)
       (name "secretd")
-      (path
-        (node
-          (x 3072)
-          (y 640)
-        )
-      )
+      (path-ref "95d564fc-3bd7-4bed-96f7-76484522f730")
       (width 5)
       (height 5)
       (tiles
@@ -514,12 +534,7 @@
       (solid #f)
       (z-pos 102)
       (name "secrete")
-      (path
-        (node
-          (x 5344)
-          (y 576)
-        )
-      )
+      (path-ref "b898e1e2-c5b4-4937-a2b7-64a74a3739cc")
       (width 4)
       (height 6)
       (tiles

@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Area 42"))
   (author "SuperTux Team")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 26512)
       (y 631)
@@ -21,6 +21,7 @@
       (y 559)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -278,10 +279,22 @@
       (x 31275)
       (y 699)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
+    (path
+      (name "9773916f-c1b5-4d04-8396-4a563b26b3ce")
+      (path
+        (node
+          (x 26848)
+          (y 480)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 124)
       (height 164)
       (x 26878.06)
@@ -330,8 +343,6 @@
     (snowball
       (x 30330)
       (y 806)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")
@@ -502,12 +513,7 @@
       (solid #f)
       (z-pos 101)
       (name "secret")
-      (path
-        (node
-          (x 26848)
-          (y 480)
-        )
-      )
+      (path-ref "9773916f-c1b5-4d04-8396-4a563b26b3ce")
       (width 6)
       (height 7)
       (tiles

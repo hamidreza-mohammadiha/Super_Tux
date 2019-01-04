@@ -1,28 +1,26 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Crystal Sunset"))
   (author "CT. da'Bomb")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 40)
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bonusblock
-      (script "")
       (sprite "images/objects/bonus_block/brick.sprite")
       (x 1856)
       (y 800)
     )
     (bonusblock
-      (script "")
       (contents "firegrow")
       (sprite "images/objects/bonus_block/brick.sprite")
       (x 1888)
       (y 800)
     )
     (bonusblock
-      (script "")
       (sprite "images/objects/bonus_block/brick.sprite")
       (x 1920)
       (y 800)
@@ -60,6 +58,7 @@
       (y 640)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -134,17 +133,16 @@
       (x 7461)
       (y 872)
     )
-    (smartball
-      (x 6435)
-      (y 646)
+    (music
+      (file "music/airship_remix.music")
     )
-    (smartball
-      (x 6787)
-      (y 614)
+    (particles-snow
+    )
+    (particles-snow
+      (z-pos -50)
     )
     (secretarea
       (script "secret.fade(1,0.4);")
-      (message "")
       (width 264)
       (height 92)
       (x 532)
@@ -346,13 +344,13 @@
       (x 6217)
       (y 834)
     )
-    (sspiky
-      (x 4486)
-      (y 778)
+    (smartball
+      (x 6435)
+      (y 646)
     )
-    (sspiky
-      (x 7238)
-      (y 554)
+    (smartball
+      (x 6787)
+      (y 614)
     )
     (smartblock
       (x 2723)
@@ -362,15 +360,18 @@
       (x 2442)
       (y 707)
     )
-    (particles-snow
-    )
-    (particles-snow
-      (z-pos -50)
-    )
     (spawnpoint
       (name "main")
       (x 32)
       (y 736)
+    )
+    (sspiky
+      (x 4486)
+      (y 778)
+    )
+    (sspiky
+      (x 7238)
+      (y 554)
     )
     (stalactite
       (x 8064)
@@ -635,7 +636,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.7)
+      (speed-x 0.7)
+      (speed-y 0.7)
       (z-pos -190)
       (name "paralax")
       (width 300)

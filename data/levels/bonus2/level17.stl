@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "...Where Everything Is Possible"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "...Where Everything Is Possible"))
   (author "Marek Moeckel")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/theme.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 10850)
       (y 561)
@@ -20,6 +21,7 @@
       (y 349)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -161,10 +163,49 @@
       (x 1617)
       (y 716)
     )
+    (music
+      (file "music/theme.music")
+    )
+    (particles-snow
+    )
+    (path
+      (name "c1c8f4db-1cbf-46bf-b0b1-96a47db6910c")
+      (path
+        (node
+          (x 2272)
+          (y 512)
+        )
+      )
+    )
+    (path
+      (name "2a08bac6-b9f3-478c-ba9f-ff946cd7235b")
+      (path
+        (node
+          (x 4704)
+          (y 608)
+        )
+      )
+    )
+    (path
+      (name "736a59ab-bd63-4bec-b6fd-6c0beddf20db")
+      (path
+        (node
+          (x 10688)
+          (y 544)
+        )
+      )
+    )
+    (path
+      (name "d895a7d0-d5b3-46d8-980f-46d22e280c6d")
+      (path
+        (node
+          (x 12544)
+          (y 448)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "s1")
-      (script "")
-      (message "")
       (width 44)
       (height 124)
       (x 2292)
@@ -172,8 +213,6 @@
     )
     (secretarea
       (fade-tilemap "s2")
-      (script "")
-      (message "")
       (width 40)
       (height 124)
       (x 4704)
@@ -181,8 +220,6 @@
     )
     (secretarea
       (fade-tilemap "s3")
-      (script "")
-      (message "")
       (width 252)
       (height 284)
       (x 10720)
@@ -227,8 +264,6 @@
     (snowball
       (x 8183)
       (y 346)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")
@@ -383,12 +418,7 @@
       (solid #f)
       (z-pos 100)
       (name "s1")
-      (path
-        (node
-          (x 2272)
-          (y 512)
-        )
-      )
+      (path-ref "c1c8f4db-1cbf-46bf-b0b1-96a47db6910c")
       (width 2)
       (height 5)
       (tiles
@@ -403,12 +433,7 @@
       (solid #f)
       (z-pos 100)
       (name "s2")
-      (path
-        (node
-          (x 4704)
-          (y 608)
-        )
-      )
+      (path-ref "2a08bac6-b9f3-478c-ba9f-ff946cd7235b")
       (width 2)
       (height 5)
       (tiles
@@ -423,12 +448,7 @@
       (solid #f)
       (z-pos 100)
       (name "s3")
-      (path
-        (node
-          (x 10688)
-          (y 544)
-        )
-      )
+      (path-ref "736a59ab-bd63-4bec-b6fd-6c0beddf20db")
       (width 10)
       (height 7)
       (tiles
@@ -445,12 +465,7 @@
       (solid #f)
       (z-pos 0)
       (name "frgrd")
-      (path
-        (node
-          (x 12544)
-          (y 448)
-        )
-      )
+      (path-ref "d895a7d0-d5b3-46d8-980f-46d22e280c6d")
       (width 1)
       (height 1)
       (tiles

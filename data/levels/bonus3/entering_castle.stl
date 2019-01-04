@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Entering the castle"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
@@ -7,9 +7,11 @@
   (target-time 40)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -45,7 +47,6 @@
       (y 744)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 2559)
       (y 1924)
     )
@@ -85,17 +86,34 @@
       (x 1889)
       (y 2278)
     )
-    (smartball
-      (x 2819)
-      (y 902)
+    (music
+      (file "music/chipdisko.ogg")
     )
-    (smartball
-      (x 1731)
-      (y 1894)
+    (particles-snow
     )
-    (smartball
-      (x 1923)
-      (y 1542)
+    (path
+      (name "4245b3e1-b8f7-470f-a1ba-ff06f358111e")
+      (path
+        (node
+          (x 3520)
+          (y 2272)
+          (time 5)
+        )
+        (node
+          (x 3520)
+          (y 960)
+          (time 4)
+        )
+      )
+    )
+    (path
+      (name "b364b592-745e-4880-b268-c450986aa0cd")
+      (path
+        (node
+          (x 1568)
+          (y 2016)
+        )
+      )
     )
     (scripttrigger
       (script "platf1.goto_node(0);
@@ -108,17 +126,22 @@ platf1.goto_node(1);")
     )
     (secretarea
       (fade-tilemap "secr1")
-      (script "")
-      (message "")
       (width 168)
       (height 104)
       (x 1588)
       (y 2260)
     )
-    (sspiky
-      (direction "right")
-      (x 1830)
-      (y 1130)
+    (smartball
+      (x 2819)
+      (y 902)
+    )
+    (smartball
+      (x 1731)
+      (y 1894)
+    )
+    (smartball
+      (x 1923)
+      (y 1542)
     )
     (snowball
       (x 1699)
@@ -128,12 +151,15 @@ platf1.goto_node(1);")
       (x 2147)
       (y 2308)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 128)
       (y 352)
+    )
+    (sspiky
+      (direction "right")
+      (x 1830)
+      (y 1130)
     )
     (stalactite
       (x 3328)
@@ -153,7 +179,8 @@ platf1.goto_node(1);")
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 140)
       (height 80)
@@ -242,7 +269,8 @@ platf1.goto_node(1);")
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 140)
       (height 80)
@@ -689,18 +717,7 @@ platf1.goto_node(1);")
       (solid #t)
       (z-pos 0)
       (name "platf1")
-      (path
-        (node
-          (x 3520)
-          (y 2272)
-          (time 5)
-        )
-        (node
-          (x 3520)
-          (y 960)
-          (time 4)
-        )
-      )
+      (path-ref "4245b3e1-b8f7-470f-a1ba-ff06f358111e")
       (width 4)
       (height 1)
       (tiles
@@ -800,12 +817,7 @@ platf1.goto_node(1);")
       (solid #f)
       (z-pos 50)
       (name "secr1")
-      (path
-        (node
-          (x 1568)
-          (y 2016)
-        )
-      )
+      (path-ref "b364b592-745e-4880-b268-c450986aa0cd")
       (width 7)
       (height 11)
       (tiles

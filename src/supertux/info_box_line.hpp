@@ -31,7 +31,7 @@ class Rectf;
 /**
  * Helper class for InfoBox: Represents a line of text
  */
-class InfoBoxLine
+class InfoBoxLine final
 {
 public:
   enum LineType { NORMAL, NORMAL_LEFT, SMALL, HEADING, REFERENCE, IMAGE};
@@ -45,7 +45,7 @@ public:
 
   static bool is_valid_format_char(char format_char)
   {
-    switch(format_char)
+    switch (format_char)
     {
       case ' ':
       case '-':
@@ -67,8 +67,8 @@ private:
   SurfacePtr image;
 
 private:
-  InfoBoxLine(const InfoBoxLine&);
-  InfoBoxLine& operator=(const InfoBoxLine&);
+  InfoBoxLine(const InfoBoxLine&) = delete;
+  InfoBoxLine& operator=(const InfoBoxLine&) = delete;
 };
 
 #endif

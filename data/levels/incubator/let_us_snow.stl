@@ -1,14 +1,15 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Let us snow!"))
   (author "Hume")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (dispenser
@@ -122,81 +123,6 @@
       (x 4480)
       (y 1088)
     )
-    (platform
-      (name "door1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 160)
-          (y 864)
-        )
-        (node
-          (x 160)
-          (y 992)
-        )
-      )
-    )
-    (platform
-      (name "door2")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 4480)
-          (y 1440)
-        )
-        (node
-          (x 4480)
-          (y 1568)
-        )
-      )
-    )
-    (platform
-      (name "door3")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 3520)
-          (y 1184)
-        )
-        (node
-          (x 3520)
-          (y 1312)
-        )
-      )
-    )
-    (platform
-      (name "door4")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 4000)
-          (y 320)
-        )
-        (node
-          (x 4000)
-          (y 288)
-        )
-      )
-    )
-    (platform
-      (name "door5")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 4608)
-          (y 1248)
-        )
-        (node
-          (x 4608)
-          (y 1120)
-        )
-      )
-    )
     (gradient
       (top_color 0 0.3137255 1)
       (bottom_color 1 1 1)
@@ -259,6 +185,112 @@
       (x 2784)
       (y 224)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
+    (particles-snow
+      (z-pos 0)
+    )
+    (particles-snow
+      (z-pos 200)
+    )
+    (path
+      (name "9e363aed-0b2b-4931-9984-2b6c745ee868")
+      (path
+        (node
+          (x 160)
+          (y 864)
+        )
+        (node
+          (x 160)
+          (y 992)
+        )
+      )
+    )
+    (path
+      (name "d9dea6ce-c6e7-4c44-a5fb-8fbf2af04c56")
+      (path
+        (node
+          (x 4480)
+          (y 1440)
+        )
+        (node
+          (x 4480)
+          (y 1568)
+        )
+      )
+    )
+    (path
+      (name "32b900a1-6440-4522-9cdc-7b068f15d953")
+      (path
+        (node
+          (x 3520)
+          (y 1184)
+        )
+        (node
+          (x 3520)
+          (y 1312)
+        )
+      )
+    )
+    (path
+      (name "0459c30f-fe8d-4c27-8ee4-40adc8ee356b")
+      (path
+        (node
+          (x 4000)
+          (y 320)
+        )
+        (node
+          (x 4000)
+          (y 288)
+        )
+      )
+    )
+    (path
+      (name "5d235947-a253-44cd-814d-81fa2b8f4c3b")
+      (path
+        (node
+          (x 4608)
+          (y 1248)
+        )
+        (node
+          (x 4608)
+          (y 1120)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (name "door1")
+      (path-ref "9e363aed-0b2b-4931-9984-2b6c745ee868")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "door2")
+      (path-ref "d9dea6ce-c6e7-4c44-a5fb-8fbf2af04c56")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "door3")
+      (path-ref "32b900a1-6440-4522-9cdc-7b068f15d953")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "door4")
+      (path-ref "0459c30f-fe8d-4c27-8ee4-40adc8ee356b")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "door5")
+      (path-ref "5d235947-a253-44cd-814d-81fa2b8f4c3b")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
     (pushbutton
       (script "wind1.start()")
       (x 768)
@@ -312,10 +344,8 @@ Tux.activate()")
       (y 1392)
     )
     (scriptedobject
-      (name "pitomec")
-      (visible #t)
       (physic-enabled #f)
-      (solid #t)
+      (name "pitomec")
       (sprite "images/creatures/angrystone/angrystone.sprite")
       (x 3232)
       (y -96)
@@ -333,14 +363,6 @@ Tux.activate()")
       (height 652)
       (x 6848)
       (y -172)
-    )
-    (particles-snow
-    )
-    (particles-snow
-      (z-pos 0)
-    )
-    (particles-snow
-      (z-pos 200)
     )
     (spawnpoint
       (name "main")
@@ -384,13 +406,13 @@ Tux.activate()")
  Tux.activate()
  Camera.set_mode(\"normal\")
  Tux.set_visible(true);")
-      (sprite "images/objects/switch/switch.sprite")
       (x 7744)
       (y 1440)
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 250)
       (height 50)
@@ -449,7 +471,8 @@ Tux.activate()")
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 250)
       (height 50)
@@ -688,13 +711,13 @@ Tux.activate()")
       (y -128)
     )
     (wind
-      (name "wind1")
       (blowing #f)
       (speed-x 0)
       (speed-y -1600)
       (acceleration 5000)
       (width 64)
       (height 96)
+      (name "wind1")
       (x 448)
       (y 1344)
     )

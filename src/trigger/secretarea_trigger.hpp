@@ -21,30 +21,27 @@
 
 #include "supertux/timer.hpp"
 
-class DrawingContext;
 class Color;
+class DrawingContext;
 class ReaderMapping;
 
-class SecretAreaTrigger : public TriggerBase
+class SecretAreaTrigger final : public TriggerBase
 {
   static Color text_color;
 public:
   SecretAreaTrigger(const ReaderMapping& reader);
   SecretAreaTrigger(const Rectf& area, std::string fade_tilemap = "");
 
-  std::string get_class() const {
-    return "secretarea";
-  }
+  virtual std::string get_class() const override { return "secretarea"; }
+  virtual std::string get_display_name() const override { return _("Secret area"); }
+  virtual bool has_variable_size() const override { return true; }
 
-  bool has_variable_size() const {
-    return true;
-  }
+  virtual ObjectSettings get_settings() override;
+  virtual void after_editor_set() override;
 
-  virtual ObjectSettings get_settings();
-  virtual void after_editor_set();
+  virtual void event(Player& player, EventType type) override;
+  virtual void draw(DrawingContext& context) override;
 
-  void event(Player& player, EventType type);
-  void draw(DrawingContext& context);
   std::string get_fade_tilemap_name() const;
 
 private:
@@ -54,6 +51,10 @@ private:
   std::string fade_tilemap; /**< tilemap to fade away when trigger is activated, or empty if you don't care */
   std::string script; /**< optional script to run when trigger is activated */
   Vector new_size;
+
+private:
+  SecretAreaTrigger(const SecretAreaTrigger&) = delete;
+  SecretAreaTrigger& operator=(const SecretAreaTrigger&) = delete;
 };
 
 #endif

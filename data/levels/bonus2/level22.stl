@@ -1,17 +1,16 @@
 (supertux-level
-  (version 2)
-  (name (_ "Water Ways"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Water Ways"))
   (author "Penguinmaster")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
-    (camera
-      (mode "normal")
-      (backscrolling #f)
+    (ambient-light
+      (color 1 1 1)
     )
-    (particles-clouds
+    (camera
+      (name "Camera")
+      (mode "normal")
     )
     (fish
       (x 830)
@@ -60,9 +59,22 @@
       (x 6497)
       (y 439)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
+    (path
+      (name "f9eb56c0-970e-4527-a2e1-5ca644de54b7")
+      (path
+        (node
+          (x 672)
+          (y 640)
+        )
+      )
+    )
     (secretarea
       (script "secret.fade(1,0)")
-      (message "")
       (width 236)
       (height 32)
       (x 820)
@@ -107,7 +119,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 230)
       (height 36)
@@ -152,7 +165,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 230)
       (height 36)
@@ -335,12 +349,7 @@
       (alpha 0)
       (z-pos 0)
       (name "secret")
-      (path
-        (node
-          (x 672)
-          (y 640)
-        )
-      )
+      (path-ref "f9eb56c0-970e-4527-a2e1-5ca644de54b7")
       (width 16)
       (height 11)
       (tiles

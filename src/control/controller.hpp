@@ -41,6 +41,7 @@ public:
     REMOVE,
 
     CHEAT_MENU,
+    DEBUG_MENU,
     CONSOLE,
 
     PEEK_LEFT,
@@ -76,6 +77,10 @@ protected:
   bool oldControls[CONTROLCOUNT];
   bool mousePressed;
   Vector mousePos;
+
+private:
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
 };
 
 #endif

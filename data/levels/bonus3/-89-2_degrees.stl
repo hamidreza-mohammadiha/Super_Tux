@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "-89.2 degrees"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 55)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flyingsnowball
@@ -112,6 +114,25 @@
       (x 6720)
       (y 640)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "2fba371f-9d50-4482-9d17-3303f2577fa3")
+      (path
+        (node
+          (x 320)
+          (y 704)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "secret1")
+      (width 156)
+      (height 124)
+      (x 320)
+      (y 704)
+    )
     (smartball
       (x 2016)
       (y 256)
@@ -168,15 +189,6 @@
       (x 5120)
       (y 416)
     )
-    (secretarea
-      (fade-tilemap "secret1")
-      (script "")
-      (message "")
-      (width 156)
-      (height 124)
-      (x 320)
-      (y 704)
-    )
     (snowman
       (x 5280)
       (y 352)
@@ -200,7 +212,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 250)
       (height 36)
@@ -245,7 +258,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 250)
       (height 36)
@@ -427,12 +441,7 @@
       (solid #f)
       (z-pos 60)
       (name "secret1")
-      (path
-        (node
-          (x 320)
-          (y 704)
-        )
-      )
+      (path-ref "2fba371f-9d50-4482-9d17-3303f2577fa3")
       (width 5)
       (height 4)
       (tiles

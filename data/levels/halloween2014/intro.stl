@@ -1,13 +1,18 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "The Abandoned House"))
   (author "SuperTux Team")
   (license "GPL 2 / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (scripttrigger
       (script "Level.finish(true);")

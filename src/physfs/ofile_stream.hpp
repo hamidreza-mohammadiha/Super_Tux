@@ -19,9 +19,8 @@
 
 #include <memory>
 #include <ostream>
-#include <physfs.h>
 
-class OFileStream : public std::ostream
+class OFileStream final : public std::ostream
 {
 protected:
   std::unique_ptr<std::streambuf> sb;

@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "Cave Of Mirrors"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Cave Of Mirrors"))
   (author "SuperTux Team")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/cave2.jpg")
@@ -56,6 +57,7 @@
       (y 485)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -136,6 +138,9 @@
     (mriceblock
       (x 13248)
       (y 596)
+    )
+    (music
+      (file "music/cave.music")
     )
     (snowball
       (x 2070)

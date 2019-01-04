@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "After the Glaciers"))
   (author "CT. da'Bomb")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 40)
   (sector
     (name "main")
-    (music "music/theme.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/arctis2.png")
@@ -37,6 +38,7 @@
       (y 672)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -91,30 +93,39 @@
       (x 7237)
       (y 808)
     )
-    (smartball
-      (x 803)
-      (y 838)
+    (music
+      (file "music/theme.music")
     )
-    (smartball
-      (x 2499)
-      (y 646)
+    (path
+      (name "9e20f069-5234-481e-8ebb-92f2abdee10c")
+      (path
+        (node
+          (x 2624)
+          (y 736)
+        )
+      )
     )
-    (smartball
-      (x 2595)
-      (y 646)
+    (path
+      (name "92864fde-20ff-41db-8fe6-4eb4fbb047b3")
+      (path
+        (node
+          (x 2848)
+          (y 768)
+        )
+      )
     )
-    (smartball
-      (x 5251)
-      (y 806)
-    )
-    (smartball
-      (x 5571)
-      (y 806)
+    (path
+      (name "96b223a8-79da-493f-a645-d3d8483c661c")
+      (path
+        (node
+          (x 2624)
+          (y 672)
+        )
+      )
     )
     (secretarea
       (fade-tilemap "secret")
       (script "slope.set_alpha(1)")
-      (message "")
       (width 40)
       (height 124)
       (x 2848)
@@ -134,13 +145,25 @@
       (x 8308)
       (y 640)
     )
-    (sspiky
-      (x 4518)
-      (y 938)
+    (smartball
+      (x 803)
+      (y 838)
     )
-    (sspiky
-      (x 4102)
-      (y 938)
+    (smartball
+      (x 2499)
+      (y 646)
+    )
+    (smartball
+      (x 2595)
+      (y 646)
+    )
+    (smartball
+      (x 5251)
+      (y 806)
+    )
+    (smartball
+      (x 5571)
+      (y 806)
     )
     (snowball
       (x 4227)
@@ -162,6 +185,14 @@
       (name "main")
       (x 64)
       (y 800)
+    )
+    (sspiky
+      (x 4518)
+      (y 938)
+    )
+    (sspiky
+      (x 4102)
+      (y 938)
     )
     (tilemap
       (solid #f)
@@ -300,12 +331,7 @@
       (alpha 0.4)
       (z-pos 110)
       (name "ice")
-      (path
-        (node
-          (x 2624)
-          (y 736)
-        )
-      )
+      (path-ref "9e20f069-5234-481e-8ebb-92f2abdee10c")
       (width 8)
       (height 12)
       (tiles
@@ -327,12 +353,7 @@
       (solid #f)
       (z-pos 150)
       (name "secret")
-      (path
-        (node
-          (x 2848)
-          (y 768)
-        )
-      )
+      (path-ref "92864fde-20ff-41db-8fe6-4eb4fbb047b3")
       (width 14)
       (height 8)
       (tiles
@@ -395,12 +416,7 @@
       (alpha 0)
       (z-pos 10)
       (name "slope")
-      (path
-        (node
-          (x 2624)
-          (y 672)
-        )
-      )
+      (path-ref "96b223a8-79da-493f-a645-d3d8483c661c")
       (width 8)
       (height 14)
       (tiles

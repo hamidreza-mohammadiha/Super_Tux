@@ -16,8 +16,7 @@
 
 #include "badguy/walkingleaf.hpp"
 
-#include "object/sprite_particle.hpp"
-#include "supertux/object_factory.hpp"
+#include "sprite/sprite.hpp"
 
 WalkingLeaf::WalkingLeaf(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/walkingleaf/walkingleaf.sprite", "left", "right")
@@ -29,7 +28,9 @@ WalkingLeaf::WalkingLeaf(const ReaderMapping& reader) :
 bool
 WalkingLeaf::collision_squished(GameObject& object)
 {
-  sprite->set_action(dir == LEFT ? "squished-left" : "squished-right");
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+  // Spawn death particles
+  spawn_explosion_sprites(3, "images/objects/particles/walkingleaf.sprite");
   kill_squished(object);
   return true;
 }

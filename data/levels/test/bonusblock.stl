@@ -1,78 +1,33 @@
-(supertux-level																																											
-	(version 2)																																										
-	(name (_ "Bonusblock Test"))																																										
-	(author "LMH")																																										
-	(license	"GPL 2 / CC-by-sa 3.0"	)																																								
-	(sector	(name	"main"	)																																							
-		(ambient-light	1	1	1	)																																					
-		(camera	(mode	"normal"	))																																						
-		(init-script "	lightson <- true;	")																																							
-																																											
-		(spawnpoint	(name	"main"	)																																						
-			(x	80	)(y	704	))																																				
-																																											
-		(tilemap	(name	"Interactive"	)																																						
-			(z-pos	0	)(solid	#t	)																																				
-			(width 	42	)(height	30	)																																				
-			(tiles	;	160	192	224	256	288	320	352	384	416	448	480	512	544	576	608	640	672	704	736	768	800	832	864	896	928	960	992	1024	1056	1088	1120	1152	1184	1216	1248	1280	1312		
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0		
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	32
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	64
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	96
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	128
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	160
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	192
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	44	0	0	0	0	0	0	0	0	0	0	0	44	0	0	0	0	0	0	0	0	0	;	224
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	256
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	288
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	320
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	352
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	384
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	416
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	448
-0	0	0	0	2946	0	0	0	2947	0	0	0	2948	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	480
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	512
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	544
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	576
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	608
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2943	0	0	0	2944	2945	0	0	0	0	0	0	0	0	;	640
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	;	672
-0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	132	0	;	704
-8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	48	8	;	736
-14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	14	;	768
-11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	;	800
-11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	;	832
-11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	;	864
-11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	;	896
-11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	11	;	928
-		))																																									
-																																											
-	(bonusblock																																										
-		(x	256	)																																							
-		(y	640	)																																							
-		(contents	"coin"	)																																							
-		(count	3	)																																							
-	)																																										
-																																											
-	(bonusblock																																										
-		(x	384	)																																							
-		(y	640	)																																							
-		(contents	"firegrow"	)																																							
-		(sprite	"images/objects/bonus_block/brick.sprite"	)																																							
-	)																																										
-																																											
-	(bonusblock																																										
-		(x	512	)																																							
-		(y	640	)																																							
-		(contents	"1up"	)																																							
-		(sprite	"images/objects/bonus_block/hiddenbonus.sprite"	)																																							
-	)																																										
-																																											
-	(bonusblock																																										
-		(x	640	)																																							
-		(y	640	)																																							
-		(contents	"script"	)																																							
-		(script "																																									
+(supertux-level
+  (version 3)
+  (name (_ "Bonusblock Test"))
+  (author "LMH")
+  (license "GPL 2 / CC-by-sa 3.0")
+  (sector
+    (name "main")
+    (init-script "	lightson <- true;	")
+    (ambient-light
+      (color 1 1 1)
+    )
+    (bonusblock
+      (count 3)
+      (x 256)
+      (y 640)
+    )
+    (bonusblock
+      (contents "firegrow")
+      (sprite "images/objects/bonus_block/brick.sprite")
+      (x 384)
+      (y 640)
+    )
+    (bonusblock
+      (contents "1up")
+      (sprite "images/objects/bonus_block/hiddenbonus.sprite")
+      (x 512)
+      (y 640)
+    )
+    (bonusblock
+      (script "																																									
 			vineA.goto_node(8);																																								
 			vineB.goto_node(8);																																								
 			vineC.goto_node(8);																																								
@@ -81,16 +36,13 @@
 			vineF.goto_node(8);																																								
 			vineG.goto_node(8);																																								
 			vineH.goto_node(8);																																								
-		")																																									
-	)																																										
-																																											
-	(bonusblock																																										
-		(x	768	)																																							
-		(y	640	)																																							
-		(contents	"script"	)																																							
-		(sprite	"images/objects/bonus_block/hiddenbonus.sprite"	)																																							
-		(count	0	)																																							
-		(script "																																									
+		")
+      (contents "script")
+      (x 640)
+      (y 640)
+    )
+    (bonusblock
+      (script "																																									
 			if(lightson){																																								
 				lightson <- false;																																							
 				settings.set_ambient_light(0, 0, 0);																																							
@@ -100,123 +52,593 @@
 				settings.set_ambient_light(1, 1, 1);																																							
 				cover.fade(1,0);																																							
 			}																																								
-		")																																									
-	)																																										
-	(candle	(x	768	)(y	640	))																																					
-																																											
-	(tilemap	(name	"cover"	)(alpha	1	)																																					
-		(z-pos	-100	)(solid	#f	)																																					
-		(path	(node	(x	767	)(y	640	))	)																																		
-		(width	1	)(height	1	)																																					
-		(tiles	131	))																																							
-	(tilemap																																										
-		(z-pos	-200	)(solid	#f	)																																					
-		(path	(node	(x	767	)(y	640	))	)																																		
-		(width	1	)(height	1	)																																					
-		(tiles	61	))																																							
-																																											
-	(tilemap	(name	"vineA"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))																																	
-			(node	(x	640	)(y	512	)(time	0.25	))																																	
-			(node	(x	640	)(y	480	)(time	0.25	))																																	
-			(node	(x	640	)(y	448	)(time	0.25	))																																	
-			(node	(x	640	)(y	416	)(time	0.25	))																																	
-			(node	(x	640	)(y	384	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2163	))																																							
-	(tilemap	(name	"vineB"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))																																	
-			(node	(x	640	)(y	512	)(time	0.25	))																																	
-			(node	(x	640	)(y	480	)(time	0.25	))																																	
-			(node	(x	640	)(y	448	)(time	0.25	))																																	
-			(node	(x	640	)(y	416	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-	(tilemap	(name	"vineC"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))																																	
-			(node	(x	640	)(y	512	)(time	0.25	))																																	
-			(node	(x	640	)(y	480	)(time	0.25	))																																	
-			(node	(x	640	)(y	448	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-	(tilemap	(name	"vineD"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))																																	
-			(node	(x	640	)(y	512	)(time	0.25	))																																	
-			(node	(x	640	)(y	480	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-	(tilemap	(name	"vineE"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))																																	
-			(node	(x	640	)(y	512	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2163	))																																							
-	(tilemap	(name	"vineF"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))																																	
-			(node	(x	640	)(y	544	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-	(tilemap	(name	"vineG"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))																																	
-			(node	(x	640	)(y	576	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-	(tilemap	(name	"vineH"	)																																							
-		(z-pos	-50	)(solid	#t	)																																					
-		(path	(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	640	)(time	0.25	))																																	
-			(node	(x	640	)(y	608	)(time	0.25	))	)																																
-		(width	1	)(height	1	)																																					
-		(tiles	2162	))																																							
-))																																											
+		")
+      (count 0)
+      (contents "script")
+      (sprite "images/objects/bonus_block/hiddenbonus.sprite")
+      (x 768)
+      (y 640)
+    )
+    (camera
+      (name "Camera")
+      (mode "normal")
+    )
+    (candle
+      (x 768)
+      (y 640)
+    )
+    (music
+    )
+    (path
+      (name "a86aefe8-da32-4cc7-a96c-2255eb1125a6")
+      (path
+        (node
+          (x 767)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "eba1aa23-1f2a-4ca4-9048-115393408fe3")
+      (path
+        (node
+          (x 767)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "b4175bc6-359f-4194-a62f-6ff70ee9571a")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 512)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 480)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 448)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 416)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 384)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "d7c60559-c3b6-4117-897f-e4079b06d77f")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 512)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 480)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 448)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 416)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "bc678c96-e30f-476d-b33b-bae09bee516f")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 512)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 480)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 448)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "0dad770f-cf9e-4f36-9e90-3e4121a18c62")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 512)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 480)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "33c934a3-91d8-4bcc-a2a8-7872f2d7e7cc")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 512)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "4c99236c-3c77-41e8-8195-524e5ffe4c92")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 544)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "2552091a-2634-4339-99cd-c379e42218aa")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 576)
+          (time 0.25)
+        )
+      )
+    )
+    (path
+      (name "9b916196-5cc4-47d3-b722-3cbd063595d5")
+      (path
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 640)
+          (time 0.25)
+        )
+        (node
+          (x 640)
+          (y 608)
+          (time 0.25)
+        )
+      )
+    )
+    (spawnpoint
+      (name "main")
+      (x 80)
+      (y 704)
+    )
+    (tilemap
+      (solid #t)
+      (z-pos 0)
+      (name "Interactive")
+      (width 42)
+      (height 30)
+      (tiles
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 2946 0 0 0 2947 0 0 0 2948 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2943 0 0 0 2944 2945 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 132 0
+      8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 48 8
+      14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14
+      11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+      11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+      11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+      11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+      11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+      )
+    )
+    (tilemap
+      (solid #f)
+      (z-pos -100)
+      (name "cover")
+      (path-ref "a86aefe8-da32-4cc7-a96c-2255eb1125a6")
+      (width 1)
+      (height 1)
+      (tiles
+      131
+      )
+    )
+    (tilemap
+      (solid #f)
+      (z-pos -200)
+      (path-ref "eba1aa23-1f2a-4ca4-9048-115393408fe3")
+      (width 1)
+      (height 1)
+      (tiles
+      61
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineA")
+      (path-ref "b4175bc6-359f-4194-a62f-6ff70ee9571a")
+      (width 1)
+      (height 1)
+      (tiles
+      2163
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineB")
+      (path-ref "d7c60559-c3b6-4117-897f-e4079b06d77f")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineC")
+      (path-ref "bc678c96-e30f-476d-b33b-bae09bee516f")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineD")
+      (path-ref "0dad770f-cf9e-4f36-9e90-3e4121a18c62")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineE")
+      (path-ref "33c934a3-91d8-4bcc-a2a8-7872f2d7e7cc")
+      (width 1)
+      (height 1)
+      (tiles
+      2163
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineF")
+      (path-ref "4c99236c-3c77-41e8-8195-524e5ffe4c92")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineG")
+      (path-ref "2552091a-2634-4339-99cd-c379e42218aa")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+    (tilemap
+      (solid #t)
+      (z-pos -50)
+      (name "vineH")
+      (path-ref "9b916196-5cc4-47d3-b722-3cbd063595d5")
+      (width 1)
+      (height 1)
+      (tiles
+      2162
+      )
+    )
+  )
+)

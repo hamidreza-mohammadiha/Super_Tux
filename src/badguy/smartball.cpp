@@ -16,10 +16,7 @@
 
 #include "badguy/smartball.hpp"
 
-#include "audio/sound_manager.hpp"
 #include "sprite/sprite.hpp"
-#include "supertux/object_factory.hpp"
-#include "supertux/sector.hpp"
 
 SmartBall::SmartBall(const ReaderMapping& reader)
   : WalkingBadguy(reader, "images/creatures/snowball/smart-snowball.sprite", "left", "right")
@@ -31,7 +28,7 @@ SmartBall::SmartBall(const ReaderMapping& reader)
 bool
 SmartBall::collision_squished(GameObject& object)
 {
-  sprite->set_action(dir == LEFT ? "squished-left" : "squished-right");
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
   kill_squished(object);
   return true;
 }

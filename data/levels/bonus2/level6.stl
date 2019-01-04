@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "A Path Trough The Clouds"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "A Path Trough The Clouds"))
   (author "Tobe Deprez")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 3682)
       (y 643)
@@ -20,10 +21,8 @@
       (y 656)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
-    )
-    (particles-clouds
     )
     (firefly
       (x 7740)
@@ -240,10 +239,22 @@
       (x 6894)
       (y 816)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
+    (path
+      (name "83cb73f9-d5ab-46ec-944d-1148dd7cb4f2")
+      (path
+        (node
+          (x 11648)
+          (y 736)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 232)
       (height 136)
       (x 11440)
@@ -438,12 +449,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret")
-      (path
-        (node
-          (x 11648)
-          (y 736)
-        )
-      )
+      (path-ref "83cb73f9-d5ab-46ec-944d-1148dd7cb4f2")
       (width 2)
       (height 4)
       (tiles

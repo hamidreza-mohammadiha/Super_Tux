@@ -14,36 +14,41 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_SUPERTUX_NODE_MARKER_HPP
-#define HEADER_SUPERTUX_NODE_MARKER_HPP
+#ifndef HEADER_SUPERTUX_EDITOR_NODE_MARKER_HPP
+#define HEADER_SUPERTUX_EDITOR_NODE_MARKER_HPP
 
-#include "editor/point_marker.hpp"
+#include "editor/marker_object.hpp"
 #include "object/path.hpp"
 
-class NodeMarker : public PointMarker
+class NodeMarker : public MarkerObject
 {
-  public:
-    NodeMarker(Path* path_, std::vector<Path::Node>::iterator node_iterator, size_t id_);
+public:
+  NodeMarker(Path* path_, std::vector<Path::Node>::iterator node_iterator, size_t id_);
 
-    Path* path;
-    std::vector<Path::Node>::iterator node;
-    size_t id;
+  virtual void move_to(const Vector& pos) override;
+  virtual void editor_delete() override;
+  virtual Vector get_point_vector() const override;
+  virtual Vector get_offset() const override;
+  virtual bool has_settings() const override { return true; }
+  virtual ObjectSettings get_settings() override;
+  virtual void editor_update() override;
 
-    void update(float elapsed_time);
-    void move_to(const Vector& pos);
-    void editor_delete();
-    Vector get_point_vector() const;
-    Vector get_offset() const;
+  void update_iterator();
 
-    ObjectSettings get_settings();
+private:
+  Path* m_path;
 
-    void update_iterator();
+public:
+  std::vector<Path::Node>::iterator m_node;
 
-  private:
-    NodeMarker(const NodeMarker&);
-    NodeMarker& operator=(const NodeMarker&);
+private:
+  size_t m_id;
+
+private:
+  NodeMarker(const NodeMarker&) = delete;
+  NodeMarker& operator=(const NodeMarker&) = delete;
 };
 
-#endif // HEADER_SUPERTUX_EDITOR_NODE_MARKER_HPP
+#endif
 
 /* EOF */

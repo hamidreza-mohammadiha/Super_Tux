@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Putrid Pools"))
   (author "LMH")
   (contact "lmh.0013@gmail.com")
@@ -7,17 +7,18 @@
   (target-time 90)
   (sector
     (name "main")
-    (music "music/wisphunt.music")
-    (ambient-light 0.2509804 0.2980392 0.3490196)
-    (background
-      (speed 0)
-      (image "images/background/halloween/sky.png")
-      (layer -300)
+    (ambient-light
+      (color 0.2509804 0.2980392 0.3490196)
     )
     (background
       (speed 0)
+      (image "images/background/halloween/sky.png")
+    )
+    (background
+      (alignment "bottom")
+      (speed 0)
       (image "images/background/halloween/vignette.png")
-      (layer 1000)
+      (z-pos 500)
     )
     (background
       (alignment "bottom")
@@ -25,7 +26,6 @@
       (image "images/background/halloween/mountain.png")
     )
     (bonusblock
-      (script "")
       (contents "1up")
       (x 19248)
       (y 288)
@@ -71,6 +71,7 @@
       (y 583)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
@@ -102,17 +103,14 @@
       (y 896)
     )
     (candle
-      (color 1 1 1)
       (x 3360)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 3344)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 3280)
       (y 640)
     )
@@ -229,12 +227,10 @@
       (y 832)
     )
     (candle
-      (color 1 1 1)
       (x 8480)
       (y 1024)
     )
     (candle
-      (color 1 1 1)
       (x 8704)
       (y 1024)
     )
@@ -659,7 +655,6 @@
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 10624)
       (y 800)
     )
@@ -818,32 +813,26 @@
       (y 896)
     )
     (candle
-      (color 1 1 1)
       (x 14496)
       (y 768)
     )
     (candle
-      (color 1 1 1)
       (x 13696)
       (y 768)
     )
     (candle
-      (color 1 1 1)
       (x 13856)
       (y 768)
     )
     (candle
-      (color 1 1 1)
       (x 14368)
       (y 768)
     )
     (candle
-      (color 1 1 1)
       (x 14720)
       (y 768)
     )
     (candle
-      (color 1 1 1)
       (x 14624)
       (y 768)
     )
@@ -1529,103 +1518,101 @@
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 21520)
       (y 608)
     )
     (candle
       (flicker #f)
       (sprite "images/objects/candle/no_candle.sprite")
-      (color 1 1 1)
       (x 21376)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 7520)
       (y 1088)
     )
     (candle
-      (color 1 1 1)
       (x 7808)
       (y 1088)
     )
     (candle
-      (color 1 1 1)
       (x 9264)
       (y 896)
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 96)
       (y 128)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 736)
       (y 416)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 2784)
       (y 352)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/gravestone1.png")
       (x 3296)
       (y 608)
-      (layer -50)
-      (sprite "images/decal/halloween/gravestone1.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 3680)
       (y 224)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 5568)
       (y 736)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 18304)
       (y 416)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 20288)
       (y 384)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 19648)
       (y 576)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
     )
     (decal
-      (x 21248)
-      (y 448)
-      (layer -50)
+      (z-pos -50)
       (sprite "images/decal/halloween/exit.png")
-    )
-    (decal
       (x 21248)
       (y 448)
-      (layer 150)
-      (sprite "images/decal/halloween/exitfg.png")
     )
     (decal
+      (z-pos 150)
+      (sprite "images/decal/halloween/exitfg.png")
+      (x 21248)
+      (y 448)
+    )
+    (decal
+      (z-pos -50)
+      (sprite "images/decal/halloween/tree.png")
       (x 21824)
       (y 384)
-      (layer -50)
-      (sprite "images/decal/halloween/tree.png")
+    )
+    (music
+      (file "music/wisphunt.music")
     )
     (powerup
       (sprite "images/powerups/1up/1up.sprite")
@@ -1633,16 +1620,12 @@
       (y 640)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 60)
       (height 60)
       (x 384)
       (y 608)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 124)
       (height 108)
       (x 19200)
@@ -1926,7 +1909,6 @@
       )
     )
     (torch
-      (sprite "images/objects/torch/torch1.sprite")
       (x 80)
       (y 352)
     )
@@ -1946,7 +1928,6 @@
       (y 832)
     )
     (torch
-      (sprite "images/objects/torch/torch1.sprite")
       (x 13232)
       (y 800)
     )
@@ -1956,7 +1937,6 @@
       (y 576)
     )
     (torch
-      (sprite "images/objects/torch/torch1.sprite")
       (x 18032)
       (y 1024)
     )
@@ -1981,12 +1961,10 @@
       (y 608)
     )
     (torch
-      (sprite "images/objects/torch/torch1.sprite")
       (x 19024)
       (y 800)
     )
     (torch
-      (sprite "images/objects/torch/torch1.sprite")
       (x 18320)
       (y 640)
     )
@@ -2086,32 +2064,24 @@
       (y 928)
     )
     (willowisp
-      (sector "")
-      (spawnpoint "")
       (track-range 0)
       (vanish-range 0)
       (x 288)
       (y 128)
     )
     (willowisp
-      (sector "")
-      (spawnpoint "")
       (track-range 0)
       (vanish-range 0)
       (x 1456)
       (y 688)
     )
     (willowisp
-      (sector "")
-      (spawnpoint "")
       (track-range 1000)
       (vanish-range 0)
       (x 2672)
       (y 720)
     )
     (willowisp
-      (sector "")
-      (spawnpoint "")
       (track-range 1000)
       (vanish-range 0)
       (x 5344)

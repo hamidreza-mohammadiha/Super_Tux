@@ -1,22 +1,26 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Snow Air Tile Test"))
   (author "No Author")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
-      (image        "images/background/nightsky_middle.png")
-      (image-top    "images/background/nightsky_top.png")
+      (image-top "images/background/nightsky_top.png")
+      (image "images/background/nightsky_middle.png")
       (image-bottom "images/background/nightsky_bottom.png")
-		  
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
-    (platform
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
+    (music
+    )
+    (path
+      (name "838bb6ae-0fd2-4df4-b57b-90dd30dbf381")
       (path
         (node
           (x 576)
@@ -24,13 +28,16 @@
         )
       )
     )
+    (platform
+      (path-ref "838bb6ae-0fd2-4df4-b57b-90dd30dbf381")
+    )
     (stalactite
       (x 256)
       (y 292)
     )
     (tilemap
-      (z-pos 0)
       (solid #f)
+      (z-pos 0)
       (width 250)
       (height 30)
       (tiles
@@ -67,8 +74,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (width 250)
       (height 30)
       (tiles
@@ -105,8 +112,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #f)
+      (z-pos 0)
       (width 250)
       (height 30)
       (tiles

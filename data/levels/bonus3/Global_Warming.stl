@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Global Warming"))
   (author "Devyn Collier Johnson")
   (contact "DevynCJohnson@Gmail.com")
@@ -7,22 +7,20 @@
   (target-time 20)
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
-    (decal
-      (x 928)
-      (y 192)
-    )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 1643)
       (y 488)
     )
+    (music
+    )
     (secretarea
-      (script "")
-      (message "")
       (width 488)
       (height 268)
       (x 1236)

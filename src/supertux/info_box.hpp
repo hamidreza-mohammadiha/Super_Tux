@@ -28,7 +28,7 @@ class DrawingContext;
 class InfoBoxLine;
 
 /** This class is displaying a box with information text inside the game */
-class InfoBox
+class InfoBox final
 {
 public:
   InfoBox(const std::string& text);
@@ -47,8 +47,8 @@ private:
   SurfacePtr arrow_scrolldown;
 
 private:
-  InfoBox(const InfoBox&);
-  InfoBox& operator=(const InfoBox&);
+  InfoBox(const InfoBox&) = delete;
+  InfoBox& operator=(const InfoBox&) = delete;
 };
 
 #endif

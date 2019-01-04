@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Walking candle test"))
   (author "Hume")
   (contact "Nemám zájem, aby mě někdo otravoval.")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (ambient-light 0.4677348 0.4677348 0.4677348)
+    (ambient-light
+      (color 0.4677348 0.4677348 0.4677348)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (lantern
@@ -71,35 +73,12 @@
       (x 1152)
       (y 672)
     )
+    (music
+    )
     (spawnpoint
       (name "main")
       (x 96)
       (y 96)
-    )
-    (walking_candle
-      (color 1 0 0)
-      (x 486)
-      (y 522)
-    )
-    (walking_candle
-      (color 0 1 0)
-      (x 1286)
-      (y 618)
-    )
-    (walking_candle
-      (color 0 0 1)
-      (x 1446)
-      (y 618)
-    )
-    (walking_candle
-      (color 1 1 0)
-      (x 1382)
-      (y 490)
-    )
-    (walking_candle
-      (color 1 1 1)
-      (x 1606)
-      (y 522)
     )
     (tilemap
       (solid #t)
@@ -144,6 +123,30 @@
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       )
+    )
+    (walking_candle
+      (color 1 0 0)
+      (x 486)
+      (y 522)
+    )
+    (walking_candle
+      (color 0 1 0)
+      (x 1286)
+      (y 618)
+    )
+    (walking_candle
+      (color 0 0 1)
+      (x 1446)
+      (y 618)
+    )
+    (walking_candle
+      (color 1 1 0)
+      (x 1382)
+      (y 490)
+    )
+    (walking_candle
+      (x 1606)
+      (y 522)
     )
   )
 )

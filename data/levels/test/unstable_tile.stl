@@ -1,14 +1,19 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Unstable tile test"))
   (author "octo")
   (contact "supertux at octo.it")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (spawnpoint
       (name "main")
@@ -60,22 +65,18 @@
       )
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 128)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 160)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 192)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 224)
       (y 576)
     )
@@ -120,22 +121,18 @@
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 896)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 928)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 960)
       (y 576)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 992)
       (y 576)
     )

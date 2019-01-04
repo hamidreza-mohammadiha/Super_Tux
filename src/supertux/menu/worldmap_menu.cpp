@@ -20,7 +20,6 @@
 #include "gui/menu_manager.hpp"
 #include "supertux/levelsavestate.hpp"
 #include "supertux/menu/menu_storage.hpp"
-#include "supertux/menu/options_menu.hpp"
 #include "supertux/screen_fade.hpp"
 #include "supertux/screen_manager.hpp"
 #include "util/gettext.hpp"
@@ -36,9 +35,9 @@ WorldmapMenu::WorldmapMenu()
 }
 
 void
-WorldmapMenu::menu_action(MenuItem* item)
+WorldmapMenu::menu_action(MenuItem& item)
 {
-  switch (item->id)
+  switch (item.get_id())
   {
     case MNID_RETURNWORLDMAP:
       MenuManager::instance().clear_menu_stack();

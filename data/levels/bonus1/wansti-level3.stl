@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "A Maze In The Sky"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "A Maze In The Sky"))
   (author "SuperTux Team")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 2426)
       (y 507)
@@ -104,21 +105,9 @@
       (y 572)
     )
     (camera
+      (name "Camera")
       (mode "autoscroll")
-      (path
-        (mode "oneshot")
-        (node
-          (x 0)
-          (y 352)
-          (time 177)
-        )
-        (node
-          (x 16000)
-          (y 352)
-        )
-      )
-    )
-    (particles-clouds
+      (path-ref "9075113d-d3c9-4597-8f29-4d852d4ee253")
     )
     (flyingsnowball
       (x 7712)
@@ -238,6 +227,26 @@
     (mriceblock
       (x 5306)
       (y 764)
+    )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
+    (path
+      (name "9075113d-d3c9-4597-8f29-4d852d4ee253")
+      (path
+        (mode "oneshot")
+        (node
+          (x 0)
+          (y 352)
+          (time 177)
+        )
+        (node
+          (x 16000)
+          (y 352)
+        )
+      )
     )
     (snowball
       (x 4096)

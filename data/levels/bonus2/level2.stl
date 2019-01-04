@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "Think Fast, or Die"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Think Fast, or Die"))
   (author "Kevin")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/cave2.jpg")
@@ -48,19 +49,9 @@
       (y 256)
     )
     (camera
+      (name "Camera")
       (mode "autoscroll")
-      (backscrolling #f)
-      (path
-        (node
-          (x 0)
-          (y 0)
-          (time 250)
-        )
-        (node
-          (x 22848)
-          (y 0)
-        )
-      )
+      (path-ref "4fecb608-cc73-4761-9b95-0f2ed114a61a")
     )
     (fish
       (x 17456)
@@ -288,6 +279,23 @@
     (mriceblock
       (x 21889)
       (y 316)
+    )
+    (music
+      (file "music/cave.music")
+    )
+    (path
+      (name "4fecb608-cc73-4761-9b95-0f2ed114a61a")
+      (path
+        (node
+          (x 0)
+          (y 0)
+          (time 250)
+        )
+        (node
+          (x 22848)
+          (y 0)
+        )
+      )
     )
     (snowball
       (x 2031)

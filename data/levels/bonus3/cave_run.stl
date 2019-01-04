@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Cave Run"))
   (author "Stuart Rynn")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 70)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (y 500)
       (speed 0.5)
@@ -20,6 +21,7 @@
       (y 320)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flyingsnowball
@@ -94,6 +96,31 @@
       (x 129)
       (y 294)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "933df2b2-e4e4-42ae-9cd1-8ac321a52a43")
+      (path
+        (node
+          (x 6176)
+          (y 480)
+        )
+      )
+    )
+    (secretarea
+      (width 108)
+      (height 76)
+      (x 1172)
+      (y 532)
+    )
+    (secretarea
+      (fade-tilemap "Secret1")
+      (width 108)
+      (height 172)
+      (x 6228)
+      (y 500)
+    )
     (smartball
       (x 515)
       (y 326)
@@ -134,23 +161,6 @@
     (smartball
       (x 7683)
       (y 678)
-    )
-    (secretarea
-      (script "")
-      (message "")
-      (width 108)
-      (height 76)
-      (x 1172)
-      (y 532)
-    )
-    (secretarea
-      (fade-tilemap "Secret1")
-      (script "")
-      (message "")
-      (width 108)
-      (height 172)
-      (x 6228)
-      (y 500)
     )
     (spawnpoint
       (name "main")
@@ -349,12 +359,7 @@
       (solid #f)
       (z-pos 60)
       (name "Secret1")
-      (path
-        (node
-          (x 6176)
-          (y 480)
-        )
-      )
+      (path-ref "933df2b2-e4e4-42ae-9cd1-8ac321a52a43")
       (width 5)
       (height 8)
       (tiles

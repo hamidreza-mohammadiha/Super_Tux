@@ -1,15 +1,15 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Electric-Wood factory"))
   (author "Esteban")
   (contact "supertuxeditor@yahoo.es")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/darkforestkeep.ogg")
-    (ambient-light 1 1 1)
-    (ambient_sound
+    (ambient-light
+      (color 1 1 1)
+    )
+    (ambient-sound
       (sample "sounds/rain.wav")
       (distance_factor 0)
       (distance_bias 0)
@@ -20,43 +20,44 @@
       (y -384)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (decal
+      (z-pos 99)
+      (sprite "images/decal/misc/Antena2.png")
       (x 5344)
       (y 608)
-      (layer 99)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (decal
+      (z-pos -101)
+      (sprite "images/decal/misc/Antena2.png")
       (x 5664)
       (y 608)
-      (layer -101)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (decal
+      (z-pos 99)
+      (sprite "images/decal/misc/Antena2.png")
       (x 4928)
       (y 320)
-      (layer 99)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (decal
+      (z-pos -101)
+      (sprite "images/decal/misc/Antena2.png")
       (x 5312)
       (y 320)
-      (layer -101)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (decal
+      (z-pos 99)
+      (sprite "images/decal/misc/Antena2.png")
       (x 5952)
       (y 704)
-      (layer 99)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (decal
+      (z-pos -101)
+      (sprite "images/decal/misc/Antena2.png")
       (x 6240)
       (y 704)
-      (layer -101)
-      (sprite "images/decal/misc/Antena2.png")
     )
     (firefly
       (x 7680)
@@ -66,10 +67,135 @@
       (x 10048)
       (y 672)
     )
-    (platform
-      (name "SpikePlatform")
+    (flyingsnowball
+      (x 1120)
+      (y 512)
+    )
+    (gradient
+      (top_color 0 0.3137255 1)
+      (bottom_color 1 1 1)
+    )
+    (hurting_platform
       (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
+      (name "spikebad4")
+      (path-ref "99d2f71a-5694-4e6b-9424-30aab55b86bf")
+      (sprite "images/objects/sawblade/spikeright.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "spikebad3")
+      (path-ref "a47420a6-99d4-4461-990c-f6fbf1753555")
+      (sprite "images/objects/sawblade/spikeright.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "spikebad2")
+      (path-ref "1d166646-50fe-42b3-adb3-3307489e43ce")
+      (sprite "images/objects/sawblade/spikeright.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "spikebad1")
+      (path-ref "09f085ed-4064-4b19-87f1-d9757686b5d0")
+      (sprite "images/objects/sawblade/spikeright.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "Rayo1")
+      (path-ref "b5536445-f8d6-4a8a-ba4c-ad22713d54ea")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "Rayo2")
+      (path-ref "460a15d7-8618-4782-940f-47de865f8741")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "df10bdb5-c9f6-4641-9768-ed8cd97351a9")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "98950c56-1ee6-4edb-ba2a-f42bcfef4295")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "005a8b62-b915-4593-af72-dbdb22451fec")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "9a38e740-2202-4b11-b2f3-5bd5b5659909")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "ded7c9b8-142c-48fd-8339-080c8e37d0da")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "RayoArriba1")
+      (path-ref "42ef4276-8644-4fe8-9189-868efefd9bd0")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (running #f)
+      (name "RayoArriba2")
+      (path-ref "c0b67fd9-4850-463e-b454-14d34ecd5cac")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "4182b174-a958-4d7c-9736-dd22bb68caf3")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "4d4d4870-508f-417e-bbb9-47855cea7cdf")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "6e0d133d-334f-43b7-ad43-9978994e5924")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (hurting_platform
+      (path-ref "36ef3d42-6864-48d1-8d26-77e862c36bce")
+      (sprite "images/objects/sawblade/thunder.sprite")
+    )
+    (jumpy
+      (x 8384)
+      (y 576)
+    )
+    (jumpy
+      (x 6144)
+      (y 736)
+    )
+    (mrbomb
+      (x 11648)
+      (y 256)
+    )
+    (mrbomb
+      (x 8416)
+      (y 928)
+    )
+    (mriceblock
+      (x 10848)
+      (y 224)
+    )
+    (mriceblock
+      (x 2402)
+      (y 677)
+    )
+    (mriceblock
+      (x 480)
+      (y 512)
+    )
+    (mriceblock
+      (x 736)
+      (y 512)
+    )
+    (music
+      (file "music/darkforestkeep.ogg")
+    )
+    (path
+      (name "f7834dbd-dd9c-4876-95d2-d9a58bf97918")
       (path
         (node
           (x 9312)
@@ -83,10 +209,8 @@
         )
       )
     )
-    (platform
-      (name "Plataforma2")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
+    (path
+      (name "7f0995ca-4881-4252-959b-fc2af3d098a4")
       (path
         (node
           (x 3008)
@@ -98,10 +222,8 @@
         )
       )
     )
-    (platform
-      (name "Pasaje2")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
+    (path
+      (name "815bd8c7-9d0e-4dd8-8fbf-0e65ecc96cb3")
       (path
         (node
           (x 2912)
@@ -118,10 +240,8 @@
         )
       )
     )
-    (platform
-      (name "Pasaje1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
+    (path
+      (name "8335e077-902b-45e6-ab4a-cc75016ebc95")
       (path
         (node
           (x 2688)
@@ -138,10 +258,8 @@
         )
       )
     )
-    (platform
-      (name "Subir1")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
+    (path
+      (name "8ae9572c-b21a-4089-aeac-a3d783a3b484")
       (path
         (node
           (x 4448)
@@ -153,10 +271,8 @@
         )
       )
     )
-    (platform
-      (name "Subir2")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
+    (path
+      (name "00da3170-5290-42de-bc95-b98831689558")
       (path
         (node
           (x 4672)
@@ -168,10 +284,8 @@
         )
       )
     )
-    (platform
-      (name "Subir3")
-      (running #f)
-      (sprite "images/objects/platforms/wood-tiny.sprite")
+    (path
+      (name "21e49a5c-477e-4c7c-84ac-46d94920ca8a")
       (path
         (node
           (x 4544)
@@ -183,10 +297,8 @@
         )
       )
     )
-    (platform
-      (name "Plataformapuerta1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
+    (path
+      (name "ee8a89ba-3eb6-40de-aa51-bea7a5caab3b")
       (path
         (node
           (x 8832)
@@ -203,10 +315,8 @@
         )
       )
     )
-    (platform
-      (name "Bloquesalir2")
-      (running #f)
-      (sprite "images/objects/platforms/wood-tiny.sprite")
+    (path
+      (name "a1f3ace0-e5bc-467c-ad85-d3d68d71b3a1")
       (path
         (node
           (x 8832)
@@ -223,10 +333,8 @@
         )
       )
     )
-    (platform
-      (name "Bloquesalir1")
-      (running #f)
-      (sprite "images/objects/platforms/wood-tiny.sprite")
+    (path
+      (name "812545d7-41d3-4a48-a94f-1138d9c5a82e")
       (path
         (node
           (x 8832)
@@ -238,10 +346,8 @@
         )
       )
     )
-    (platform
-      (name "TrapSmall")
-      (running #f)
-      (sprite "images/objects/platforms/small.sprite")
+    (path
+      (name "f9d1556c-7750-4411-9000-dea6a666b263")
       (path
         (node
           (x 9984)
@@ -254,10 +360,8 @@
         )
       )
     )
-    (platform
-      (name "Plataforma1")
-      (running #f)
-      (sprite "images/objects/platforms/small.sprite")
+    (path
+      (name "b8b609eb-cb92-414d-a994-d8a42f4f97b4")
       (path
         (node
           (x 3104)
@@ -273,10 +377,8 @@
         )
       )
     )
-    (platform
-      (name "Subir4")
-      (running #f)
-      (sprite "images/objects/platforms/small.sprite")
+    (path
+      (name "3ca0d68d-e11b-4a0f-a339-2e78f4bee219")
       (path
         (node
           (x 3616)
@@ -288,10 +390,8 @@
         )
       )
     )
-    (platform
-      (name "Subir5")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
+    (path
+      (name "b54ff721-76a8-4e51-b253-4291ce4b7969")
       (path
         (node
           (x 3808)
@@ -303,10 +403,8 @@
         )
       )
     )
-    (platform
-      (name "Subir6")
-      (running #f)
-      (sprite "images/objects/platforms/wood-tiny.sprite")
+    (path
+      (name "e87f89f9-4c69-4687-9f96-c75ef41fcc9c")
       (path
         (node
           (x 4064)
@@ -320,10 +418,8 @@
         )
       )
     )
-    (platform
-      (name "right")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
+    (path
+      (name "bc0d074b-cd28-4a9b-a3bf-a852957f58d0")
       (path
         (node
           (x 4320)
@@ -337,18 +433,8 @@
         )
       )
     )
-    (flyingsnowball
-      (x 1120)
-      (y 512)
-    )
-    (gradient
-      (top_color 0 0.3137255 1)
-      (bottom_color 1 1 1)
-    )
-    (hurting_platform
-      (name "spikebad4")
-      (running #f)
-      (sprite "images/objects/sawblade/spikeright.sprite")
+    (path
+      (name "99d2f71a-5694-4e6b-9424-30aab55b86bf")
       (path
         (node
           (x 9344)
@@ -362,10 +448,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "spikebad3")
-      (running #f)
-      (sprite "images/objects/sawblade/spikeright.sprite")
+    (path
+      (name "a47420a6-99d4-4461-990c-f6fbf1753555")
       (path
         (node
           (x 9344)
@@ -379,10 +463,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "spikebad2")
-      (running #f)
-      (sprite "images/objects/sawblade/spikeright.sprite")
+    (path
+      (name "1d166646-50fe-42b3-adb3-3307489e43ce")
       (path
         (node
           (x 9344)
@@ -396,10 +478,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "spikebad1")
-      (running #f)
-      (sprite "images/objects/sawblade/spikeright.sprite")
+    (path
+      (name "09f085ed-4064-4b19-87f1-d9757686b5d0")
       (path
         (node
           (x 9344)
@@ -413,10 +493,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "Rayo1")
-      (running #f)
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "b5536445-f8d6-4a8a-ba4c-ad22713d54ea")
       (path
         (node
           (x 9088)
@@ -438,10 +516,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "Rayo2")
-      (running #f)
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "460a15d7-8618-4782-940f-47de865f8741")
       (path
         (node
           (x 9280)
@@ -465,8 +541,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "df10bdb5-c9f6-4641-9768-ed8cd97351a9")
       (path
         (node
           (x 9088)
@@ -510,8 +586,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "98950c56-1ee6-4edb-ba2a-f42bcfef4295")
       (path
         (node
           (x 10976)
@@ -538,8 +614,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "005a8b62-b915-4593-af72-dbdb22451fec")
       (path
         (node
           (x 11296)
@@ -551,8 +627,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "9a38e740-2202-4b11-b2f3-5bd5b5659909")
       (path
         (node
           (x 11264)
@@ -565,8 +641,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "ded7c9b8-142c-48fd-8339-080c8e37d0da")
       (path
         (node
           (x 11328)
@@ -578,10 +654,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "RayoArriba1")
-      (running #f)
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "42ef4276-8644-4fe8-9189-868efefd9bd0")
       (path
         (node
           (x 3616)
@@ -595,10 +669,8 @@
         )
       )
     )
-    (hurting_platform
-      (name "RayoArriba2")
-      (running #f)
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "c0b67fd9-4850-463e-b454-14d34ecd5cac")
       (path
         (node
           (x 3840)
@@ -612,8 +684,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "4182b174-a958-4d7c-9736-dd22bb68caf3")
       (path
         (node
           (x 11520)
@@ -641,8 +713,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "4d4d4870-508f-417e-bbb9-47855cea7cdf")
       (path
         (node
           (x 10560)
@@ -721,8 +793,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "6e0d133d-334f-43b7-ad43-9978994e5924")
       (path
         (node
           (x 10240)
@@ -758,8 +830,8 @@
         )
       )
     )
-    (hurting_platform
-      (sprite "images/objects/sawblade/thunder.sprite")
+    (path
+      (name "36ef3d42-6864-48d1-8d26-77e862c36bce")
       (path
         (node
           (x 12000)
@@ -771,37 +843,119 @@
         )
       )
     )
-    (jumpy
-      (x 8384)
-      (y 576)
+    (path
+      (name "d0fd2c06-54b0-409e-af2b-11536fe30052")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
     )
-    (jumpy
-      (x 6144)
-      (y 736)
+    (path
+      (name "48a8f357-4025-4ed0-a04e-dddea1d1922b")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
     )
-    (mrbomb
-      (x 11648)
-      (y 256)
+    (platform
+      (running #f)
+      (name "SpikePlatform")
+      (path-ref "f7834dbd-dd9c-4876-95d2-d9a58bf97918")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
-    (mrbomb
-      (x 8416)
-      (y 928)
+    (platform
+      (running #f)
+      (name "Plataforma2")
+      (path-ref "7f0995ca-4881-4252-959b-fc2af3d098a4")
+      (sprite "images/objects/platforms/big.sprite")
     )
-    (mriceblock
-      (x 10848)
-      (y 224)
+    (platform
+      (running #f)
+      (name "Pasaje2")
+      (path-ref "815bd8c7-9d0e-4dd8-8fbf-0e65ecc96cb3")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
-    (mriceblock
-      (x 2402)
-      (y 677)
+    (platform
+      (running #f)
+      (name "Pasaje1")
+      (path-ref "8335e077-902b-45e6-ab4a-cc75016ebc95")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
-    (mriceblock
-      (x 480)
-      (y 512)
+    (platform
+      (running #f)
+      (name "Subir1")
+      (path-ref "8ae9572c-b21a-4089-aeac-a3d783a3b484")
+      (sprite "images/objects/platforms/big.sprite")
     )
-    (mriceblock
-      (x 736)
-      (y 512)
+    (platform
+      (running #f)
+      (name "Subir2")
+      (path-ref "00da3170-5290-42de-bc95-b98831689558")
+      (sprite "images/objects/platforms/big.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Subir3")
+      (path-ref "21e49a5c-477e-4c7c-84ac-46d94920ca8a")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Plataformapuerta1")
+      (path-ref "ee8a89ba-3eb6-40de-aa51-bea7a5caab3b")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Bloquesalir2")
+      (path-ref "a1f3ace0-e5bc-467c-ad85-d3d68d71b3a1")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Bloquesalir1")
+      (path-ref "812545d7-41d3-4a48-a94f-1138d9c5a82e")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (running #f)
+      (name "TrapSmall")
+      (path-ref "f9d1556c-7750-4411-9000-dea6a666b263")
+      (sprite "images/objects/platforms/small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Plataforma1")
+      (path-ref "b8b609eb-cb92-414d-a994-d8a42f4f97b4")
+      (sprite "images/objects/platforms/small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Subir4")
+      (path-ref "3ca0d68d-e11b-4a0f-a339-2e78f4bee219")
+      (sprite "images/objects/platforms/small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Subir5")
+      (path-ref "b54ff721-76a8-4e51-b253-4291ce4b7969")
+      (sprite "images/objects/platforms/big.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Subir6")
+      (path-ref "e87f89f9-4c69-4687-9f96-c75ef41fcc9c")
+      (sprite "images/objects/platforms/wood-tiny.sprite")
+    )
+    (platform
+      (running #f)
+      (name "right")
+      (path-ref "bc0d074b-cd28-4a9b-a3bf-a852957f58d0")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
     )
     (pushbutton
       (script "SpikePlatform.start_moving();
@@ -856,20 +1010,10 @@ Plataformapuerta1.start_moving();
     )
     (secretarea
       (fade-tilemap "Gotosky")
-      (script "")
-      (message "")
       (width 28)
       (height 124)
       (x 9984)
       (y 352)
-    )
-    (sspiky
-      (x 3232)
-      (y 768)
-    )
-    (sspiky
-      (x 4224)
-      (y 416)
     )
     (snowball
       (x 2338)
@@ -905,6 +1049,14 @@ Plataformapuerta1.start_moving();
     (spiky
       (x 2976)
       (y 672)
+    )
+    (sspiky
+      (x 3232)
+      (y 768)
+    )
+    (sspiky
+      (x 4224)
+      (y 416)
     )
     (stalactite
       (x 8992)
@@ -954,13 +1106,13 @@ RayoArriba1.start_moving();
 RayoArriba2.start_moving();
 this.Electric1 <- true;
 }")
-      (sprite "images/objects/switch/switch.sprite")
       (x 4992)
       (y 864)
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 400)
       (height 35)
@@ -1004,7 +1156,8 @@ this.Electric1 <- true;
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 400)
       (height 35)
@@ -1094,12 +1247,7 @@ this.Electric1 <- true;
       (solid #t)
       (z-pos 0)
       (name "Interactive")
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "d0fd2c06-54b0-409e-af2b-11536fe30052")
       (width 400)
       (height 35)
       (tiles
@@ -1144,12 +1292,7 @@ this.Electric1 <- true;
       (solid #f)
       (z-pos 100)
       (name "Foreground")
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "48a8f357-4025-4ed0-a04e-dddea1d1922b")
       (width 400)
       (height 35)
       (tiles
@@ -1341,77 +1484,62 @@ this.Electric1 <- true;
       (y 704)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6816)
       (y 704)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 7072)
       (y 736)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6464)
       (y 896)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6560)
       (y 832)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6624)
       (y 768)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6720)
       (y 736)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 6912)
       (y 640)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11104)
       (y 1088)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11200)
       (y 1024)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11264)
       (y 960)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11328)
       (y 896)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11392)
       (y 832)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 11392)
       (y 672)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 9792)
       (y 288)
     )
     (unstable_tile
-      (sprite "images/objects/unstable_tile/snow.sprite")
       (x 9760)
       (y 288)
     )

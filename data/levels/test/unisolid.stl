@@ -1,10 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Snow Tileset and Platform Test"))
   (author "Ingo Ruhnke")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.125)
       (image-top "images/background/bluemountain-top.png")
@@ -12,17 +14,8 @@
       (image-bottom "images/background/bluemountain-bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
-    )
-    (platform
-      (running #f)
-      (sprite "images/objects/platforms/icefloe_small.sprite")
-      (path
-        (node
-          (x 1280)
-          (y 544)
-        )
-      )
     )
     (mriceblock
       (x 994)
@@ -36,14 +29,57 @@
       (x 1090)
       (y 261)
     )
+    (music
+    )
+    (path
+      (name "9011c7b9-3a56-4445-80d6-0f77c9236c37")
+      (path
+        (node
+          (x 1280)
+          (y 544)
+        )
+      )
+    )
+    (path
+      (name "45534b80-f2e1-418a-86df-e3b835a44508")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
+    )
+    (path
+      (name "d8962301-445c-4eb5-ac7b-3c87746311b2")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
+    )
+    (path
+      (name "bb84b839-0827-4e4e-9ad5-73ece70dd555")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (path-ref "9011c7b9-3a56-4445-80d6-0f77c9236c37")
+      (sprite "images/objects/platforms/icefloe_small.sprite")
+    )
     (spawnpoint
       (name "main")
       (x 128)
       (y 256)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 100)
       (height 20)
@@ -71,8 +107,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 100)
       (height 20)
@@ -100,16 +136,12 @@
       )
     )
     (tilemap
-      (z-pos -200)
       (solid #f)
+      (speed-x 0.5)
+      (speed-y 0.5)
+      (z-pos -200)
       (name "Paralax1")
-      (speed 0.5)
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "45534b80-f2e1-418a-86df-e3b835a44508")
       (width 100)
       (height 20)
       (tiles
@@ -136,16 +168,12 @@
       )
     )
     (tilemap
-      (z-pos -300)
       (solid #f)
+      (speed-x 0.25)
+      (speed-y 0.25)
+      (z-pos -300)
       (name "Paralax2")
-      (speed 0.25)
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "d8962301-445c-4eb5-ac7b-3c87746311b2")
       (width 100)
       (height 20)
       (tiles
@@ -172,15 +200,10 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "bb84b839-0827-4e4e-9ad5-73ece70dd555")
       (width 100)
       (height 20)
       (tiles

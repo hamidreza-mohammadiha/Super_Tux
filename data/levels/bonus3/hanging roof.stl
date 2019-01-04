@@ -1,23 +1,21 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Hanging From the Roof"))
   (author "CT. da'Bomb")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 50)
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/bluemountain-middle.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
-    )
-    (particles-clouds
-    )
-    (particles-clouds
     )
     (firefly
       (x 3776)
@@ -135,6 +133,17 @@
       (x 8389)
       (y 520)
     )
+    (music
+      (file "music/airship_remix.music")
+    )
+    (particles-clouds
+    )
+    (particles-clouds
+    )
+    (particles-snow
+    )
+    (particles-snow
+    )
     (smartball
       (x 8899)
       (y 390)
@@ -218,10 +227,6 @@
     (snowball
       (x 5539)
       (y 388)
-    )
-    (particles-snow
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")

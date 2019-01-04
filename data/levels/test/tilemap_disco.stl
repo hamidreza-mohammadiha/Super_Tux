@@ -1,15 +1,19 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Tilemap disco test"))
   (author "Hume")
   (contact "Nemám zájem, aby mě někdo otravoval.")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (spawnpoint
       (name "main")
@@ -18,49 +22,41 @@
     )
     (switch
       (script "tm.tint_fade(1,1,1,1,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 195)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(1,0,1,0,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 387)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(1,1,0,0,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 451)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(1,0,0,1,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 515)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(1,0,0.7,1,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 579)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(1,1,0.7,0,1)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 643)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(2,1,1,1,0)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 707)
       (y 420)
     )
     (switch
       (script "tm.tint_fade(2,0,0.7,0,0.5)")
-      (sprite "images/objects/switch/switch.sprite")
       (x 771)
       (y 420)
     )

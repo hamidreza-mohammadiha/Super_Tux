@@ -1,12 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Crystal Cave (Crystallo Test)"))
   (author "Wolfgang Becker")
   (contact "uafr@gmx.de")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/nightsky_top.png")
@@ -14,26 +16,29 @@
       (image-bottom "images/background/nightsky_bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
+      (direction "left")
       (x 352)
       (y 295)
-      (direction "left")
     )
     (crystallo
       (x 800)
       (y 615)
     )
     (crystallo
+      (direction "right")
       (x 736)
       (y 295)
-      (direction "right")
     )
     (crystallo
       (radius 32)
       (x 416)
       (y 103)
+    )
+    (music
     )
     (spawnpoint
       (name "main")
@@ -41,8 +46,8 @@
       (y 224)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 50)
       (height 35)
@@ -85,8 +90,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 50)
       (height 35)
@@ -129,8 +134,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
       (width 50)
       (height 35)

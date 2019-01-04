@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Freezing test"))
   (author "Hume")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (angrystone
       (x 1376)
       (y 192)
@@ -16,6 +17,7 @@
       (y 576)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (climbable
@@ -52,6 +54,8 @@
     (mrtree
       (x 448)
       (y 606)
+    )
+    (music
     )
     (spawnpoint
       (name "main")

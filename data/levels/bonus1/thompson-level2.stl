@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Bad Guys Stink!"))
   (author "Jason W. Thompson")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 1824)
       (y 535)
@@ -29,6 +29,7 @@
       (y 619)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -122,18 +123,26 @@
       (x 8068)
       (y 721)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "68739da6-e126-4e17-89f5-89bc27d28a0a")
+      (path
+        (node
+          (x 448)
+          (y 704)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 129.5808)
       (height 111.196)
       (x 480)
       (y 704)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 69.24023)
       (height 96.40521)
       (x 12064)
@@ -243,7 +252,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 413)
       (height 36)
@@ -288,7 +298,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 413)
       (height 36)
@@ -511,12 +522,7 @@
       (solid #f)
       (z-pos 200)
       (name "secret")
-      (path
-        (node
-          (x 448)
-          (y 704)
-        )
-      )
+      (path-ref "68739da6-e126-4e17-89f5-89bc27d28a0a")
       (width 6)
       (height 4)
       (tiles

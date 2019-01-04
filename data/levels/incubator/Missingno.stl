@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Missingno"))
   (author "sK!LL")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-top.png")
@@ -15,6 +15,7 @@
       (image-bottom "images/background/bluemountain-bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (dispenser
@@ -714,6 +715,14 @@
       (x 448)
       (y 1120)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (spawnpoint
+      (name "main")
+      (x 0)
+      (y 1760)
+    )
     (sspiky
       (direction "left")
       (x 6944)
@@ -722,11 +731,6 @@
     (sspiky
       (x 6784)
       (y 1568)
-    )
-    (spawnpoint
-      (name "main")
-      (x 0)
-      (y 1760)
     )
     (stalactite
       (x 7904)
@@ -1191,12 +1195,12 @@
       (y 1184)
     )
     (wind
-      (name "Wind")
       (speed-x 2000)
       (speed-y -800)
       (acceleration 4000)
       (width 28)
       (height 252)
+      (name "Wind")
       (x 896)
       (y 2400)
     )

@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Crystal Beauty"))
   (author "niso")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 45)
   (sector
     (name "main")
-    (music "music/cave.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-bottom.png")
@@ -15,6 +16,7 @@
       (image-bottom "images/background/bluemountain-bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -78,56 +80,47 @@
       (y 707)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 2849)
       (y 288)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 2018)
       (y 192)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 3265)
       (y 352)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 3457)
       (y 352)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 7298)
       (y 224)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 7713)
       (y 160)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 8129)
       (y 256)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 8802)
       (y 417)
     )
+    (music
+      (file "music/cave.music")
+    )
     (secretarea
-      (script "")
-      (message "")
       (width 60)
       (height 92)
       (x 2848)
       (y 832)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 412)
       (height 168)
       (x 5408)
@@ -312,7 +305,7 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.3)
+      (speed-x 0.3)
       (speed-y 0.3)
       (z-pos -150)
       (name "Backwall")
@@ -358,7 +351,7 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
       (speed-y 0.5)
       (z-pos -120)
       (name "Backobjects")

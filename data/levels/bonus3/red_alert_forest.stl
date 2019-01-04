@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Red alert! The forest is burning!"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 70)
   (sector
     (name "main")
-    (music "music/treeboss.music")
-    (ambient-light 1 0 0)
+    (ambient-light
+      (color 1 0 0)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -15,25 +16,22 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
-      (color 1 1 1)
       (x 128)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 32)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 64)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 96)
       (y 480)
     )
@@ -53,8 +51,31 @@
       (x 4000)
       (y 416)
     )
-    (platform
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
+    (igel
+      (x 928)
+      (y 544)
+    )
+    (jumpy
+      (x 1120)
+      (y 480)
+    )
+    (mrtree
+      (x 2848)
+      (y 480)
+    )
+    (mrtree
+      (x 3040)
+      (y 480)
+    )
+    (mrtree
+      (x 3200)
+      (y 480)
+    )
+    (music
+      (file "music/treeboss.music")
+    )
+    (path
+      (name "5fa311b3-6523-4e46-91fd-8d3c051c0442")
       (path
         (node
           (x 4576)
@@ -162,33 +183,14 @@
         )
       )
     )
-    (igel
-      (x 928)
-      (y 544)
-    )
-    (jumpy
-      (x 1120)
-      (y 480)
-    )
-    (mrtree
-      (x 2848)
-      (y 480)
-    )
-    (mrtree
-      (x 3040)
-      (y 480)
-    )
-    (mrtree
-      (x 3200)
-      (y 480)
+    (platform
+      (path-ref "5fa311b3-6523-4e46-91fd-8d3c051c0442")
     )
     (poisonivy
       (x 416)
       (y 480)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 188)
       (height 168)
       (x 0)
@@ -395,372 +397,298 @@
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 512)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 544)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 544)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 544)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 288)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 512)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 800)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 832)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 800)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 800)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 768)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 832)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 800)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 768)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 768)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 2240)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 2336)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2464)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2304)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2368)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2400)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2432)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2496)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2560)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2528)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2560)
       (y 576)
     )
     (weak_block
-      (linked #t)
       (x 2208)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 2656)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 2624)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 3424)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 3456)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 544)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 512)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 3904)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 384)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 416)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 448)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 480)
     )
     (weak_block
-      (linked #t)
       (x 3936)
       (y 512)
     )
@@ -777,8 +705,9 @@
   )
   (sector
     (name "secret1")
-    (music "music/salcon.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/nightsky_top.png")
@@ -786,6 +715,7 @@
       (image-bottom "images/background/nightsky_bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -793,6 +723,9 @@
       (spawnpoint "spawn2")
       (x 992)
       (y 288)
+    )
+    (music
+      (file "music/salcon.ogg")
     )
     (spawnpoint
       (name "main")

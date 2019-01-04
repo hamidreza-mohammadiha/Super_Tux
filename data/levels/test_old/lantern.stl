@@ -1,10 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Lantern catches WillOWisp Test"))
   (author "christoph")
   (sector
     (name "main")
-    (ambient-light 0.314519 0.314519 0.314519)
+    (ambient-light
+      (color 0.314519 0.314519 0.314519)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -12,17 +14,20 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (lantern
+      (color 1 1 0)
       (x 752)
       (y 136)
-      (color 1 1 0)
     )
     (lantern
+      (color 0 0 0)
       (x 240)
       (y 328)
-      (color 0 0 0)
+    )
+    (music
     )
     (spawnpoint
       (name "main")
@@ -30,8 +35,8 @@
       (y 96)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 48)
       (height 16)
@@ -55,8 +60,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 48)
       (height 16)
@@ -80,8 +85,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
       (width 48)
       (height 16)

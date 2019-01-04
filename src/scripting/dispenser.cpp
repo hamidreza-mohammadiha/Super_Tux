@@ -19,17 +19,18 @@
 
 namespace scripting {
 
-Dispenser::Dispenser(::Dispenser* parent) :
-  m_parent(parent)
+void Dispenser::activate()
 {
+  SCRIPT_GUARD_VOID;
+  object.activate();
 }
 
-void Dispenser::activate() {
-  m_parent->activate();
+void Dispenser::deactivate()
+{
+  SCRIPT_GUARD_VOID;
+  object.deactivate();
 }
 
-void Dispenser::deactivate() {
-  m_parent->deactivate();
 }
 
-}
+/* EOF */

@@ -33,55 +33,56 @@ friend class HeavyCoin;
 
 public:
   Coin(const Vector& pos);
-  Coin(const Vector& pos, TileMap* tilemap);
   Coin(const ReaderMapping& reader);
+  virtual void finish_construction() override;
 
-  HitResponse collision(GameObject& other, const CollisionHit& hit);
+  virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
+
+  virtual void update(float dt_sec) override;
+  virtual std::string get_class() const override { return "coin"; }
+  virtual std::string get_display_name() const override { return _("Coin"); }
+
+  virtual ObjectSettings get_settings() override;
+  virtual void after_editor_set() override;
+  virtual void editor_update() override;
+
+  virtual void move_to(const Vector& pos) override;
 
   void collect();
-  virtual void update(float elapsed_time);
-  virtual void save(Writer& writer);
-  std::string get_class() const {
-    return "coin";
-  }
-  std::string get_display_name() const {
-    return _("Coin");
-  }
-
-  ObjectSettings get_settings();
-  void after_editor_set();
-
-  virtual void move_to(const Vector& pos);
 
 private:
-  Vector offset;
-  bool from_tilemap;
-  bool add_path;
-  Physic physic;
-  std::string collect_script;
+  Vector m_offset;
+  bool m_from_tilemap;
+  bool m_add_path;
+  Physic m_physic;
+  std::string m_collect_script;
+
+private:
+  Coin(const Coin&) = delete;
+  Coin& operator=(const Coin&) = delete;
 };
 
-class HeavyCoin : public Coin
+class HeavyCoin final : public Coin
 {
 public:
   HeavyCoin(const Vector& pos, const Vector& init_velocity);
   HeavyCoin(const ReaderMapping& reader);
 
-  virtual void update(float elapsed_time);
-  virtual void collision_solid(const CollisionHit& hit);
+  virtual void update(float dt_sec) override;
+  virtual void collision_solid(const CollisionHit& hit) override;
 
-  virtual std::string get_class() const {
-    return "heavycoin";
-  }
-  std::string get_display_name() const {
-    return _("Heavy coin");
-  }
+  virtual std::string get_class() const override { return "heavycoin"; }
+  virtual std::string get_display_name() const override { return _("Heavy coin"); }
 
-  ObjectSettings get_settings();
-  void after_editor_set();
+  virtual ObjectSettings get_settings() override;
+  virtual void after_editor_set() override;
 
 private:
-  Physic physic;
+  Physic m_physic;
+
+private:
+  HeavyCoin(const HeavyCoin&) = delete;
+  HeavyCoin& operator=(const HeavyCoin&) = delete;
 };
 
 #endif

@@ -24,20 +24,16 @@
  * A Firefly: When tux touches it, it begins buzzing and you will respawn at this
  * position.
  */
-class Firefly : public MovingSprite
+class Firefly final : public MovingSprite
 {
 public:
-  Firefly(const ReaderMapping& lisp);
+  Firefly(const ReaderMapping& mapping);
 
-  void draw(DrawingContext& context);
+  virtual void draw(DrawingContext& context) override;
 
-  HitResponse collision(GameObject& other, const CollisionHit& hit);
-  std::string get_class() const {
-    return "firefly";
-  }
-  std::string get_display_name() const {
-    return _("Reset point");
-  }
+  virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
+  virtual std::string get_class() const override { return "firefly"; }
+  virtual std::string get_display_name() const override { return _("Reset point"); }
 
 private:
   SpritePtr m_sprite_light;

@@ -1,12 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "rusty trampoline test (C++ implementation)"))
   (author "Jonas Kuemmerlin")
   (contact "rgcjonas@googlemail.com")
   (license "GPLv2+")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -14,7 +16,25 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+    )
+    (rustytrampoline
+      (counter 5)
+      (x 160)
+      (y 256)
+    )
+    (rustytrampoline
+      (counter 2)
+      (x 190)
+      (y 256)
+    )
+    (rustytrampoline
+      (portable #f)
+      (x 210)
+      (y 256)
     )
     (spawnpoint
       (name "main")
@@ -152,24 +172,6 @@
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       )
-    )
-    
-    (rustytrampoline
-      (x 160)
-      (y 256)
-      (counter 5)
-    )
-    
-    (rustytrampoline
-      (x 190)
-      (y 256)
-      (counter 2)
-    )
-    
-    (rustytrampoline
-      (x 210)
-      (y 256)
-      (portable #f)
     )
   )
 )

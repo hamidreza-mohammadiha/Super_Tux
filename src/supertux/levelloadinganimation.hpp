@@ -36,7 +36,7 @@ public:
   virtual ~LevelLoadingAnimation();
 
   void setup();
-  void draw(DrawingContext& context);
+  void draw(Renderer& renderer);
   void update(float elapsed_time);
 
 private:

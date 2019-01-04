@@ -1,14 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Blue iced hills"))
   (author "Esteban")
   (contact "supertuxeditor@yahoo.es")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 2912)
       (y 224)
@@ -42,6 +42,7 @@
       (y 672)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -51,134 +52,6 @@
     (firefly
       (x 13056)
       (y 768)
-    )
-    (platform
-      (name "plata1")
-      (running #f)
-      (sprite "images/objects/platforms/icefloe_small.sprite")
-      (path
-        (node
-          (x 9952)
-          (y 896)
-        )
-        (node
-          (x 9952)
-          (y 384)
-        )
-      )
-    )
-    (platform
-      (name "Plata2")
-      (running #f)
-      (sprite "images/objects/platforms/icefloe_small.sprite")
-      (path
-        (node
-          (x 12640)
-          (y 864)
-          (time 9)
-        )
-        (node
-          (x 14464)
-          (y 864)
-          (time 6)
-        )
-        (node
-          (x 14464)
-          (y 288)
-          (time 3)
-        )
-      )
-    )
-    (platform
-      (name "Plata3")
-      (running #f)
-      (sprite "images/objects/platforms/icefloe_small.sprite")
-      (path
-        (node
-          (x 15360)
-          (y 672)
-        )
-        (node
-          (x 15360)
-          (y 384)
-        )
-      )
-    )
-    (platform
-      (name "PlataformaSecreta")
-      (running #f)
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 8832)
-          (y 768)
-          (time 3)
-        )
-        (node
-          (x 9120)
-          (y 768)
-          (time 3)
-        )
-        (node
-          (x 9088)
-          (y 288)
-          (time 4)
-        )
-        (node
-          (x 8896)
-          (y 96)
-          (time 10)
-        )
-        (node
-          (x 10016)
-          (y 96)
-        )
-      )
-    )
-    (platform
-      (name "secretwood1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 14172.34)
-          (y 285.4903)
-        )
-        (node
-          (x 14177.94)
-          (y 376.0416)
-        )
-      )
-    )
-    (platform
-      (name "secretwood2")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 14241.42)
-          (y 287.2929)
-        )
-        (node
-          (x 14239.56)
-          (y 377.487)
-        )
-      )
-    )
-    (platform
-      (name "supersecretoplataforma")
-      (running #f)
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 15552)
-          (y 256)
-        )
-        (node
-          (x 15552)
-          (y -64)
-        )
-      )
     )
     (flyingsnowball
       (x 5056)
@@ -227,6 +100,174 @@
     (mriceblock
       (x 7936)
       (y 352)
+    )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
+    (path
+      (name "695b7feb-3806-4733-9abf-bf9c8f2f2972")
+      (path
+        (node
+          (x 9952)
+          (y 896)
+        )
+        (node
+          (x 9952)
+          (y 384)
+        )
+      )
+    )
+    (path
+      (name "dfb76207-fa1e-4944-bcb1-e8f2b5e267aa")
+      (path
+        (node
+          (x 12640)
+          (y 864)
+          (time 9)
+        )
+        (node
+          (x 14464)
+          (y 864)
+          (time 6)
+        )
+        (node
+          (x 14464)
+          (y 288)
+          (time 3)
+        )
+      )
+    )
+    (path
+      (name "e0acd3f1-a740-4f13-a5f4-bd22916167ab")
+      (path
+        (node
+          (x 15360)
+          (y 672)
+        )
+        (node
+          (x 15360)
+          (y 384)
+        )
+      )
+    )
+    (path
+      (name "7df83e95-d22e-4308-87e5-9c8fe6202568")
+      (path
+        (node
+          (x 8832)
+          (y 768)
+          (time 3)
+        )
+        (node
+          (x 9120)
+          (y 768)
+          (time 3)
+        )
+        (node
+          (x 9088)
+          (y 288)
+          (time 4)
+        )
+        (node
+          (x 8896)
+          (y 96)
+          (time 10)
+        )
+        (node
+          (x 10016)
+          (y 96)
+        )
+      )
+    )
+    (path
+      (name "be72755c-8316-4ff6-887a-1e490590c24a")
+      (path
+        (node
+          (x 14172.34)
+          (y 285.4903)
+        )
+        (node
+          (x 14177.94)
+          (y 376.0416)
+        )
+      )
+    )
+    (path
+      (name "bd356e8f-5d20-46a2-961b-20c6a968c527")
+      (path
+        (node
+          (x 14241.42)
+          (y 287.2929)
+        )
+        (node
+          (x 14239.56)
+          (y 377.487)
+        )
+      )
+    )
+    (path
+      (name "8b059bfe-ef1a-40f0-abe7-8fa04ed969cf")
+      (path
+        (node
+          (x 15552)
+          (y 256)
+        )
+        (node
+          (x 15552)
+          (y -64)
+        )
+      )
+    )
+    (path
+      (name "471f7832-dd13-42f5-8942-b1c90b7d5567")
+      (path
+        (node
+          (x 0)
+          (y 0)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (name "plata1")
+      (path-ref "695b7feb-3806-4733-9abf-bf9c8f2f2972")
+      (sprite "images/objects/platforms/icefloe_small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Plata2")
+      (path-ref "dfb76207-fa1e-4944-bcb1-e8f2b5e267aa")
+      (sprite "images/objects/platforms/icefloe_small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "Plata3")
+      (path-ref "e0acd3f1-a740-4f13-a5f4-bd22916167ab")
+      (sprite "images/objects/platforms/icefloe_small.sprite")
+    )
+    (platform
+      (running #f)
+      (name "PlataformaSecreta")
+      (path-ref "7df83e95-d22e-4308-87e5-9c8fe6202568")
+    )
+    (platform
+      (running #f)
+      (name "secretwood1")
+      (path-ref "be72755c-8316-4ff6-887a-1e490590c24a")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "secretwood2")
+      (path-ref "bd356e8f-5d20-46a2-961b-20c6a968c527")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "supersecretoplataforma")
+      (path-ref "8b059bfe-ef1a-40f0-abe7-8fa04ed969cf")
     )
     (powerup
       (script "supersecretoplataforma.goto_node(1);")
@@ -654,8 +695,6 @@ Plata3.goto_node(0);")
     )
     (secretarea
       (fade-tilemap "Secrets")
-      (script "")
-      (message "")
       (width 268)
       (height 124)
       (x 8800)
@@ -663,8 +702,6 @@ Plata3.goto_node(0);")
     )
     (secretarea
       (fade-tilemap "coin1")
-      (script "")
-      (message "")
       (width 32)
       (height 60)
       (x 14144)
@@ -672,16 +709,10 @@ Plata3.goto_node(0);")
     )
     (secretarea
       (fade-tilemap "coin2")
-      (script "")
-      (message "")
       (width 32)
       (height 60)
       (x 14272)
       (y 320)
-    )
-    (sspiky
-      (x 8763.757)
-      (y 183.5147)
     )
     (snowball
       (x 768)
@@ -706,8 +737,6 @@ Plata3.goto_node(0);")
     (snowball
       (x 8128)
       (y 352)
-    )
-    (particles-snow
     )
     (spawnpoint
       (name "main")
@@ -734,6 +763,10 @@ Plata3.goto_node(0);")
     (spiky
       (x 7776)
       (y 608)
+    )
+    (sspiky
+      (x 8763.757)
+      (y 183.5147)
     )
     (stalactite
       (x 10080)
@@ -913,7 +946,8 @@ Plata3.goto_node(0);")
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 500)
       (height 30)
@@ -952,7 +986,8 @@ Plata3.goto_node(0);")
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 500)
       (height 30)
@@ -1149,12 +1184,7 @@ Plata3.goto_node(0);")
       (solid #f)
       (z-pos 151)
       (name "coin1")
-      (path
-        (node
-          (x 0)
-          (y 0)
-        )
-      )
+      (path-ref "471f7832-dd13-42f5-8942-b1c90b7d5567")
       (width 500)
       (height 30)
       (tiles
@@ -1267,9 +1297,10 @@ Plata3.goto_node(0);")
   )
   (sector
     (name "Sky")
-    (music "music/intro.ogg")
     (gravity 8)
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_top.jpg")
@@ -1277,7 +1308,11 @@ Plata3.goto_node(0);")
       (image-bottom "images/background/arctis_top.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+      (file "music/intro.ogg")
     )
     (particles-clouds
     )
@@ -1290,8 +1325,6 @@ Plata3.goto_node(0);")
       (y 657.2009)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 168)
       (height 136)
       (x 1204)
@@ -1404,9 +1437,10 @@ Plata3.goto_node(0);")
   )
   (sector
     (name "secretship")
-    (music "music/greatgigantic.music")
     (gravity 5)
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-top.png")
@@ -1418,13 +1452,8 @@ Plata3.goto_node(0);")
       (y 736)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (path
-        (node
-          (x 0)
-          (y -2.82843)
-        )
-      )
     )
     (firefly
       (x 1536)
@@ -1448,69 +1477,6 @@ Plata3.goto_node(0);")
       (speed 4)
       (x 1104.25)
       (y 109.0883)
-    )
-    (platform
-      (name "palo2")
-      (running #f)
-      (sprite "images/objects/platforms/big.sprite")
-      (path
-        (node
-          (x 480)
-          (y 288)
-        )
-        (node
-          (x 480)
-          (y 416)
-        )
-      )
-    )
-    (platform
-      (name "palo1")
-      (running #f)
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 384)
-          (y 544)
-        )
-        (node
-          (x 384)
-          (y 832)
-        )
-      )
-    )
-    (platform
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 1920)
-          (y -128)
-        )
-      )
-    )
-    (platform
-      (sprite "images/objects/platforms/vertical-wood.sprite")
-      (path
-        (node
-          (x 1920)
-          (y -256)
-        )
-      )
-    )
-    (platform
-      (name "TaponCubos")
-      (running #f)
-      (sprite "images/objects/platforms/small.sprite")
-      (path
-        (node
-          (x 1664)
-          (y 672)
-        )
-        (node
-          (x 1664)
-          (y 800)
-        )
-      )
     )
     (flyingsnowball
       (x 1408)
@@ -1544,6 +1510,92 @@ Plata3.goto_node(0);")
       (x 2816)
       (y 896)
     )
+    (music
+      (file "music/greatgigantic.music")
+    )
+    (path
+      (name "7625889f-de6e-4f3f-b90e-0a82e1cfaf40")
+      (path
+        (node
+          (x 480)
+          (y 288)
+        )
+        (node
+          (x 480)
+          (y 416)
+        )
+      )
+    )
+    (path
+      (name "d672965a-5efa-4fd1-94ba-7c1cd7a7615d")
+      (path
+        (node
+          (x 384)
+          (y 544)
+        )
+        (node
+          (x 384)
+          (y 832)
+        )
+      )
+    )
+    (path
+      (name "e68d9a2d-d901-4aa6-b02f-269e813403ee")
+      (path
+        (node
+          (x 1920)
+          (y -128)
+        )
+      )
+    )
+    (path
+      (name "54701da2-d08f-4eee-9a89-9dc219d19a22")
+      (path
+        (node
+          (x 1920)
+          (y -256)
+        )
+      )
+    )
+    (path
+      (name "540a0804-1902-41f7-b33f-dfbb9c9d07c6")
+      (path
+        (node
+          (x 1664)
+          (y 672)
+        )
+        (node
+          (x 1664)
+          (y 800)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (name "palo2")
+      (path-ref "7625889f-de6e-4f3f-b90e-0a82e1cfaf40")
+      (sprite "images/objects/platforms/big.sprite")
+    )
+    (platform
+      (running #f)
+      (name "palo1")
+      (path-ref "d672965a-5efa-4fd1-94ba-7c1cd7a7615d")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (path-ref "e68d9a2d-d901-4aa6-b02f-269e813403ee")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (path-ref "54701da2-d08f-4eee-9a89-9dc219d19a22")
+      (sprite "images/objects/platforms/vertical-wood.sprite")
+    )
+    (platform
+      (running #f)
+      (name "TaponCubos")
+      (path-ref "540a0804-1902-41f7-b33f-dfbb9c9d07c6")
+      (sprite "images/objects/platforms/small.sprite")
+    )
     (pushbutton
       (script "palo1.goto_node(1);
 salir1.start();")
@@ -1573,16 +1625,10 @@ Salir2.start();")
       (y 640)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 220)
       (height 12.92896)
       (x 1440)
       (y 955.071)
-    )
-    (sspiky
-      (x 2464)
-      (y 32)
     )
     (snowball
       (x 512)
@@ -1617,9 +1663,12 @@ Salir2.start();")
       (x 512)
       (y 928)
     )
+    (sspiky
+      (x 2464)
+      (y 32)
+    )
     (switch
       (script "TaponCubos.goto_node(1);")
-      (sprite "images/objects/switch/switch.sprite")
       (x 160)
       (y 896)
     )
@@ -1769,13 +1818,13 @@ Salir2.start();")
       (y 928)
     )
     (wind
-      (name "salir1")
       (blowing #f)
       (speed-x 0)
       (speed-y -400)
       (acceleration 4)
       (width 59.979)
       (height 319.6138)
+      (name "salir1")
       (x 2690.458)
       (y 351.9437)
     )
@@ -1798,13 +1847,13 @@ Salir2.start();")
       (y 1087.861)
     )
     (wind
-      (name "Salir2")
       (blowing #f)
       (speed-x 0)
       (speed-y -400)
       (acceleration 4)
       (width 59.97919)
       (height 206.261)
+      (name "Salir2")
       (x 514.1421)
       (y 52.8873)
     )

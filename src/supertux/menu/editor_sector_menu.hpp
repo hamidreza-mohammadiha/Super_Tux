@@ -22,14 +22,14 @@
 
 class Sector;
 
-class EditorSectorMenu : public Menu
+class EditorSectorMenu final : public Menu
 {
 private:
 public:
   EditorSectorMenu();
   ~EditorSectorMenu();
 
-  void menu_action(MenuItem* item) override;
+  void menu_action(MenuItem& item) override;
 
 private:
   enum MenuIDs {
@@ -41,11 +41,13 @@ private:
 
   Size size;
   Size new_size;
+  Size offset;
 
-  EditorSectorMenu(const EditorSectorMenu&);
-  EditorSectorMenu& operator=(const EditorSectorMenu&);
+private:
+  EditorSectorMenu(const EditorSectorMenu&) = delete;
+  EditorSectorMenu& operator=(const EditorSectorMenu&) = delete;
 };
 
-#endif //HEADER_SUPERTUX_SUPERTUX_MENU_EDITOR_SECTOR_MENU_HPP
+#endif
 
 /* EOF */

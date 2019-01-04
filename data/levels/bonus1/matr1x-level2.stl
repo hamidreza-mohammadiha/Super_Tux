@@ -1,18 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Something Fishy"))
   (author "Matr1x")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
-    (camera
-      (mode "normal")
+    (ambient-light
+      (color 1 1 1)
     )
-    (particles-clouds
-      (z-pos -198)
+    (camera
+      (name "Camera")
+      (mode "normal")
     )
     (firefly
       (x 6208)
@@ -273,10 +271,23 @@
       (x 6373)
       (y 598)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+      (z-pos -198)
+    )
+    (path
+      (name "a11e2d4e-c4f9-4e42-a64e-4c992f8a3f46")
+      (path
+        (node
+          (x 7328)
+          (y 672)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 159)
       (height 128)
       (x 7360.662)
@@ -463,12 +474,7 @@
       (solid #f)
       (z-pos 101)
       (name "secret")
-      (path
-        (node
-          (x 7328)
-          (y 672)
-        )
-      )
+      (path-ref "a11e2d4e-c4f9-4e42-a64e-4c992f8a3f46")
       (width 6)
       (height 5)
       (tiles

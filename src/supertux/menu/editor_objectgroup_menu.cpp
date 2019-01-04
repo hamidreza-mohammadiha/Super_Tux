@@ -20,19 +20,20 @@
 #include "editor/object_group.hpp"
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
+#include "supertux/level.hpp"
 #include "util/gettext.hpp"
 
 EditorObjectgroupMenu::EditorObjectgroupMenu()
 {
-  bool worldmap = Editor::current()->get_worldmap_mode();
+  bool worldmap = Editor::current()->get_level()->is_worldmap();
 
   add_label(_("Objects"));
   add_hl();
 
   int id = 0;
-  for(auto& og : Editor::current()->get_objectgroups()) {
-    if (worldmap == og.for_worldmap) {
-      add_entry(id, og.name);
+  for (auto& og : Editor::current()->get_objectgroups()) {
+    if (worldmap == og.is_worldmap()) {
+      add_entry(id, og.get_name());
     }
     id++;
   }
@@ -44,18 +45,18 @@ EditorObjectgroupMenu::EditorObjectgroupMenu()
 EditorObjectgroupMenu::~EditorObjectgroupMenu()
 {
   auto editor = Editor::current();
-  if(editor == NULL) {
+  if (editor == nullptr) {
     return;
   }
-  editor->reactivate_request = true;
+  editor->m_reactivate_request = true;
 }
 
 void
-EditorObjectgroupMenu::menu_action(MenuItem* item)
+EditorObjectgroupMenu::menu_action(MenuItem& item)
 {
-  if (item->id >= 0)
+  if (item.get_id() >= 0)
   {
-    Editor::current()->select_objectgroup(item->id);
+    Editor::current()->select_objectgroup(item.get_id());
   }
   MenuManager::instance().clear_menu_stack();
 }

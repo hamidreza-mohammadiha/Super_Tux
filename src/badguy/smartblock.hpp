@@ -19,20 +19,18 @@
 
 #include "badguy/mriceblock.hpp"
 
-class SmartBlock : public MrIceBlock
+class SmartBlock final : public MrIceBlock
 {
 public:
   SmartBlock(const ReaderMapping& reader);
 
-  virtual std::string get_water_sprite() const {
-    return "images/objects/water_drop/pink_drop.sprite";
-  }
-  std::string get_class() const {
-    return "smartblock";
-  }
-  std::string get_display_name() const {
-    return _("Smart Block");
-  }
+  virtual std::string get_water_sprite() const override { return "images/objects/water_drop/pink_drop.sprite"; }
+  virtual std::string get_class() const override { return "smartblock"; }
+  virtual std::string get_display_name() const override { return _("Smart Block"); }
+
+private:
+  SmartBlock(const SmartBlock&) = delete;
+  SmartBlock& operator=(const SmartBlock&) = delete;
 };
 
 #endif

@@ -1,4 +1,4 @@
-//  SuperTux=
+//  SuperTux
 //  Copyright (C) 2006 Matthias Braun <matze@braunis.de>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/format.hpp>
+#include <boost/optional.hpp>
 
-class Config
+class Config final
 {
 public:
   Config();
@@ -46,6 +46,9 @@ public:
   /** the width/height of the window managers window */
   Size window_size;
 
+  /** Window is resizable */
+  bool window_resizable;
+
   /** the aspect ratio */
   Size aspect_size;
 
@@ -58,21 +61,18 @@ public:
   bool show_player_pos;
   bool sound_enabled;
   bool music_enabled;
+  int sound_volume;
+  int music_volume;
 
   /** initial random seed.  0 ==> set from time() */
   int random_seed;
 
-  /** this variable is set if supertux should start in a specific level */
-  std::string start_level;
   bool enable_script_debugger;
   std::string start_demo;
   std::string record_demo;
 
   /** this variable is set if tux should spawn somewhere which isn't the "main" spawn point*/
   boost::optional<Vector> tux_spawn_pos;
-
-  /** The level that should be launched in the editor*/
-  boost::optional<std::string> edit_level;
 
   /** force SuperTux language to this locale, e.g. "de". A file
       "data/locale/xx.po" must exist for this to work. An empty string
@@ -93,6 +93,7 @@ public:
   bool christmas_mode;
   bool transitions_enabled;
   bool confirmation_dialog;
+  bool pause_on_focusloss;
 
   std::string repository_url;
 

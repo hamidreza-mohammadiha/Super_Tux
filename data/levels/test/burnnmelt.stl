@@ -1,30 +1,22 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Burning and melting test"))
   (author "Hume2")
   (contact "Nemám zájem, aby mě někdo otravoval.")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (ambient-light 1 1 1)
-    (plant
-      (x 832)
-      (y 992)
-    )
-    (plant
-      (x 2752)
-      (y 320)
+    (ambient-light
+      (color 1 1 1)
     )
     (bonusblock
-      (script "")
       (count -1)
       (contents "firegrow")
-      (sprite "images/objects/bonus_block/bonusblock.sprite")
       (x 192)
       (y 192)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -87,17 +79,24 @@
       (x 517)
       (y 232)
     )
-    (smartball
-      (x 995)
-      (y 262)
-    )
     (mrtree
       (x 1024)
       (y 574)
     )
+    (music
+    )
     (owl
+      (carry "skydive")
       (x 2126)
       (y 583)
+    )
+    (plant
+      (x 832)
+      (y 992)
+    )
+    (plant
+      (x 2752)
+      (y 320)
     )
     (short_fuse
       (x 713)
@@ -106,6 +105,10 @@
     (skullyhop
       (x 1760)
       (y 608)
+    )
+    (smartball
+      (x 995)
+      (y 262)
     )
     (smartblock
       (x 705)

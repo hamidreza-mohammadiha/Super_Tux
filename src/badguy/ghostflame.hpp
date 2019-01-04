@@ -19,22 +19,21 @@
 
 #include "badguy/flame.hpp"
 
-class Ghostflame : public Flame
+class Ghostflame final : public Flame
 {
 public:
   Ghostflame(const ReaderMapping& reader);
 
-  bool is_flammable() const;
-  bool is_freezable() const;
-  std::string get_class() const {
-    return "ghostflame";
-  }
+  virtual bool is_flammable() const override;
+  virtual bool is_freezable() const override;
+  virtual std::string get_class() const override { return "ghostflame"; }
+  virtual std::string get_display_name() const override { return _("Ghost flame"); }
+  virtual ObjectSettings get_settings() override;
+  virtual void after_editor_set() override;
 
-  std::string get_display_name() const {
-    return _("Ghost flame");
-  }
-  ObjectSettings get_settings();
-  void after_editor_set();
+private:
+  Ghostflame(const Ghostflame&) = delete;
+  Ghostflame& operator=(const Ghostflame&) = delete;
 };
 
 #endif

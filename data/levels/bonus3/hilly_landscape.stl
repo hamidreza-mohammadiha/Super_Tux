@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "A hilly landscape"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
@@ -7,8 +7,9 @@
   (target-time 40)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 6337)
       (y 384)
@@ -18,6 +19,7 @@
       (y 224)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -45,16 +47,16 @@
       (y 359)
     )
     (decal
+      (z-pos 100)
+      (sprite "images/tiles/goal/exitfg.png")
       (x 9376)
       (y 96)
-      (layer 100)
-      (sprite "images/tiles/goal/exitfg.png")
     )
     (decal
+      (z-pos -100)
+      (sprite "images/tiles/goal/exitbg.png")
       (x 9280)
       (y 96)
-      (layer -100)
-      (sprite "images/tiles/goal/exitbg.png")
     )
     (dispenser
       (cycle 4)
@@ -128,6 +130,25 @@
       (x 8513)
       (y 742)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "1dd9a11c-a689-43f0-a6d7-3a7409d8abf5")
+      (path
+        (node
+          (x 1888)
+          (y 608)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "secr1")
+      (width 156)
+      (height 92)
+      (x 1920)
+      (y 896)
+    )
     (smartball
       (x 867)
       (y 294)
@@ -135,19 +156,6 @@
     (smartball
       (x 7427)
       (y 742)
-    )
-    (secretarea
-      (fade-tilemap "secr1")
-      (script "")
-      (message "")
-      (width 156)
-      (height 92)
-      (x 1920)
-      (y 896)
-    )
-    (sspiky
-      (x 8998)
-      (y 714)
     )
     (snowball
       (x 4291)
@@ -174,6 +182,10 @@
       (x 4966)
       (y 682)
     )
+    (sspiky
+      (x 8998)
+      (y 714)
+    )
     (stalactite
       (x 4736)
       (y 644)
@@ -188,7 +200,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 300)
       (height 35)
@@ -232,7 +245,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 300)
       (height 35)
@@ -498,12 +512,7 @@
       (solid #f)
       (z-pos 98)
       (name "secr1")
-      (path
-        (node
-          (x 1888)
-          (y 608)
-        )
-      )
+      (path-ref "1dd9a11c-a689-43f0-a6d7-3a7409d8abf5")
       (width 24)
       (height 13)
       (tiles

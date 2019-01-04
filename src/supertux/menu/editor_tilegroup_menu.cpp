@@ -27,7 +27,7 @@ EditorTilegroupMenu::EditorTilegroupMenu()
   add_hl();
 
   int id = 0;
-  for(auto& tg : Editor::current()->get_tilegroups()) {
+  for (auto& tg : Editor::current()->get_tilegroups()) {
     add_entry(id, _(tg.name));
     id++;
   }
@@ -39,18 +39,18 @@ EditorTilegroupMenu::EditorTilegroupMenu()
 EditorTilegroupMenu::~EditorTilegroupMenu()
 {
   auto editor = Editor::current();
-  if(editor == NULL) {
+  if (editor == nullptr) {
     return;
   }
-  editor->reactivate_request = true;
+  editor->m_reactivate_request = true;
 }
 
 void
-EditorTilegroupMenu::menu_action(MenuItem* item)
+EditorTilegroupMenu::menu_action(MenuItem& item)
 {
-  if (item->id >= 0)
+  if (item.get_id() >= 0)
   {
-    Editor::current()->select_tilegroup(item->id);
+    Editor::current()->select_tilegroup(item.get_id());
   }
   MenuManager::instance().clear_menu_stack();
 }

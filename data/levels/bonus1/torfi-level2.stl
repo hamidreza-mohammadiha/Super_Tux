@@ -1,14 +1,15 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Too easy"))
   (author "Torfi Gunnarsson")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flyingsnowball
@@ -75,10 +76,29 @@
       (x 3045)
       (y 502)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "f6af4de3-4334-4611-8309-171fb1356700")
+      (path
+        (node
+          (x 608)
+          (y 640)
+        )
+      )
+    )
+    (path
+      (name "bd051393-92b7-48b1-9d29-58763cca445b")
+      (path
+        (node
+          (x 4000)
+          (y 672)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secreta")
-      (script "")
-      (message "")
       (width 42.60657)
       (height 64.52698)
       (x 639.5341)
@@ -86,16 +106,12 @@
     )
     (secretarea
       (fade-tilemap "secretb")
-      (script "")
-      (message "")
       (width 104.25)
       (height 63.91162)
       (x 4032.08)
       (y 704.0124)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 352)
       (height 416.75)
       (x 6847.57)
@@ -140,7 +156,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 240)
       (height 36)
@@ -185,7 +202,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 240)
       (height 36)
@@ -364,12 +382,7 @@
       (solid #f)
       (z-pos 101)
       (name "secreta")
-      (path
-        (node
-          (x 608)
-          (y 640)
-        )
-      )
+      (path-ref "f6af4de3-4334-4611-8309-171fb1356700")
       (width 3)
       (height 5)
       (tiles
@@ -384,12 +397,7 @@
       (solid #f)
       (z-pos 101)
       (name "secretb")
-      (path
-        (node
-          (x 4000)
-          (y 672)
-        )
-      )
+      (path-ref "bd051393-92b7-48b1-9d29-58763cca445b")
       (width 5)
       (height 4)
       (tiles

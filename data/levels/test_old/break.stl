@@ -1,11 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Badguys die on Break Test"))
   (author "Wolfgang Becker")
   (license "GPL 2 / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -13,27 +15,26 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
     )
     (powerup
       (x 128)
       (y 256)
-      (sprite "images/powerups/egg/egg.sprite")
     )
     (powerup
       (x 288)
       (y 256)
-      (sprite "images/powerups/egg/egg.sprite")
     )
     (powerup
       (x 800)
       (y 224)
-      (sprite "images/powerups/egg/egg.sprite")
     )
     (powerup
       (x 576)
       (y 256)
-      (sprite "images/powerups/egg/egg.sprite")
     )
     (spawnpoint
       (name "main")
@@ -41,8 +42,8 @@
       (y 96)
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 100)
       (height 35)

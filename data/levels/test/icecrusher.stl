@@ -1,15 +1,18 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "IceCrusher Test"))
   (author "Marek Moeckel")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/bluemountain-top.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (door
@@ -38,10 +41,11 @@
       (x 736)
       (y 512)
     )
+    (music
+    )
     (powerup
       (x 100)
       (y 700)
-      (sprite "images/powerups/egg/egg.sprite")
     )
     (spawnpoint
       (name "main")
@@ -49,8 +53,8 @@
       (y 700)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (width 30)
       (height 30)
       (tiles
@@ -87,8 +91,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (width 30)
       (height 30)
       (tiles

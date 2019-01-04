@@ -1,10 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Snow Slope Tile Test"))
   (author "ingo")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_top.jpg")
@@ -12,26 +14,27 @@
       (image-bottom "images/background/arctis_bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (decal
+      (sprite "images/tiles/doodads/iceshrub.sprite")
       (x 192)
       (y 352)
-      (image "images/tiles/doodads/iceshrub.png")
     )
     (decal
+      (z-pos -200)
+      (sprite "images/tiles/doodads/iceshrub.sprite")
       (x 608)
       (y 384)
-      (layer -200)
-      (image "images/tiles/doodads/iceshrub.png")
     )
     (dispenser
       (cycle 2)
-      (x 3843)
-      (y 709)
       (random #t)
       (type "cannon")
       (badguy "captainsnowball" "kamikazesnowball")
+      (x 3843)
+      (y 709)
     )
     (fish
       (x 1954)
@@ -40,6 +43,8 @@
     (fish
       (x 2018)
       (y 803)
+    )
+    (music
     )
     (smartball
       (x 866)
@@ -63,8 +68,8 @@
       (y 96)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 200)
       (height 35)
@@ -107,8 +112,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 200)
       (height 35)
@@ -151,8 +156,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
       (width 200)
       (height 35)

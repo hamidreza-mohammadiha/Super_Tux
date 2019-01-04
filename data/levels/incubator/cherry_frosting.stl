@@ -1,31 +1,33 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "The Cherry Frosting"))
   (author "Florian \"octo\" Forster")
   (contact "supertux at octo.it")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/greatgigantic.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/nightsky_top.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (decal
+      (z-pos -40)
+      (sprite "images/tiles/goal/exitbg.png")
       (x 9248)
       (y 768)
-      (layer -40)
-      (sprite "images/tiles/goal/exitbg.png")
     )
     (decal
+      (z-pos 90)
+      (sprite "images/tiles/goal/exitfg.png")
       (x 9344)
       (y 768)
-      (layer 90)
-      (sprite "images/tiles/goal/exitfg.png")
     )
     (fish
       (x 8000)
@@ -51,6 +53,16 @@
       (x 6912)
       (y 800)
     )
+    (music
+      (file "music/greatgigantic.music")
+    )
+    (secretarea
+      (fade-tilemap "Secret")
+      (width 32)
+      (height 96)
+      (x 4800)
+      (y 864)
+    )
     (smartball
       (x 730)
       (y 852)
@@ -62,17 +74,6 @@
     (smartball
       (x 8704)
       (y 800)
-    )
-    (secretarea
-      (fade-tilemap "Secret")
-      (width 32)
-      (height 96)
-      (x 4800)
-      (y 864)
-    )
-    (sspiky
-      (x 3424)
-      (y 768)
     )
     (snowball
       (x 2368)
@@ -106,6 +107,10 @@
     (spiky
       (x 6944)
       (y 928)
+    )
+    (sspiky
+      (x 3424)
+      (y 768)
     )
     (tilemap
       (solid #f)

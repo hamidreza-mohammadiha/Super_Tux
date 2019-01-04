@@ -1,14 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "To rain or not to rain - That's the question (Antarctic)"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 25)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (gradient
@@ -19,6 +21,27 @@
       (x 2182.533)
       (y 671.2115)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-rain
+    )
+    (path
+      (name "10bada0a-f27c-45a3-bd0b-220e794217b6")
+      (path
+        (node
+          (x 2400)
+          (y 608)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "secret1")
+      (width 203.6345)
+      (height 107.2964)
+      (x 2394.111)
+      (y 600.9527)
+    )
     (smartball
       (x 1964.211)
       (y 621.5576)
@@ -26,25 +49,6 @@
     (smartball
       (x 2539.861)
       (y 529.2865)
-    )
-    (particles-rain
-    )
-    (secretarea
-      (fade-tilemap "secret1")
-      (script "")
-      (message "")
-      (width 203.6345)
-      (height 107.2964)
-      (x 2394.111)
-      (y 600.9527)
-    )
-    (sspiky
-      (x 4618.784)
-      (y 626.2362)
-    )
-    (sspiky
-      (x 4009.258)
-      (y 623.4077)
     )
     (snowball
       (x 544)
@@ -79,9 +83,18 @@
       (x 4440.988)
       (y 661.7667)
     )
+    (sspiky
+      (x 4618.784)
+      (y 626.2362)
+    )
+    (sspiky
+      (x 4009.258)
+      (y 623.4077)
+    )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 200)
       (height 36)
@@ -126,7 +139,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 200)
       (height 36)
@@ -308,12 +322,7 @@
       (solid #f)
       (z-pos 99)
       (name "secret1")
-      (path
-        (node
-          (x 2400)
-          (y 608)
-        )
-      )
+      (path-ref "10bada0a-f27c-45a3-bd0b-220e794217b6")
       (width 6)
       (height 3)
       (tiles

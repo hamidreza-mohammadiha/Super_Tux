@@ -23,82 +23,80 @@
 #include "object/player.hpp"
 #include "object/tilemap.hpp"
 #include "supertux/level.hpp"
-#include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
+#include "util/writer.hpp"
 
-Coin::Coin(const Vector& pos)
-  : MovingSprite(pos, "images/objects/coin/coin.sprite", LAYER_OBJECTS - 1, COLGROUP_TOUCHABLE),
-    PathObject(),
-    offset(),
-    from_tilemap(false),
-    add_path(false),
-    physic(),
-    collect_script()
+Coin::Coin(const Vector& pos) :
+  MovingSprite(pos, "images/objects/coin/coin.sprite", LAYER_OBJECTS - 1, COLGROUP_TOUCHABLE),
+  PathObject(),
+  m_offset(),
+  m_from_tilemap(false),
+  m_add_path(false),
+  m_physic(),
+  m_collect_script()
 {
   SoundManager::current()->preload("sounds/coin.wav");
 }
 
-Coin::Coin(const Vector& pos, TileMap* tilemap)
-  : MovingSprite(pos, "images/objects/coin/coin.sprite", LAYER_OBJECTS - 1, COLGROUP_TOUCHABLE),
-    PathObject(*tilemap),
-    offset(),
-    from_tilemap(true),
-    add_path(false),
-    physic(),
-    collect_script()
+Coin::Coin(const ReaderMapping& reader) :
+  MovingSprite(reader, "images/objects/coin/coin.sprite", LAYER_OBJECTS - 1, COLGROUP_TOUCHABLE),
+  PathObject(),
+  m_offset(),
+  m_from_tilemap(false),
+  m_add_path(false),
+  m_physic(),
+  m_collect_script()
 {
-  if(walker.get()) {
-    Vector v = path->get_base();
-    offset = pos - v;
-  }
+  init_path(reader, true);
+
+  reader.get("collect-script", m_collect_script, "");
 
   SoundManager::current()->preload("sounds/coin.wav");
 }
 
-Coin::Coin(const ReaderMapping& reader)
-  : MovingSprite(reader, "images/objects/coin/coin.sprite", LAYER_OBJECTS - 1, COLGROUP_TOUCHABLE),
-    PathObject(),
-    offset(),
-    from_tilemap(false),
-    add_path(false),
-    physic(),
-    collect_script()
+void
+Coin::finish_construction()
 {
-  ReaderMapping path_mapping;
-  if (reader.get("path", path_mapping)) {
-    path.reset(new Path());
-    path->read(path_mapping);
-    walker.reset(new PathWalker(path.get()));
-    Vector v = path->get_base();
+  if (get_path())
+  {
+    Vector v = get_path()->get_base();
     set_pos(v);
   }
 
-  reader.get("collect-script", collect_script, "");
-
-  SoundManager::current()->preload("sounds/coin.wav");
+  m_add_path = get_walker() && get_path() && get_path()->is_valid();
 }
 
 void
-Coin::save(Writer& writer) {
-  MovingSprite::save(writer);
-  if (path) {
-    path->save(writer);
+Coin::update(float dt_sec)
+{
+  // if we have a path to follow, follow it
+  if (get_walker()) {
+    Vector v;
+    if (m_from_tilemap)
+    {
+      v = m_offset + get_walker()->get_pos();
+    }
+    else
+    {
+      get_walker()->update(dt_sec);
+      v = get_walker()->get_pos();
+    }
+
+    if (get_path()->is_valid()) {
+      m_col.m_movement = v - get_pos();
+    }
   }
 }
 
 void
-Coin::update(float elapsed_time)
+Coin::editor_update()
 {
-  // if we have a path to follow, follow it
-  if (walker.get()) {
-    Vector v = from_tilemap ? offset + walker->get_pos() : walker->advance(elapsed_time);
-    if (path->is_valid()) {
-      if (Editor::is_active()) {
-        set_pos(v);
-      } else {
-        movement = v - get_pos();
-      }
+  if (get_walker()) {
+    if (m_from_tilemap) {
+      set_pos(m_offset + get_walker()->get_pos());
+    } else {
+      set_pos(get_walker()->get_pos());
     }
   }
 }
@@ -117,48 +115,48 @@ Coin::collect()
     pitch_one = tile;
     pitch = 1;
     last_pitch = 1;
-  } else if (sound_timer.get_timegone() < 0.02) {
+  } else if (sound_timer.get_timegone() < 0.02f) {
     pitch = last_pitch;
   } else {
     switch ((pitch_one - tile) % 7) {
       case -6:
-        pitch = 1.0/2;
+        pitch = 1.f/2;
         break;
       case -5:
-        pitch = 5.0/8;
+        pitch = 5.f/8;
         break;
       case -4:
-        pitch = 4.0/6;
+        pitch = 4.f/6;
         break;
       case -3:
-        pitch = 3.0/4;
+        pitch = 3.f/4;
         break;
       case -2:
-        pitch = 5.0/6;
+        pitch = 5.f/6;
         break;
       case -1:
-        pitch = 9.0/10;
+        pitch = 9.f/10;
         break;
       case 0:
-        pitch = 1.0;
+        pitch = 1.f;
         break;
       case 1:
-        pitch = 9.0/8;
+        pitch = 9.f/8;
         break;
       case 2:
-        pitch = 5.0/4;
+        pitch = 5.f/4;
         break;
       case 3:
-        pitch = 4.0/3;
+        pitch = 4.f/3;
         break;
       case 4:
-        pitch = 3.0/2;
+        pitch = 3.f/2;
         break;
       case 5:
-        pitch = 5.0/3;
+        pitch = 5.f/3;
         break;
       case 6:
-        pitch = 9.0/5;
+        pitch = 9.f/5;
         break;
     }
     last_pitch = pitch;
@@ -171,14 +169,13 @@ Coin::collect()
   soundSource->play();
   SoundManager::current()->manage_source(std::move(soundSource));
 
-  auto sector = Sector::current();
-  sector->player->get_status()->add_coins(1, false);
-  sector->add_object(std::make_shared<BouncyCoin>(get_pos(), false, get_sprite_name()));
-  sector->get_level()->stats.coins++;
+  Sector::get().get_player().get_status().add_coins(1, false);
+  Sector::get().add<BouncyCoin>(get_pos(), false, get_sprite_name());
+  Sector::get().get_level().m_stats.m_coins++;
   remove_me();
 
-  if(!collect_script.empty()) {
-    sector->run_script(collect_script, "collect-script");
+  if (!m_collect_script.empty()) {
+    Sector::get().run_script(m_collect_script, "collect-script");
   }
 }
 
@@ -186,7 +183,7 @@ HitResponse
 Coin::collision(GameObject& other, const CollisionHit& )
 {
   auto player = dynamic_cast<Player*>(&other);
-  if(player == 0)
+  if (player == nullptr)
     return ABORT_MOVE;
 
   collect();
@@ -194,65 +191,65 @@ Coin::collision(GameObject& other, const CollisionHit& )
 }
 
 /* The following defines a coin subject to gravity */
-HeavyCoin::HeavyCoin(const Vector& pos, const Vector& init_velocity)
-  : Coin(pos),
-  physic()
+HeavyCoin::HeavyCoin(const Vector& pos, const Vector& init_velocity) :
+  Coin(pos),
+  m_physic()
 {
-  physic.enable_gravity(true);
+  m_physic.enable_gravity(true);
   SoundManager::current()->preload("sounds/coin2.ogg");
   set_group(COLGROUP_MOVING);
-  physic.set_velocity(init_velocity);
+  m_physic.set_velocity(init_velocity);
 }
 
-HeavyCoin::HeavyCoin(const ReaderMapping& reader)
-  : Coin(reader),
-  physic()
+HeavyCoin::HeavyCoin(const ReaderMapping& reader) :
+  Coin(reader),
+  m_physic()
 {
-  physic.enable_gravity(true);
+  m_physic.enable_gravity(true);
   SoundManager::current()->preload("sounds/coin2.ogg");
   set_group(COLGROUP_MOVING);
 }
 
 void
-HeavyCoin::update(float elapsed_time)
+HeavyCoin::update(float dt_sec)
 {
   // enable physics
-  movement = physic.get_movement(elapsed_time);
+  m_col.m_movement = m_physic.get_movement(dt_sec);
 }
 
 void
 HeavyCoin::collision_solid(const CollisionHit& hit)
 {
-  int clink_threshold = 100; // sets the minimum speed needed to result in collision noise
+  float clink_threshold = 100.0f; // sets the minimum speed needed to result in collision noise
   //TODO: colliding HeavyCoins should have their own unique sound
-  if(hit.bottom) {
-    if(physic.get_velocity_y() > clink_threshold)
+  if (hit.bottom) {
+    if (m_physic.get_velocity_y() > clink_threshold)
       SoundManager::current()->play("sounds/coin2.ogg");
-    if(physic.get_velocity_y() > 200) {// lets some coins bounce
-      physic.set_velocity_y(-99);
+    if (m_physic.get_velocity_y() > 200) {// lets some coins bounce
+      m_physic.set_velocity_y(-99);
     } else {
-      physic.set_velocity_y(0);
-      physic.set_velocity_x(0);
+      m_physic.set_velocity_y(0);
+      m_physic.set_velocity_x(0);
     }
   }
-  if(hit.right || hit.left) {
-    if(physic.get_velocity_x() > clink_threshold || physic.get_velocity_x() < clink_threshold)
+  if (hit.right || hit.left) {
+    if (m_physic.get_velocity_x() > clink_threshold || m_physic.get_velocity_x() < clink_threshold)
       SoundManager::current()->play("sounds/coin2.ogg");
-    physic.set_velocity_x(-physic.get_velocity_x());
+    m_physic.set_velocity_x(-m_physic.get_velocity_x());
   }
-  if(hit.top) {
-    if(physic.get_velocity_y() < clink_threshold)
+  if (hit.top) {
+    if (m_physic.get_velocity_y() < clink_threshold)
       SoundManager::current()->play("sounds/coin2.ogg");
-    physic.set_velocity_y(-physic.get_velocity_y());
+    m_physic.set_velocity_y(-m_physic.get_velocity_y());
   }
 }
 
 void
 Coin::move_to(const Vector& pos)
 {
-  Vector shift = pos - bbox.p1;
-  if (path) {
-    path->move_by(shift);
+  Vector shift = pos - m_col.m_bbox.p1();
+  if (get_path()) {
+    get_path()->move_by(shift);
   }
   set_pos(pos);
 }
@@ -262,15 +259,17 @@ Coin::get_settings()
 {
   ObjectSettings result = MovingSprite::get_settings();
 
-  add_path = walker.get() && path->is_valid();
-  result.options.push_back( ObjectOption(MN_TOGGLE, _("Following path"), &add_path));
+  result.add_path_ref(_("Path"), get_path_ref(), "path-ref");
+  m_add_path = get_walker() && get_path() && get_path()->is_valid();
+  result.add_bool(_("Following path"), &m_add_path);
 
-  if (walker.get() && path->is_valid()) {
-    result.options.push_back( Path::get_mode_option(&path->mode) );
+  if (get_walker() && get_path()->is_valid()) {
+    result.add_walk_mode(_("Path Mode"), &get_path()->m_mode, {}, {});
   }
 
-  result.options.push_back( ObjectOption(MN_SCRIPT, _("Collect script"),
-                                         &collect_script, "collect-script"));
+  result.add_script(_("Collect script"), &m_collect_script, "collect-script");
+
+  result.reorder({"collect-script", "path-ref"});
 
   return result;
 }
@@ -280,14 +279,13 @@ Coin::after_editor_set()
 {
   MovingSprite::after_editor_set();
 
-  if (walker.get() && path->is_valid()) {
-    if (!add_path) {
-      path->nodes.clear();
+  if (get_walker() && get_path()->is_valid()) {
+    if (!m_add_path) {
+      get_path()->m_nodes.clear();
     }
   } else {
-    if (add_path) {
-      path.reset(new Path(bbox.p1));
-      walker.reset(new PathWalker(path.get()));
+    if (m_add_path) {
+      init_path_pos(m_col.m_bbox.p1());
     }
   }
 }
@@ -296,8 +294,11 @@ ObjectSettings
 HeavyCoin::get_settings()
 {
   auto result = MovingSprite::get_settings();
-  result.options.push_back( ObjectOption(MN_SCRIPT, _("Collect script"),
-                                         &collect_script, "collect-script"));
+
+  result.add_script(_("Collect script"), &m_collect_script, "collect-script");
+
+  result.reorder({"collect-script", "sprite", "x", "y"});
+
   return result;
 }
 

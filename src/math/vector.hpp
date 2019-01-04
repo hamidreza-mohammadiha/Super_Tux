@@ -17,8 +17,11 @@
 #ifndef HEADER_SUPERTUX_MATH_VECTOR_HPP
 #define HEADER_SUPERTUX_MATH_VECTOR_HPP
 
+#include <math.h>
+#include <iosfwd>
+
 /** Simple two dimensional vector. */
-class Vector
+class Vector final
 {
 public:
   Vector(float nx, float ny)
@@ -110,9 +113,9 @@ public:
   float norm() const;
   Vector unit() const;
 
-  Vector to_int_vec() const
+  Vector floor() const
   {
-    return Vector(int(x), int(y));
+    return Vector(floorf(x), floorf(y));
   }
 
   // ... add the other operators as needed, I'm too lazy now ...
@@ -120,6 +123,8 @@ public:
   float x, y; // leave this public, get/set methods just give me headaches
   // for such simple stuff :)
 };
+
+std::ostream& operator<<(std::ostream& out, const Vector& vector);
 
 #endif
 

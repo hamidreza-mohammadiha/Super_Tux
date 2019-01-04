@@ -1,13 +1,16 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Haywire bomb test"))
   (author "octo")
   (contact "supertux at octo.it")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (haywire
@@ -21,6 +24,8 @@
     (haywire
       (x 2656)
       (y 928)
+    )
+    (music
     )
     (spawnpoint
       (name "main")

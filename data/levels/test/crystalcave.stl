@@ -1,10 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Crystal Cave test"))
   (author "ingo")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_top.jpg")
@@ -12,11 +14,14 @@
       (image-bottom "images/background/arctis_bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
       (x 1152)
       (y 640)
+    )
+    (music
     )
     (spawnpoint
       (name "main")
@@ -25,7 +30,7 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.8)
+      (speed-x 0.8)
       (speed-y 0.8)
       (z-pos -100)
       (name "Background")

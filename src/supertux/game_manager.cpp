@@ -16,13 +16,8 @@
 
 #include "supertux/game_manager.hpp"
 
-#include <sstream>
-
-#include "gui/menu_manager.hpp"
-#include "supertux/game_session.hpp"
-#include "supertux/gameconfig.hpp"
-#include "supertux/globals.hpp"
 #include "supertux/levelset_screen.hpp"
+#include "supertux/player_status.hpp"
 #include "supertux/savegame.hpp"
 #include "supertux/screen.hpp"
 #include "supertux/screen_fade.hpp"
@@ -35,42 +30,40 @@
 #include "util/reader.hpp"
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
-#include "worldmap/worldmap.hpp"
 #include "worldmap/level.hpp"
+#include "worldmap/worldmap.hpp"
+#include "worldmap/worldmap_screen.hpp"
 
 GameManager::GameManager() :
-  m_world(),
   m_savegame(),
-  next_worldmap(),
-  next_spawnpoint()
+  m_next_worldmap(),
+  m_next_spawnpoint()
 {
 }
 
 void
-GameManager::run_level(World* world, const std::string& level_filename)
+GameManager::start_level(const World& world, const std::string& level_filename)
 {
-  m_savegame.reset(new Savegame(world->get_savegame_filename()));
-  m_savegame->load();
+  m_savegame = Savegame::from_file(world.get_savegame_filename());
 
-  std::unique_ptr<Screen> screen(new LevelsetScreen(world->get_basedir(),
-                                                    level_filename,
-                                                    *m_savegame));
+  auto screen = std::make_unique<LevelsetScreen>(world.get_basedir(),
+                                                 level_filename,
+                                                 *m_savegame);
   ScreenManager::current()->push_screen(std::move(screen));
 }
 
 void
-GameManager::run_worldmap(World* world, const std::string& worldmap_filename, const std::string& spawnpoint)
+GameManager::start_worldmap(const World& world, const std::string& spawnpoint, const std::string& worldmap_filename)
 {
   try
   {
-    m_savegame.reset(new Savegame(world->get_savegame_filename()));
-    m_savegame->load();
+    m_savegame = Savegame::from_file(world.get_savegame_filename());
     LevelSaveState::save(LevelSaveState(m_world->get_basedir()));
 
-    auto filename = m_savegame->get_player_status()->last_worldmap;
+    auto filename = m_savegame->get_player_status().last_worldmap;
     // If we specified a worldmap filename manually,
     // this overrides the default choice of "last worldmap"
-    if(!worldmap_filename.empty())
+    if (!worldmap_filename.empty())
     {
       filename = worldmap_filename;
     }
@@ -78,13 +71,14 @@ GameManager::run_worldmap(World* world, const std::string& worldmap_filename, co
     // No "last worldmap" found and no worldmap_filename
     // specified. Let's go ahead and use the worldmap
     // filename specified in the world.
-    if(filename.empty())
+    if (filename.empty())
     {
-      filename = world->get_worldmap_filename();
+      filename = world.get_worldmap_filename();
     }
 
-    auto worldmap = new worldmap::WorldMap(filename, *m_savegame, spawnpoint);
-    ScreenManager::current()->push_screen(std::unique_ptr<Screen>(worldmap));
+    auto worldmap = std::make_unique<worldmap::WorldMap>(filename, *m_savegame, spawnpoint);
+    auto worldmap_screen = std::make_unique<worldmap::WorldMapScreen>(std::move(worldmap));
+    ScreenManager::current()->push_screen(std::move(worldmap_screen));
 
     if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "")
     {
@@ -118,81 +112,29 @@ GameManager::run_worldmap(World* world, const std::string& worldmap_filename, co
   }
 }
 
-void
-GameManager::start_level(std::unique_ptr<World> world, const std::string& level_filename)
-{
-  m_world = std::move(world);
-  run_level(m_world.get(), level_filename);
-}
-
-void
-GameManager::start_level(World* world, const std::string& level_filename)
-{
-  run_level(world, level_filename);
-}
-
-void
-GameManager::start_worldmap(std::unique_ptr<World> world, const std::string& spawnpoint, const std::string& worldmap_filename)
-{
-  m_world = std::move(world);
-  run_worldmap(m_world.get(), worldmap_filename, spawnpoint);
-}
-
-void
-GameManager::start_worldmap(World* world, const std::string& spawnpoint, const std::string& worldmap_filename)
-{
-  run_worldmap(world, worldmap_filename, spawnpoint);
-}
-
-std::string
-GameManager::get_level_name(const std::string& filename) const
-{
-  try
-  {
-    register_translation_directory(filename);
-    auto doc = ReaderDocument::parse(filename);
-    auto root = doc.get_root();
-
-    if(root.get_name() != "supertux-level") {
-      return "";
-    } else {
-      auto mapping = root.get_mapping();
-      std::string name;
-      mapping.get("name", name);
-      return name;
-    }
-  }
-  catch(const std::exception& e)
-  {
-    log_warning << "Problem getting name of '" << filename << "': "
-                << e.what() << std::endl;
-    return "";
-  }
-}
-
 bool
 GameManager::load_next_worldmap()
 {
-  if (next_worldmap.empty())
+  if (m_next_worldmap.empty())
   {
     return false;
   }
-  std::unique_ptr<World> world = World::load(next_worldmap);
-  next_worldmap = "";
+  std::unique_ptr<World> world = World::from_directory(m_next_worldmap);
+  m_next_worldmap = "";
   if (!world)
   {
-    log_warning << "Can't load world '" << next_worldmap << "'" <<  std::endl;
+    log_warning << "Can't load world '" << m_next_worldmap << "'" <<  std::endl;
     return false;
   }
-  start_worldmap(std::move(world), next_spawnpoint); // New world, new savegame
+  start_worldmap(*world, m_next_spawnpoint); // New world, new savegame
   return true;
 }
 
 void
 GameManager::set_next_worldmap(const std::string& worldmap, const std::string &spawnpoint)
 {
-  next_worldmap = worldmap;
-  next_spawnpoint = spawnpoint;
+  m_next_worldmap = worldmap;
+  m_next_spawnpoint = spawnpoint;
 }
 
 /* EOF */

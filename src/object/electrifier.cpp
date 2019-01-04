@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "object/electrifier.hpp"
+
 #include "supertux/sector.hpp"
 
 Electrifier::Electrifier(TileChangeMap replacements, float seconds) :
@@ -22,8 +23,8 @@ Electrifier::Electrifier(TileChangeMap replacements, float seconds) :
   duration()
 {
   duration.start(seconds);
-  for(auto& tile : change_map) {
-    Sector::current()->change_solid_tiles(tile.first, tile.second);
+  for (auto& tile : change_map) {
+    Sector::get().change_solid_tiles(tile.first, tile.second);
   }
 }
 
@@ -38,8 +39,8 @@ void
 Electrifier::update(float )
 {
   if (duration.check()) {
-    for(const auto& tile : change_map){
-      Sector::current()->change_solid_tiles(tile.second, tile.first);
+    for (const auto& tile : change_map){
+      Sector::get().change_solid_tiles(tile.second, tile.first);
     }
     remove_me();
   }

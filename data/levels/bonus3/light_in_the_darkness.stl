@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Some light in the darkness would be fine, thanks!"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 80)
   (sector
     (name "main")
-    (music "music/ghostforest.music")
-    (ambient-light 0 0 0)
+    (ambient-light
+      (color 0 0 0)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/ghostforest.jpg")
@@ -15,155 +16,126 @@
       (image-bottom "images/background/ghostforest.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
-      (color 1 1 1)
       (x 1312)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 1152)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 1792)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 1728)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 2240)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 2144)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 2048)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 1888)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 2432)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 3040)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 3168)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 2912)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 2688)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 2752)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 2720)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 2816)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 2592)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 2688)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3136)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 2880)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 2944)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 2752)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3008)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3072)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 320)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 0)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 64)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 128)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 192)
       (y 672)
     )
     (candle
-      (color 1 1 1)
       (x 256)
       (y 672)
     )
@@ -321,20 +293,28 @@
       (x 2816)
       (y 576)
     )
+    (music
+      (file "music/ghostforest.music")
+    )
     (particles-rain
+    )
+    (path
+      (name "b954134d-b050-4818-82ad-5dc46bbcbbed")
+      (path
+        (node
+          (x 0)
+          (y 576)
+        )
+      )
     )
     (secretarea
       (fade-tilemap "secret1")
-      (script "")
-      (message "")
       (width 360)
       (height 168)
       (x -12)
       (y 564)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 156)
       (height 92)
       (x 576)
@@ -486,12 +466,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret1")
-      (path
-        (node
-          (x 0)
-          (y 576)
-        )
-      )
+      (path-ref "b954134d-b050-4818-82ad-5dc46bbcbbed")
       (width 11)
       (height 5)
       (tiles

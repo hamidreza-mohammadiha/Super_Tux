@@ -1,39 +1,25 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "eman level ehT <---"))
   (author "Esteban")
   (contact "supertuxeditor@yahoo.es")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 18420.27)
       (y 543.6215)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
       (x 8768)
       (y 544)
-    )
-    (platform
-      (name "castleentrance")
-      (running #f)
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 3090.97)
-          (y -75.65686)
-        )
-        (node
-          (x 3096.551)
-          (y 272.8961)
-        )
-      )
     )
     (flyingsnowball
       (x 16800)
@@ -87,6 +73,29 @@
       (x 14982.99)
       (y 705.6863)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-snow
+    )
+    (path
+      (name "5979c4a0-26c0-42da-b375-0169ac05b150")
+      (path
+        (node
+          (x 3090.97)
+          (y -75.65686)
+        )
+        (node
+          (x 3096.551)
+          (y 272.8961)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (name "castleentrance")
+      (path-ref "5979c4a0-26c0-42da-b375-0169ac05b150")
+    )
     (scripttrigger
       (script "Level.spawn( \"sky castle\", \"main\" )")
       (button #f)
@@ -113,8 +122,6 @@
       (y -150)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 808)
       (height 136)
       (x 9044)
@@ -122,24 +129,10 @@
     )
     (secretarea
       (fade-tilemap "secreto")
-      (script "")
-      (message "")
       (width 220)
       (height 92)
       (x 7904)
       (y 544)
-    )
-    (sspiky
-      (x 5412.242)
-      (y 631.5147)
-    )
-    (sspiky
-      (x 17638.27)
-      (y 557.6215)
-    )
-    (sspiky
-      (x 4534.623)
-      (y 409.9988)
     )
     (snowball
       (x 2624)
@@ -181,8 +174,6 @@
       (x 736)
       (y 480)
     )
-    (particles-snow
-    )
     (spawnpoint
       (name "main")
       (x 160)
@@ -202,19 +193,31 @@
       (x 10176)
       (y 448)
     )
+    (sspiky
+      (x 5412.242)
+      (y 631.5147)
+    )
+    (sspiky
+      (x 17638.27)
+      (y 557.6215)
+    )
+    (sspiky
+      (x 4534.623)
+      (y 409.9988)
+    )
     (switch
       (script "viento.start();
 viento2.start();
 viento3.start();
 castleentrance.goto_node(1);
 ")
-      (sprite "images/objects/switch/switch.sprite")
       (x 12927.46)
       (y 728.0416)
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 600)
       (height 35)
@@ -258,7 +261,8 @@ castleentrance.goto_node(1);
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 600)
       (height 35)
@@ -490,43 +494,44 @@ castleentrance.goto_node(1);
       (y 832)
     )
     (wind
-      (name "viento2")
       (blowing #f)
       (speed-x 0)
       (speed-y -400)
       (acceleration 4)
       (width 60)
       (height 485.8032)
+      (name "viento2")
       (x 2978.746)
       (y 90.91168)
     )
     (wind
-      (name "viento")
       (blowing #f)
       (speed-x 0)
       (speed-y -400)
       (acceleration 4)
       (width 60)
       (height 529.8032)
+      (name "viento")
       (x 9410)
       (y 79)
     )
     (wind
-      (name "viento3")
       (blowing #f)
       (speed-x 0)
       (speed-y -400)
       (acceleration 4)
       (width 60)
       (height 487.8032)
+      (name "viento3")
       (x 3261.123)
       (y 86.48883)
     )
   )
   (sector
     (name "NewSector")
-    (music "music/intro.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/arctis_top.jpg")
@@ -534,7 +539,11 @@ castleentrance.goto_node(1);
       (image-bottom "images/background/arctis_top.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+      (file "music/intro.ogg")
     )
     (particles-clouds
     )
@@ -558,8 +567,6 @@ castleentrance.goto_node(1);
       (y 129.1987)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 312.0144)
       (height 32)
       (x 2920.962)
@@ -739,8 +746,9 @@ castleentrance.goto_node(1);
   )
   (sector
     (name "sky castle")
-    (music "music/greatgigantic.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/bluemountain-top.png")
@@ -748,6 +756,7 @@ castleentrance.goto_node(1);
       (image-bottom "images/background/bluemountain-top.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flame
@@ -770,59 +779,6 @@ castleentrance.goto_node(1);
     (flame
       (x 704)
       (y 32)
-    )
-    (platform
-      (name "pedestal")
-      (running #f)
-      (sprite "images/objects/platforms/pedestal.sprite")
-      (path
-        (node
-          (x 1376)
-          (y 352)
-        )
-        (node
-          (x 1344)
-          (y 352)
-        )
-        (node
-          (x 1344)
-          (y 480)
-        )
-      )
-    )
-    (platform
-      (name "empezar")
-      (running #f)
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
-      (path
-        (node
-          (x 160)
-          (y 1024)
-        )
-        (node
-          (x 160)
-          (y 864)
-        )
-        (node
-          (x 160)
-          (y 160)
-        )
-      )
-    )
-    (platform
-      (name "bloques")
-      (running #f)
-      (sprite "images/objects/platforms/small.sprite")
-      (path
-        (node
-          (x 608)
-          (y 448)
-        )
-        (node
-          (x 608)
-          (y 832)
-        )
-      )
     )
     (flyingsnowball
       (x 2624)
@@ -880,6 +836,73 @@ castleentrance.goto_node(1);
       (x 1600)
       (y 320)
     )
+    (music
+      (file "music/greatgigantic.music")
+    )
+    (path
+      (name "a189a7e2-0ab2-461a-bd92-437c192ca830")
+      (path
+        (node
+          (x 1376)
+          (y 352)
+        )
+        (node
+          (x 1344)
+          (y 352)
+        )
+        (node
+          (x 1344)
+          (y 480)
+        )
+      )
+    )
+    (path
+      (name "0bc68c52-c77a-4f89-8120-aa5a59f8bb7e")
+      (path
+        (node
+          (x 160)
+          (y 1024)
+        )
+        (node
+          (x 160)
+          (y 864)
+        )
+        (node
+          (x 160)
+          (y 160)
+        )
+      )
+    )
+    (path
+      (name "4a146be1-be32-4be6-9314-910d308d61a4")
+      (path
+        (node
+          (x 608)
+          (y 448)
+        )
+        (node
+          (x 608)
+          (y 832)
+        )
+      )
+    )
+    (platform
+      (running #f)
+      (name "pedestal")
+      (path-ref "a189a7e2-0ab2-461a-bd92-437c192ca830")
+      (sprite "images/objects/platforms/pedestal.sprite")
+    )
+    (platform
+      (running #f)
+      (name "empezar")
+      (path-ref "0bc68c52-c77a-4f89-8120-aa5a59f8bb7e")
+    )
+    (platform
+      (running #f)
+      (name "bloques")
+      (path-ref "4a146be1-be32-4be6-9314-910d308d61a4")
+      (sprite "images/objects/platforms/small.sprite")
+    )
     (pushbutton
       (script "bloques.goto_node(1);
 ")
@@ -903,22 +926,6 @@ castleentrance.goto_node(1);
       (x 160)
       (y 992)
     )
-    (sspiky
-      (x 736)
-      (y 800)
-    )
-    (sspiky
-      (x 1984)
-      (y 256)
-    )
-    (sspiky
-      (x 2144)
-      (y 544)
-    )
-    (sspiky
-      (x 2272)
-      (y 544)
-    )
     (snowball
       (x 2112)
       (y 800)
@@ -935,6 +942,22 @@ castleentrance.goto_node(1);
     (spiky
       (x 2240)
       (y 800)
+    )
+    (sspiky
+      (x 736)
+      (y 800)
+    )
+    (sspiky
+      (x 1984)
+      (y 256)
+    )
+    (sspiky
+      (x 2144)
+      (y 544)
+    )
+    (sspiky
+      (x 2272)
+      (y 544)
     )
     (stalactite
       (x 371.8236)
@@ -967,14 +990,12 @@ castleentrance.goto_node(1);
     (switch
       (script "pedestal.goto_node(2);
 ")
-      (sprite "images/objects/switch/switch.sprite")
       (x 1184)
       (y 384)
     )
     (switch
       (script "empezar.goto_node(2);
 ")
-      (sprite "images/objects/switch/switch.sprite")
       (x 2688)
       (y 512)
     )

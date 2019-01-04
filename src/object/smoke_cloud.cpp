@@ -28,18 +28,18 @@ SmokeCloud::SmokeCloud(const Vector& pos) :
 }
 
 void
-SmokeCloud::update(float elapsed_time)
+SmokeCloud::update(float dt_sec)
 {
-  position.y -= 120 * elapsed_time;
+  position.y -= 120 * dt_sec;
 
-  if(timer.check())
+  if (timer.check())
     remove_me();
 }
 
 void
 SmokeCloud::draw(DrawingContext& context)
 {
-  sprite->draw(context, position, LAYER_OBJECTS+1);
+  sprite->draw(context.color(), position, LAYER_OBJECTS+1);
 }
 
 /* EOF */

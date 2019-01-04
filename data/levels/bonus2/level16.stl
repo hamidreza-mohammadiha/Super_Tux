@@ -1,23 +1,24 @@
 (supertux-level
-  (version 2)
-  (name (_ "Luft Airship"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "Luft Airship"))
   (author "Corlin Heydman")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (alignment "bottom")
       (speed 0.5)
       (image "images/background/arcticskies3.png")
-      (layer -199)
+      (z-pos -199)
     )
     (background
       (alignment "bottom")
       (speed 2)
       (image "images/background/arcticskies35.png")
-      (layer 101)
+      (z-pos 101)
     )
     (bouncingsnowball
       (x 849)
@@ -48,33 +49,11 @@
       (y 555)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
-    (particles-clouds
-    )
     (coin
-      (path
-        (node
-          (x 3904)
-          (y 96)
-        )
-        (node
-          (x 3904)
-          (y 384)
-        )
-        (node
-          (x 3936)
-          (y 416)
-        )
-        (node
-          (x 3968)
-          (y 384)
-        )
-        (node
-          (x 3904)
-          (y 384)
-        )
-      )
+      (path-ref "b4dccce1-0ea7-4062-937e-a9cfbbda3521")
     )
     (firefly
       (x 7087)
@@ -247,18 +226,53 @@
       (x 11222)
       (y 623)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
+    (path
+      (name "b4dccce1-0ea7-4062-937e-a9cfbbda3521")
+      (path
+        (node
+          (x 3904)
+          (y 96)
+        )
+        (node
+          (x 3904)
+          (y 384)
+        )
+        (node
+          (x 3936)
+          (y 416)
+        )
+        (node
+          (x 3968)
+          (y 384)
+        )
+        (node
+          (x 3904)
+          (y 384)
+        )
+      )
+    )
+    (path
+      (name "b8721684-a6d5-42fe-8353-f607cb150688")
+      (path
+        (node
+          (x 5344)
+          (y 608)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "blb")
-      (script "")
-      (message "")
       (width 764)
       (height 124)
       (x 5376)
       (y 640)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 44)
       (height 76)
       (x 3892)
@@ -500,12 +514,7 @@
       (solid #f)
       (z-pos 100)
       (name "blb")
-      (path
-        (node
-          (x 5344)
-          (y 608)
-        )
-      )
+      (path-ref "b8721684-a6d5-42fe-8353-f607cb150688")
       (width 26)
       (height 5)
       (tiles

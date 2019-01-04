@@ -1,10 +1,12 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "An Odd Bug"))
   (author "christoph")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -12,10 +14,13 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
-    (platform
-      (sprite "images/objects/flying_platform/flying_platform.sprite")
+    (music
+    )
+    (path
+      (name "06694fb9-4012-4d56-99f3-884203444e5e")
       (path
         (node
           (x 160)
@@ -27,6 +32,9 @@
         )
       )
     )
+    (platform
+      (path-ref "06694fb9-4012-4d56-99f3-884203444e5e")
+    )
     (poisonivy
       (x 610)
       (y 100)
@@ -37,8 +45,8 @@
       (y 32)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (name "Background")
       (width 100)
       (height 35)
@@ -81,8 +89,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (name "Interactive")
       (width 100)
       (height 35)
@@ -125,8 +133,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (name "Foreground")
       (width 100)
       (height 35)

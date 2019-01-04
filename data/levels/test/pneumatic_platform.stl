@@ -1,35 +1,37 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Pneumatic Platform Test"))
   (author "Marek Moeckel")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/arctis.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
-    (rock
-      (x 90)
-      (y 500)
+    (music
     )
     (pneumatic-platform
-      (sprite "images/objects/platforms/small.sprite")
       (x 162)
       (y 640)
     )
     (pneumatic-platform
-      (sprite "images/objects/platforms/small.sprite")
       (x 418)
       (y 640)
     )
     (pneumatic-platform
-      (sprite "images/objects/platforms/small.sprite")
       (x 290)
       (y 640)
+    )
+    (rock
+      (x 90)
+      (y 500)
     )
     (spawnpoint
       (name "main")
@@ -37,8 +39,8 @@
       (y 500)
     )
     (tilemap
-      (z-pos -100)
       (solid #f)
+      (z-pos -100)
       (width 30)
       (height 30)
       (tiles
@@ -75,8 +77,8 @@
       )
     )
     (tilemap
-      (z-pos 0)
       (solid #t)
+      (z-pos 0)
       (width 30)
       (height 30)
       (tiles
@@ -113,8 +115,8 @@
       )
     )
     (tilemap
-      (z-pos 100)
       (solid #f)
+      (z-pos 100)
       (width 30)
       (height 30)
       (tiles

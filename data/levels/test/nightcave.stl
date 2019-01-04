@@ -1,61 +1,66 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "NightCave test"))
   (author "ingo")
   (sector
     (name "main")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image "images/background/nightsky_top.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower1.png")
       (x 384)
       (y 1024)
-      (sprite "images/decal/nightcave/lightflower1.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower2.png")
       (x 2528)
       (y 960)
-      (sprite "images/decal/nightcave/lightflower2.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower3.png")
       (x 2320)
       (y 1008)
-      (sprite "images/decal/nightcave/lightflower3.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower1.png")
       (x 1712)
       (y 816)
-      (sprite "images/decal/nightcave/lightflower1.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower2.png")
       (x 1920)
       (y 928)
-      (sprite "images/decal/nightcave/lightflower2.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower3.png")
       (x 2976)
       (y 944)
-      (sprite "images/decal/nightcave/lightflower3.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower1.png")
       (x 1344)
       (y 496)
-      (sprite "images/decal/nightcave/lightflower1.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower2.png")
       (x 720)
       (y 752)
-      (sprite "images/decal/nightcave/lightflower2.png")
     )
     (decal
+      (sprite "images/decal/nightcave/lightflower3.png")
       (x 992)
       (y 704)
-      (sprite "images/decal/nightcave/lightflower3.png")
+    )
+    (music
     )
     (snowman
       (x 1059)

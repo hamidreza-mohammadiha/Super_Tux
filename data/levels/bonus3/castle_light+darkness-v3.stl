@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Castle of Light and Darkness"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 80)
   (sector
     (name "main")
-    (music "music/fortress.music")
-    (ambient-light 0 0 0)
+    (ambient-light
+      (color 0 0 0)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/nightsky_top.png")
@@ -15,135 +16,108 @@
       (image-bottom "images/background/nightsky_bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (candle
-      (color 1 1 1)
       (x 64)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 0)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 192)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 128)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 1856)
       (y 96)
     )
     (candle
-      (color 1 1 1)
       (x 1760)
       (y 96)
     )
     (candle
-      (color 1 1 1)
       (x 2240)
       (y 704)
     )
     (candle
-      (color 1 1 1)
       (x 3360)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 2624)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 2912)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 3136)
       (y 512)
     )
     (candle
-      (color 1 1 1)
       (x 3456)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 3680)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3712)
       (y 448)
     )
     (candle
-      (color 1 1 1)
       (x 3552)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 3584)
       (y 480)
     )
     (candle
-      (color 1 1 1)
       (x 3424)
       (y 608)
     )
     (candle
-      (color 1 1 1)
       (x 3936)
       (y 736)
     )
     (candle
-      (color 1 1 1)
       (x 4224)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 4064)
       (y 736)
     )
     (candle
-      (color 1 1 1)
       (x 4192)
       (y 640)
     )
     (candle
-      (color 1 1 1)
       (x 5536)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 5344)
       (y 576)
     )
     (candle
-      (color 1 1 1)
       (x 5536)
       (y 160)
     )
     (candle
-      (color 1 1 1)
       (x 5536)
       (y 288)
-    )
-    (particles-clouds
-      (z-pos -201)
     )
     (darttrap
       (initial-delay 0)
@@ -217,7 +191,6 @@
       (y 704)
     )
     (lantern
-      (color 1 1 1)
       (x 4448)
       (y 544)
     )
@@ -511,6 +484,21 @@
       (x 5280)
       (y 608)
     )
+    (music
+      (file "music/fortress.music")
+    )
+    (particles-clouds
+      (z-pos -201)
+    )
+    (path
+      (name "6b9dbe45-179b-4471-9712-7ec40869ec1d")
+      (path
+        (node
+          (x 736)
+          (y 544)
+        )
+      )
+    )
     (rock
       (x 448)
       (y 256)
@@ -545,8 +533,6 @@
     )
     (secretarea
       (fade-tilemap "secret1")
-      (script "")
-      (message "")
       (width 156)
       (height 124)
       (x 736)
@@ -596,7 +582,6 @@
     )
     (spotlight
       (angle 0)
-      (color 1 1 1)
       (x 1216)
       (y 352)
     )
@@ -632,13 +617,11 @@
     )
     (spotlight
       (angle 0)
-      (color 1 1 1)
       (x 1984)
       (y 640)
     )
     (spotlight
       (angle 0)
-      (color 1 1 1)
       (x 1984)
       (y 544)
     )
@@ -748,12 +731,7 @@
       (solid #f)
       (z-pos 100)
       (name "secret1")
-      (path
-        (node
-          (x 736)
-          (y 544)
-        )
-      )
+      (path-ref "6b9dbe45-179b-4471-9712-7ec40869ec1d")
       (width 5)
       (height 4)
       (tiles

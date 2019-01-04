@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "In the mountain"))
   (author "Eliminator")
   (contact "jacob_vejvoda@hotmail.com")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/cave2.jpg")
@@ -15,6 +16,7 @@
       (image-bottom "images/background/cave2.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (climbable
@@ -82,22 +84,18 @@
       (y 328)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 3583.322)
       (y 127.1278)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 4319.411)
       (y 129.733)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 4512.411)
       (y 127.733)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 4703)
       (y 317)
     )
@@ -141,38 +139,49 @@
       (x 7937)
       (y 390)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
     (owl
+      (carry "skydive")
       (x 9089.498)
       (y 118.3259)
     )
     (owl
+      (carry "skydive")
       (x 8710.348)
       (y 123.1422)
     )
     (owl
+      (carry "skydive")
       (direction "right")
       (x 8932.934)
       (y 102.1127)
     )
     (owl
+      (carry "skydive")
       (direction "left")
       (x 8796.952)
       (y 81.93246)
     )
     (owl
+      (carry "skydive")
       (direction "left")
       (x 9017.984)
       (y 89.00354)
     )
     (owl
+      (carry "skydive")
       (x 8855.498)
       (y 88.3259)
     )
     (owl
+      (carry "skydive")
       (x 8578.498)
       (y 94.3259)
     )
     (owl
+      (carry "skydive")
       (direction "left")
       (x 8656.952)
       (y 74.93246)
@@ -203,11 +212,6 @@
     (short_fuse
       (x 2872.801)
       (y 546.8062)
-    )
-    (sspiky
-      (direction "right")
-      (x 880.0681)
-      (y 286.7487)
     )
     (snowball
       (x 332.5304)
@@ -257,6 +261,11 @@
       (name "main")
       (x 96)
       (y 288)
+    )
+    (sspiky
+      (direction "right")
+      (x 880.0681)
+      (y 286.7487)
     )
     (stalactite
       (x 352)
@@ -353,26 +362,6 @@
     (stalactite
       (x 9378.885)
       (y 253.2892)
-    )
-    (yeti_stalactite
-      (x 3521.411)
-      (y 219.2944)
-    )
-    (yeti_stalactite
-      (x 24)
-      (y 196)
-    )
-    (yeti_stalactite
-      (x 4508.513)
-      (y 93.95117)
-    )
-    (yeti_stalactite
-      (x 4549.513)
-      (y 87.95117)
-    )
-    (yeti_stalactite
-      (x 4528.513)
-      (y 83.95117)
     )
     (tilemap
       (solid #f)
@@ -548,6 +537,26 @@
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
       )
+    )
+    (yeti_stalactite
+      (x 3521.411)
+      (y 219.2944)
+    )
+    (yeti_stalactite
+      (x 24)
+      (y 196)
+    )
+    (yeti_stalactite
+      (x 4508.513)
+      (y 93.95117)
+    )
+    (yeti_stalactite
+      (x 4549.513)
+      (y 87.95117)
+    )
+    (yeti_stalactite
+      (x 4528.513)
+      (y 83.95117)
     )
   )
 )

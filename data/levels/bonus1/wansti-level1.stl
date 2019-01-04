@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Semi-Frozen"))
   (author "SuperTux Team")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 4531)
       (y 689)
@@ -25,6 +25,7 @@
       (y 640)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (firefly
@@ -98,6 +99,18 @@
       (x 10123)
       (y 569)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (path
+      (name "887dde56-4eb4-4db5-8ee3-4cc32d3eba19")
+      (path
+        (node
+          (x 13504)
+          (y 576)
+        )
+      )
+    )
     (scripttrigger
       (script "Level.spawn(\"water\",\"main\")")
       (button #f)
@@ -108,16 +121,12 @@
     )
     (secretarea
       (fade-tilemap "secret")
-      (script "")
-      (message "")
       (width 206.6582)
       (height 127.9922)
       (x 13504)
       (y 608)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 96)
       (height 96)
       (x 5696)
@@ -267,7 +276,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 500)
       (height 36)
@@ -312,7 +322,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 500)
       (height 36)
@@ -491,12 +502,7 @@
       (solid #f)
       (z-pos 101)
       (name "secret")
-      (path
-        (node
-          (x 13504)
-          (y 576)
-        )
-      )
+      (path-ref "887dde56-4eb4-4db5-8ee3-4cc32d3eba19")
       (width 7)
       (height 6)
       (tiles
@@ -600,8 +606,9 @@
   )
   (sector
     (name "water")
-    (music "music/bonuscave.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -609,7 +616,11 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
+    )
+    (music
+      (file "music/bonuscave.ogg")
     )
     (scripttrigger
       (script "Level.spawn(\"water\",\"fall\")")
@@ -628,8 +639,6 @@
       (y 0)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 156)
       (height 92)
       (x 32)

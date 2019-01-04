@@ -22,55 +22,47 @@
 #include <squirrel.h>
 
 #include "math/vector.hpp"
-#include "object/endsequence.hpp"
 #include "supertux/game_session_recorder.hpp"
+#include "supertux/player_status.hpp"
 #include "supertux/screen.hpp"
 #include "supertux/sequence.hpp"
-#include "supertux/player_status.hpp"
 #include "util/currenton.hpp"
+#include "video/surface_ptr.hpp"
 
 class CodeController;
 class DrawingContext;
+class EndSequence;
 class Level;
 class Sector;
 class Statistics;
 class Savegame;
 
-/**
- * Screen that runs a Level, where Players run and jump through Sectors.
- */
-class GameSession : public Screen,
-                    public GameSessionRecorder,
-                    public Currenton<GameSession>
+/** Screen that runs a Level, where Players run and jump through Sectors. */
+class GameSession final : public Screen,
+                          public GameSessionRecorder,
+                          public Currenton<GameSession>
 {
 public:
-  GameSession(const std::string& levelfile, Savegame& savegame, Statistics* statistics = NULL);
+  GameSession(const std::string& levelfile, Savegame& savegame, Statistics* statistics = nullptr);
 
-  void draw(DrawingContext& context) override;
-  void update(float frame_ratio) override;
-  void setup() override;
-  void leave() override;
-  void on_window_resize();
+  virtual void draw(Compositor& compositor) override;
+  virtual void update(float dt_sec, const Controller& controller) override;
+  virtual void setup() override;
+  virtual void leave() override;
 
-  /// ends the current level
+  /** ends the current level */
   void finish(bool win = true);
-  void respawn(const std::string& sectorname, const std::string& spawnpointname, 
-  const bool invincibility = false, const int invincibilityperiod = 0);
+  void respawn(const std::string& sectorname, const std::string& spawnpointname,
+               const bool invincibility = false, const int invincibilityperiod = 0);
   void reset_level();
   void set_reset_point(const std::string& sectorname, const Vector& pos);
-  std::string get_reset_point_sectorname() const
-  { return reset_sector; }
+  std::string get_reset_point_sectorname() const { return m_reset_sector; }
 
-  Vector get_reset_point_pos() const
-  { return reset_pos; }
+  Vector get_reset_point_pos() const { return m_reset_pos; }
+  Sector& get_current_sector() const { return *m_currentsector; }
+  Level& get_current_level() const { return *m_level; }
 
-  Sector* get_current_sector() const
-  { return currentsector; }
-
-  Level* get_current_level() const
-  { return level.get(); }
-
-  void start_sequence(Sequence seq);
+  void start_sequence(Sequence seq, const SequenceData* data = nullptr);
 
   /**
    * returns the "working directory" usually this is the directory where the
@@ -85,14 +77,10 @@ public:
   void abort_level();
   bool is_active() const;
 
-  /**
-   * Enters or leaves level editor mode
-   */
+  /** Enters or leaves level editor mode */
   void set_editmode(bool edit_mode = true);
 
-  /**
-   * Forces all Players to enter ghost mode
-   */
+  /** Forces all Players to enter ghost mode */
   void force_ghost_mode();
 
   Savegame& get_savegame() const { return m_savegame; }
@@ -105,57 +93,58 @@ private:
 
   void on_escape_press();
 
-  std::unique_ptr<Level> level;
-  std::unique_ptr<Level> old_level;
-  SurfacePtr statistics_backdrop;
+private:
+  std::unique_ptr<Level> m_level;
+  std::unique_ptr<Level> m_old_level;
+  SurfacePtr m_statistics_backdrop;
 
   // scripts
   typedef std::vector<HSQOBJECT> ScriptList;
-  ScriptList scripts;
+  ScriptList m_scripts;
 
-  Sector* currentsector;
+  Sector* m_currentsector;
 
-  std::shared_ptr<EndSequence> end_sequence;
+  EndSequence* m_end_sequence;
 
-  bool  game_pause;
-  float speed_before_pause;
+  bool  m_game_pause;
+  float m_speed_before_pause;
 
-  std::string levelfile;
+  std::string m_levelfile;
 
   // reset point (the point where tux respawns if he dies)
-  std::string reset_sector;
-  Vector reset_pos;
+  std::string m_reset_sector;
+  Vector m_reset_pos;
 
   // the sector and spawnpoint we should spawn after this frame
-  std::string newsector;
-  std::string newspawnpoint;
-  
-  // Whether the player had invincibility before spawning in a new sector
-  bool pastinvincibility;
-  int newinvincibilityperiod;
+  std::string m_newsector;
+  std::string m_newspawnpoint;
 
-  Statistics* best_level_statistics;
+  // Whether the player had invincibility before spawning in a new sector
+  bool m_pastinvincibility;
+  int m_newinvincibilityperiod;
+
+  Statistics* m_best_level_statistics;
   Savegame& m_savegame;
 
-  float play_time; /**< total time in seconds that this session ran interactively */
+  float m_play_time; /**< total time in seconds that this session ran interactively */
 
-  bool edit_mode; /**< true if GameSession runs in level editor mode */
-  bool levelintro_shown; /**< true if the LevelIntro screen was already shown */
+  bool m_edit_mode; /**< true if GameSession runs in level editor mode */
+  bool m_levelintro_shown; /**< true if the LevelIntro screen was already shown */
 
-  int coins_at_start; /** How many coins does the player have at the start */
-  BonusType bonus_at_start; /** What bonuses does the player have at the start */
-  int max_fire_bullets_at_start; /** How many fire bullets does the player have */
-  int max_ice_bullets_at_start; /** How many ice bullets does the player have */
+  int m_coins_at_start; /** How many coins does the player have at the start */
+  BonusType m_bonus_at_start; /** What bonuses does the player have at the start */
+  int m_max_fire_bullets_at_start; /** How many fire bullets does the player have */
+  int m_max_ice_bullets_at_start; /** How many ice bullets does the player have */
 
-  bool active; /** Game active? **/
+  bool m_active; /** Game active? **/
 
-  bool end_seq_started;
+  bool m_end_seq_started;
 
 private:
-  GameSession(const GameSession&);
-  GameSession& operator=(const GameSession&);
+  GameSession(const GameSession&) = delete;
+  GameSession& operator=(const GameSession&) = delete;
 };
 
-#endif /*SUPERTUX_GAMELOOP_H*/
+#endif
 
 /* EOF */

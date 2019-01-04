@@ -1,13 +1,15 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Pipeline"))
   (author "165your4")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (flyingsnowball
@@ -35,59 +37,62 @@
       (y 296)
     )
     (mrbomb
+      (direction "right")
       (x 3493)
       (y 648)
-      (direction "right")
     )
     (mrbomb
+      (direction "right")
       (x 4357)
       (y 200)
-      (direction "right")
     )
     (mriceblock
+      (direction "left")
       (x 4609)
       (y 614)
-      (direction "left")
+    )
+    (music
+      (file "music/airship_remix.music")
     )
     (smartball
+      (direction "left")
       (x 2083)
       (y 262)
-      (direction "left")
     )
     (smartball
+      (direction "left")
       (x 1763)
       (y 454)
-      (direction "left")
     )
     (smartball
+      (direction "left")
       (x 3619)
       (y 294)
-      (direction "left")
     )
     (smartball
+      (direction "left")
       (x 6787)
       (y 390)
-      (direction "left")
     )
     (snowball
+      (direction "left")
       (x 739)
       (y 676)
-      (direction "left")
     )
     (snowball
+      (direction "left")
       (x 675)
       (y 676)
-      (direction "left")
     )
     (snowball
+      (direction "left")
       (x 4867)
       (y 612)
-      (direction "left")
     )
     (snowball
+      (direction "left")
       (x 611)
       (y 676)
-      (direction "left")
     )
     (spawnpoint
       (name "main")

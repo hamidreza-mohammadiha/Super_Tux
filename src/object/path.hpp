@@ -19,6 +19,7 @@
 #ifndef HEADER_SUPERTUX_OBJECT_PATH_HPP
 #define HEADER_SUPERTUX_OBJECT_PATH_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,20 +29,22 @@ class ObjectOption;
 class ReaderMapping;
 class Writer;
 
-class Path
+enum class WalkMode {
+  // moves from first to last path node and stops
+  ONE_SHOT,
+  // moves from first to last node then in reverse order back to first
+  PING_PONG,
+  // moves from last node back to the first node
+  CIRCULAR
+};
+
+WalkMode string_to_walk_mode(const std::string& mode_string);
+std::string walk_mode_to_string(WalkMode walk_mode);
+
+class Path final
 {
 public:
-  Path();
-  Path(const Vector& pos);
-
-  void read(const ReaderMapping& reader);
-  void save(Writer& writer);
-
-  Vector get_base() const;
-
-  /**
-   * Helper class that stores an individual node of a Path
-   */
+  /** Helper class that stores an individual node of a Path */
   class Node
   {
   public:
@@ -54,53 +57,40 @@ public:
     {}
   };
 
-  std::vector<Node> nodes;
+public:
+  Path();
+  Path(const Vector& pos);
 
-  /**
-   * returns Node index nearest to reference_point or -1 if not applicable
-   */
+  void read(const ReaderMapping& reader);
+  void save(Writer& writer);
+
+  Vector get_base() const;
+
+  /** returns Node index nearest to reference_point or -1 if not applicable */
   int get_nearest_node_no(const Vector& reference_point) const;
 
-  /**
-   * returns Node index farthest from reference_point or -1 if not applicable
-   */
+  /** returns Node index farthest from reference_point or -1 if not applicable */
   int get_farthest_node_no(const Vector& reference_point) const;
 
-  /**
-   * Moves all nodes by given shift.
-   */
+  /** Moves all nodes by given shift. */
   void move_by(const Vector& shift);
 
-  /**
-   * Puts node markers to the nodes to edit them.
-   */
+  /** Puts node markers to the nodes to edit them. */
   void edit_path();
 
-  /**
-   * Returns false when has no nodes
-   */
+  /** Returns false when has no nodes */
   bool is_valid() const;
 
-  enum WalkMode {
-    // moves from first to last path node and stops
-    ONE_SHOT,
-    // moves from first to last node then in reverse order back to first
-    PING_PONG,
-    // moves from last node back to the first node
-    CIRCULAR,
-    // moves randomly among the nodes
-    UNORDERED
-  };
+  const std::vector<Node>& get_nodes() const { return m_nodes; }
 
-  WalkMode mode;
+public:
+  std::vector<Node> m_nodes;
 
-  WalkMode string_to_walk_mode(const std::string& mode_string) const;
-  const std::string walk_mode_to_string(const WalkMode& walk_mode) const;
+  WalkMode m_mode;
 
-  /**
-   * Returns an object option that modifies the mode.
-   */
-  static ObjectOption get_mode_option(WalkMode* mode_);
+private:
+  Path(const Path&) = delete;
+  Path& operator=(const Path&) = delete;
 };
 
 #endif

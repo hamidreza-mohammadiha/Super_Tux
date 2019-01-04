@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "My Penny is over the ocean"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
@@ -7,8 +7,9 @@
   (target-time 45)
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/nightsky_top.png")
@@ -24,6 +25,7 @@
       (y 480)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -39,7 +41,6 @@
       (y 416)
     )
     (icecrusher
-      (sprite "images/creatures/icecrusher/icecrusher.sprite")
       (x 7072)
       (y 288)
     )
@@ -76,26 +77,20 @@
       (x 6656)
       (y 640)
     )
-    (smartball
-      (x 9504)
-      (y 448)
+    (music
+      (file "music/airship_remix.music")
     )
-    (smartball
-      (x 9600)
-      (y 448)
-    )
-    (smartball
-      (x 8992)
-      (y 512)
-    )
-    (smartball
-      (x 3744)
-      (y 736)
+    (path
+      (name "b651c21c-8bbd-4ac4-927c-9381048f3cf2")
+      (path
+        (node
+          (x 6400)
+          (y 896)
+        )
+      )
     )
     (secretarea
       (fade-tilemap "secr1")
-      (script "")
-      (message "")
       (width 92)
       (height 104)
       (x 6432)
@@ -125,9 +120,21 @@
       (x 1911)
       (y 606)
     )
-    (sspiky
-      (x 5728)
-      (y 672)
+    (smartball
+      (x 9504)
+      (y 448)
+    )
+    (smartball
+      (x 9600)
+      (y 448)
+    )
+    (smartball
+      (x 8992)
+      (y 512)
+    )
+    (smartball
+      (x 3744)
+      (y 736)
     )
     (snowball
       (x 3040)
@@ -149,6 +156,10 @@
     (spiky
       (x 4256)
       (y 832)
+    )
+    (sspiky
+      (x 5728)
+      (y 672)
     )
     (tilemap
       (solid #f)
@@ -286,12 +297,7 @@
       (solid #f)
       (z-pos 101)
       (name "secr1")
-      (path
-        (node
-          (x 6400)
-          (y 896)
-        )
-      )
+      (path-ref "b651c21c-8bbd-4ac4-927c-9381048f3cf2")
       (width 27)
       (height 7)
       (tiles

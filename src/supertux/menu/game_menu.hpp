@@ -27,7 +27,7 @@ enum GameMenuIDs {
   MNID_ABORTLEVEL
 };
 
-class GameMenu : public Menu
+class GameMenu final : public Menu
 {
 private:
   // stores callback for level reset
@@ -37,11 +37,11 @@ private:
 public:
   GameMenu();
 
-  void menu_action(MenuItem* item) override;
+  void menu_action(MenuItem& item) override;
 
 private:
-  GameMenu(const GameMenu&);
-  GameMenu& operator=(const GameMenu&);
+  GameMenu(const GameMenu&) = delete;
+  GameMenu& operator=(const GameMenu&) = delete;
 };
 
 #endif

@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "The not so long way"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
   (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/nightsky_top.png")
@@ -15,6 +16,7 @@
       (image-bottom "images/background/nightsky_bottom.png")
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -149,15 +151,18 @@
       (x 7968)
       (y 800)
     )
-    (smartball
-      (x 8096)
-      (y 800)
+    (music
+      (file "music/airship_remix.music")
     )
     (secretarea
       (width 476)
       (height 156)
       (x 1376)
       (y 192)
+    )
+    (smartball
+      (x 8096)
+      (y 800)
     )
     (snowman
       (x 8448)

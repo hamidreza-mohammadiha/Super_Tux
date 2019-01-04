@@ -14,9 +14,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <algorithm>
-
 #include "string_util.hpp"
+
+#include <algorithm>
+#include <string>
+#include <string.h>
 
 bool
 StringUtil::has_suffix(const std::string& data, const std::string& suffix)
@@ -31,7 +33,7 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
   std::string::size_type i = 0;
   std::string::size_type min_len = std::min(lhs.size(), rhs.size());
 
-  while(i < min_len)
+  while (i < min_len)
   {
     if (isdigit(lhs[i]) && isdigit(rhs[i]))
     {
@@ -40,14 +42,14 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
       std::string::size_type ri = i+1;
 
       // find the end of the number in both strings
-      while(li < lhs.size() && isdigit(lhs[li])) { li += 1; }
-      while(ri < rhs.size() && isdigit(rhs[ri])) { ri += 1; }
+      while (li < lhs.size() && isdigit(lhs[li])) { li += 1; }
+      while (ri < rhs.size() && isdigit(rhs[ri])) { ri += 1; }
 
       if (li == ri)
       {
         // end is at the same point in both strings, so do a detaile
         // comparism of the numbers
-        for(std::string::size_type j = i; j < li; ++j)
+        for (std::string::size_type j = i; j < li; ++j)
         {
           if (lhs[j] != rhs[j])
           {
@@ -81,6 +83,14 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
   }
 
   return lhs.size() < rhs.size();
+}
+
+std::string
+StringUtil::tolower(const std::string& text)
+{
+  std::string result = text;
+  std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+  return result;
 }
 
 /* EOF */

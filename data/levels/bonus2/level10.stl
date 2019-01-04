@@ -1,12 +1,13 @@
 (supertux-level
-  (version 2)
-  (name (_ "fjerd"))  (license "GPL 2+ / CC-by-sa 3.0")
+  (version 3)
+  (name (_ "fjerd"))
   (author "Thomas")
-  (target-time 0)
+  (license "GPL 2+ / CC-by-sa 3.0")
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 1442)
       (y 630)
@@ -20,10 +21,8 @@
       (y 630)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-      (backscrolling #f)
-    )
-    (particles-clouds
     )
     (fish
       (x 954)
@@ -92,6 +91,11 @@
       (x 2557)
       (y 758)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
     (snowball
       (x 362)
       (y 598)
@@ -107,7 +111,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 200)
       (height 36)
@@ -152,7 +157,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 200)
       (height 36)

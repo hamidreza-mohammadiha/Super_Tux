@@ -1,5 +1,5 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Another cold day"))
   (author "Wolfs")
   (contact "pizzaservice at freenet.de")
@@ -7,13 +7,15 @@
   (target-time 40)
   (sector
     (name "main")
-    (music "music/airship_remix.music")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 5665)
       (y 352)
     )
     (camera
+      (name "Camera")
       (mode "normal")
     )
     (crystallo
@@ -29,10 +31,10 @@
       (y 615)
     )
     (decal
+      (z-pos 100)
+      (sprite "images/tiles/goal/exitfg.png")
       (x 10176)
       (y 192)
-      (layer 100)
-      (sprite "images/tiles/goal/exitfg.png")
     )
     (gradient
       (top_color 0 0.3137255 1)
@@ -126,6 +128,25 @@
       (x 3649)
       (y 550)
     )
+    (music
+      (file "music/airship_remix.music")
+    )
+    (path
+      (name "fae59af4-eae7-4f37-ba3c-b74717e1a3a6")
+      (path
+        (node
+          (x 64)
+          (y 768)
+        )
+      )
+    )
+    (secretarea
+      (fade-tilemap "secr1")
+      (width 156)
+      (height 40)
+      (x 64)
+      (y 884)
+    )
     (smartball
       (x 7459)
       (y 646)
@@ -149,19 +170,6 @@
     (smartball
       (x 4995)
       (y 966)
-    )
-    (secretarea
-      (fade-tilemap "secr1")
-      (script "")
-      (message "")
-      (width 156)
-      (height 40)
-      (x 64)
-      (y 884)
-    )
-    (sspiky
-      (x 3782)
-      (y 554)
     )
     (snowball
       (x 2179)
@@ -196,6 +204,10 @@
       (x 6406)
       (y 298)
     )
+    (sspiky
+      (x 3782)
+      (y 554)
+    )
     (stalactite
       (x 6240)
       (y 580)
@@ -214,7 +226,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.5)
+      (speed-x 0.5)
+      (speed-y 0.5)
       (z-pos -130)
       (width 330)
       (height 35)
@@ -258,7 +271,8 @@
     )
     (tilemap
       (solid #f)
-      (speed 0.2)
+      (speed-x 0.2)
+      (speed-y 0.2)
       (z-pos -170)
       (width 330)
       (height 35)
@@ -392,12 +406,7 @@
       (solid #t)
       (z-pos 101)
       (name "secr1")
-      (path
-        (node
-          (x 64)
-          (y 768)
-        )
-      )
+      (path-ref "fae59af4-eae7-4f37-ba3c-b74717e1a3a6")
       (width 7)
       (height 11)
       (tiles

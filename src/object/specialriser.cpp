@@ -14,23 +14,24 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "video/drawing_context.hpp"
 #include "object/specialriser.hpp"
-#include "supertux/sector.hpp"
 
-SpecialRiser::SpecialRiser(const Vector& pos, std::shared_ptr<MovingObject> _child) :
+#include "supertux/sector.hpp"
+#include "video/drawing_context.hpp"
+
+SpecialRiser::SpecialRiser(const Vector& pos, std::unique_ptr<MovingObject> child_) :
   offset(0),
-  child(_child)
+  child(std::move(child_))
 {
-  _child->set_pos(pos - Vector(0, 32));
+  child->set_pos(pos - Vector(0, 32));
 }
 
 void
-SpecialRiser::update(float elapsed_time)
+SpecialRiser::update(float dt_sec)
 {
-  offset += 50 * elapsed_time;
-  if(offset > 32) {
-    Sector::current()->add_object(child);
+  offset += 50 * dt_sec;
+  if (offset > 32) {
+    Sector::get().add_object(std::move(child));
     remove_me();
   }
 }

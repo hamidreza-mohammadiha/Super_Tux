@@ -1,13 +1,14 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "To rain or not to rain - That's the question"))
   (author "Tore Bergebakken")
   (license "GPL 2+ / CC-by-sa 3.0")
   (target-time 25)
   (sector
     (name "main")
-    (music "music/forest2.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (background
       (speed 0.5)
       (image-top "images/background/BlueRock_Forest/blue-top.jpg")
@@ -15,10 +16,8 @@
       (image-bottom "images/background/BlueRock_Forest/blue-bottom.jpg")
     )
     (camera
+      (name "Camera")
       (mode "normal")
-    )
-    (particles-clouds
-      (z-pos -201)
     )
     (igel
       (x 1653.211)
@@ -36,6 +35,23 @@
       (x 5374.058)
       (y 603.9736)
     )
+    (music
+      (file "music/forest2.ogg")
+    )
+    (particles-clouds
+      (z-pos -201)
+    )
+    (particles-rain
+    )
+    (path
+      (name "3f55b894-2eef-4c5a-93f0-f30c14467862")
+      (path
+        (node
+          (x 2400)
+          (y 608)
+        )
+      )
+    )
     (poisonivy
       (x 544)
       (y 640)
@@ -48,24 +64,12 @@
       (x 3215.783)
       (y 659.7925)
     )
-    (particles-rain
-    )
     (secretarea
       (fade-tilemap "secret1")
-      (script "")
-      (message "")
       (width 203.6345)
       (height 107.2964)
       (x 2394.111)
       (y 600.9527)
-    )
-    (sspiky
-      (x 4618.784)
-      (y 626.2362)
-    )
-    (sspiky
-      (x 4009.258)
-      (y 623.4077)
     )
     (snail
       (x 2182.533)
@@ -75,6 +79,14 @@
       (name "main")
       (x 32)
       (y 576)
+    )
+    (sspiky
+      (x 4618.784)
+      (y 626.2362)
+    )
+    (sspiky
+      (x 4009.258)
+      (y 623.4077)
     )
     (tilemap
       (solid #f)
@@ -215,12 +227,7 @@
       (solid #f)
       (z-pos 99)
       (name "secret1")
-      (path
-        (node
-          (x 2400)
-          (y 608)
-        )
-      )
+      (path-ref "3f55b894-2eef-4c5a-93f0-f30c14467862")
       (width 6)
       (height 3)
       (tiles

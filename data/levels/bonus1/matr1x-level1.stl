@@ -1,13 +1,13 @@
 (supertux-level
-  (version 2)
+  (version 3)
   (name (_ "Pipe Down Over There"))
   (author "Matr1x")
   (license "GPL 2+ / CC-by-sa 3.0")
-  (target-time 0)
   (sector
     (name "main")
-    (music "music/chipdisko.ogg")
-    (ambient-light 1 1 1)
+    (ambient-light
+      (color 1 1 1)
+    )
     (bouncingsnowball
       (x 1969)
       (y 608)
@@ -37,9 +37,8 @@
       (y 512)
     )
     (camera
+      (name "Camera")
       (mode "normal")
-    )
-    (particles-clouds
     )
     (firefly
       (x 5856)
@@ -260,10 +259,40 @@
       (x 11827)
       (y 736)
     )
+    (music
+      (file "music/chipdisko.ogg")
+    )
+    (particles-clouds
+    )
+    (path
+      (name "52bf5c4b-edf8-4b75-ba0a-c77899d50b86")
+      (path
+        (node
+          (x 4928)
+          (y 544)
+        )
+      )
+    )
+    (path
+      (name "8e84e9ec-46e8-491b-aba5-9b3c27763145")
+      (path
+        (node
+          (x 6624)
+          (y 384)
+        )
+      )
+    )
+    (path
+      (name "c09bae73-f6fb-42c2-9221-41ccb1a467fe")
+      (path
+        (node
+          (x 7232)
+          (y 608)
+        )
+      )
+    )
     (secretarea
       (fade-tilemap "secreta")
-      (script "")
-      (message "")
       (width 572)
       (height 92)
       (x 4928)
@@ -271,8 +300,6 @@
     )
     (secretarea
       (fade-tilemap "secretb")
-      (script "")
-      (message "")
       (width 252)
       (height 156)
       (x 6432)
@@ -280,16 +307,12 @@
     )
     (secretarea
       (fade-tilemap "secretc")
-      (script "")
-      (message "")
       (width 604)
       (height 92)
       (x 7232)
       (y 672)
     )
     (secretarea
-      (script "")
-      (message "")
       (width 92)
       (height 188)
       (x 192)
@@ -464,12 +487,7 @@
       (solid #f)
       (z-pos 101)
       (name "secreta")
-      (path
-        (node
-          (x 4928)
-          (y 544)
-        )
-      )
+      (path-ref "52bf5c4b-edf8-4b75-ba0a-c77899d50b86")
       (width 18)
       (height 6)
       (tiles
@@ -485,12 +503,7 @@
       (solid #f)
       (z-pos 101)
       (name "secretb")
-      (path
-        (node
-          (x 6624)
-          (y 384)
-        )
-      )
+      (path-ref "8e84e9ec-46e8-491b-aba5-9b3c27763145")
       (width 2)
       (height 6)
       (tiles
@@ -506,12 +519,7 @@
       (solid #f)
       (z-pos 101)
       (name "secretc")
-      (path
-        (node
-          (x 7232)
-          (y 608)
-        )
-      )
+      (path-ref "c09bae73-f6fb-42c2-9221-41ccb1a467fe")
       (width 19)
       (height 7)
       (tiles
