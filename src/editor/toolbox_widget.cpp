@@ -422,6 +422,7 @@ EditorToolboxWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
   return false;
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)
 bool
 EditorToolboxWidget::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
 {
@@ -438,6 +439,7 @@ EditorToolboxWidget::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
   }
   return false;
 }
+#endif
 
 void
 EditorToolboxWidget::resize()

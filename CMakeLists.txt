@@ -451,6 +451,7 @@ if(RAQM_FOUND)
 else()
   set(WITH_RAQM --without-raqm)
 endif()
+if(ENABLE_BUILTIN_SDL_TTF)
 set(SDL_TTF_PREFIX ${CMAKE_BINARY_DIR}/SDL_ttf/)
 ExternalProject_Add(SDL_ttf
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/SDL_ttf/"
@@ -465,6 +466,10 @@ add_library(SDL_ttf_lib STATIC IMPORTED)
 set_target_properties(SDL_ttf_lib PROPERTIES IMPORTED_LOCATION "${SDL_TTF_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2_ttf${CMAKE_STATIC_LIBRARY_SUFFIX}")
 link_directories(${SDL_TTF_PREFIX}/lib)
 include_directories(SYSTEM ${SDL_TTF_PREFIX}/include/SDL2)
+else(ENABLE_BUILTIN_SDL_TTF)
+PKG_SEARCH_MODULE(SDL_TTF REQUIRED SDL_ttf>=2.0.0)
+endif(ENABLE_BUILTIN_SDL_TTF)
+
 
 ## Some additional include paths
 
@@ -484,7 +489,7 @@ endif(WIN32)
 
 file(GLOB SUPERTUX_SOURCES_C RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/obstack/*.c external/findlocale/findlocale.c)
 
-file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*/*.cpp src/supertux/menu/*.cpp src/video/sdl/*.cpp src/video/null/*.cpp)
+file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*/*.cpp src/supertux/menu/*.cpp src/video/null/*.cpp)
 file(GLOB SUPERTUX_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${PROJECT_BINARY_DIR}/tmp/*.rc")
 
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/sexp-cpp/CMakeLists.txt)
@@ -501,19 +506,13 @@ target_link_libraries(savepng PUBLIC ${PNG_LIBRARIES})
 if(HAVE_OPENGL)
   file(GLOB SUPERTUX_OPENGL_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/video/gl/*.cpp)
   set(SUPERTUX_SOURCES_CXX ${SUPERTUX_SOURCES_CXX} ${SUPERTUX_OPENGL_SOURCES})
+else(HAVE_OPENGL)
 endif(HAVE_OPENGL)
 
 ## Sort source lists to have deterministic linking order
 list(SORT SUPERTUX_SOURCES_C)
 list(SORT SUPERTUX_SOURCES_CXX)
 list(SORT SUPERTUX_RESOURCES)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/video/sdl/sdl_painter.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/video/sdl/sdl_screen_renderer.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/video/sdl/sdl_texture.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/video/sdl/sdl_texture_renderer.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/video/sdl/sdl_video_system.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/control/game_controller_manager.cpp)
-LIST(REMOVE_ITEM SUPERTUX_SOURCES_CXX src/control/joystick_manager.cpp)
 
 
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/scripting/wrapper.cpp)
@@ -749,7 +748,9 @@ endif(WIN32 AND NOT VCPKG_BUILD)
 
 add_dependencies(supertux2_lib tinygettext)
 add_dependencies(supertux2_lib squirrel)
+if(ENABLE_BUILTIN_SDL_TTF)
 add_dependencies(supertux2_lib SDL_ttf)
+endif(ENABLE_BUILTIN_SDL_TTF)
 
 if(VCPKG_BUILD)
   target_include_directories(supertux2_lib PUBLIC ${CURL_INCLUDE_DIRS})
@@ -757,14 +758,22 @@ endif()
 
 target_include_directories(supertux2_lib SYSTEM PUBLIC ${SDL2_INCLUDE_DIRS})
 target_include_directories(supertux2_lib SYSTEM PUBLIC ${SDL2IMAGE_INCLUDE_DIRS})
+if(ENABLE_BUILTIN_SDL_TTF)
 target_include_directories(supertux2_lib SYSTEM PUBLIC ${SDL_TTF_PREFIX}/include/SDL2)
+else(ENABLE_BUILTIN_SDL_TTF)
+target_include_directories(supertux2_lib SYSTEM PUBLIC ${SDL_TTF_INCLUDE_DIRS})
+endif(ENABLE_BUILTIN_SDL_TTF)
 if(VCPKG_BUILD)
   target_link_libraries(supertux2_lib PRIVATE SDL2::SDL2main SDL2::SDL2 SDL2_image)
 else()
   target_link_libraries(supertux2_lib PUBLIC ${SDL2_LIBRARIES})
   target_link_libraries(supertux2_lib PUBLIC ${SDL2IMAGE_LIBRARIES})
 endif()
+if(ENABLE_BUILTIN_SDL_TTF)
 target_link_libraries(supertux2_lib PUBLIC SDL_ttf_lib)
+else(ENABLE_BUILTIN_SDL_TTF)
+target_link_libraries(supertux2_lib PUBLIC ${SDL_TTF_LIBRARIES})
+endif(ENABLE_BUILTIN_SDL_TTF)
 target_link_libraries(supertux2_lib PUBLIC ${FREETYPE_LIBRARIES})
 if(RAQM_FOUND)
   target_link_libraries(supertux2_lib PUBLIC ${RAQM_LIBRARIES})

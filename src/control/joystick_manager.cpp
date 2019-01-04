@@ -16,12 +16,15 @@
 
 #include "control/joystick_manager.hpp"
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+
 #include <algorithm>
 
 #include "control/input_manager.hpp"
 #include "control/joystick_config.hpp"
 #include "gui/menu_manager.hpp"
 #include "util/log.hpp"
+
 
 JoystickManager::JoystickManager(InputManager* parent_,
                                  JoystickConfig& joystick_config) :
@@ -232,5 +235,7 @@ JoystickManager::set_joy_controls(Controller::Control id, bool value)
 
   parent->get_controller().set_control(id, value);
 }
+
+#endif
 
 /* EOF */

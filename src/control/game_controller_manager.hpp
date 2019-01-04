@@ -22,6 +22,8 @@
 
 #include "control/controller.hpp"
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+
 class InputManager;
 struct SDL_ControllerAxisEvent;
 struct SDL_ControllerButtonEvent;
@@ -52,6 +54,7 @@ private:
   GameControllerManager& operator=(const GameControllerManager&) = delete;
 };
 
+#endif
 #endif
 
 /* EOF */

@@ -15,6 +15,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "control/game_controller_manager.hpp"
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+
 #include <algorithm>
 
 #include "control/input_manager.hpp"
@@ -214,5 +216,7 @@ GameControllerManager::on_controller_removed(int instance_id)
   m_game_controllers.erase(std::remove(m_game_controllers.begin(), m_game_controllers.end(), nullptr),
                            m_game_controllers.end());
 }
+
+#endif
 
 /* EOF */

@@ -23,6 +23,8 @@
 
 #include "control/controller.hpp"
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+
 class InputManager;
 class JoystickConfig;
 
@@ -71,6 +73,7 @@ private:
   JoystickManager& operator=(const JoystickManager&) = delete;
 };
 
+#endif
 #endif
 
 /* EOF */
