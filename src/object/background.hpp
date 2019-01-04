@@ -49,14 +49,13 @@ public:
   virtual void after_editor_set() override;
 
   void set_image(const std::string& name);
-  void set_image(const std::string& name, float bkgd_speed);
-  void set_images(const std::string& name_top_, const std::string& name_middle_, const std::string& name_bottom_);
+  void set_images(const std::string& name_top, const std::string& name_middle, const std::string& name_bottom);
   void set_speed(float bgd_speed);
 
   void draw_image(DrawingContext& context, const Vector& pos);
 
   std::string get_image() const { return m_imagefile; }
-  float get_speed() const { return m_speed.x; }
+  float get_speed() const { return m_parallax_speed.x; }
   int get_layer() const { return m_layer; }
 
 private:
@@ -84,7 +83,7 @@ private:
   std::string m_imagefile;
   std::string m_imagefile_bottom;
   Vector m_pos; /**< coordinates of upper-left corner of image */
-  Vector m_speed;
+  Vector m_parallax_speed;
   Vector m_scroll_speed;
   Vector m_scroll_offset;
   SurfacePtr m_image_top; /**< image to draw above pos */

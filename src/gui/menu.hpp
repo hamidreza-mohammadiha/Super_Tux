@@ -54,6 +54,17 @@ public:
   Menu();
   virtual ~Menu();
 
+  virtual void menu_action(MenuItem& item) = 0;
+
+  /** Executed before the menu is exited
+      @return true if it should perform the back action, false if it shouldn't */
+  virtual bool on_back_action() { return true; }
+
+  /** Perform actions to bring the menu up to date with configuration changes */
+  virtual void refresh() {}
+
+  virtual void on_window_resize();
+
   ItemHorizontalLine& add_hl();
   ItemLabel& add_label(const std::string& text);
   ItemAction& add_entry(int id, const std::string& text);
@@ -81,26 +92,12 @@ public:
   ItemColorDisplay& add_color_display(Color* color, int id = -1);
   ItemColorChannel& add_color_channel(float* input, Color channel, int id = -1);
 
-  virtual void menu_action(MenuItem& item) = 0;
-
-  /**
-   * Executed before the menu is exited
-   * @return true if it should perform the back action, false if it shouldn't
-   */
-  virtual bool on_back_action() { return true; }
-
   void process_input(const Controller& controller);
-
-  /** Perform actions to bring the menu up to date with configuration changes */
-  virtual void refresh() {}
 
   /** Remove all entries from the menu */
   void clear();
 
-  MenuItem& get_item(int index)
-  {
-    return *(items[index]);
-  }
+  MenuItem& get_item(int index) { return *(m_items[index]); }
 
   MenuItem& get_item_by_id(int id);
   const MenuItem& get_item_by_id(int id) const;
@@ -109,7 +106,7 @@ public:
   void set_active_item(int id);
 
   void draw(DrawingContext& context);
-  Vector get_center_pos() const { return pos; }
+  Vector get_center_pos() const { return m_pos; }
   void set_center_pos(float x, float y);
 
   void event(const SDL_Event& event);
@@ -117,43 +114,43 @@ public:
   float get_width() const;
   float get_height() const;
 
-  virtual void on_window_resize();
-
 protected:
+  /** returns true when the text is more important than action */
+  virtual bool is_sensitive() const;
+
   MenuItem& add_item(std::unique_ptr<MenuItem> menu_item);
   MenuItem& add_item(std::unique_ptr<MenuItem> menu_item, int pos_);
   void delete_item(int pos_);
-
-  ///returns true when the text is more important than action
-  virtual bool is_sensitive() const;
 
 private:
   void process_action(const MenuAction& menuaction);
   void check_controlfield_change_event(const SDL_Event& event);
   void draw_item(DrawingContext& context, int index);
-  /**
-   * Recalculates the width for this menu
-   */
+  /** Recalculates the width for this menu */
   void calculate_width();
 
 private:
-  // position of the menu (ie. center of the menu, not top/left)
-  Vector pos;
+  /** position of the menu (ie. center of the menu, not top/left) */
+  Vector m_pos;
 
   /* input implementation variables */
-  int   delete_character;
-  char  mn_input_char;
-  float menu_repeat_time;
-  float menu_width;
+  int m_delete_character;
+  char m_mn_input_char;
+  float m_menu_repeat_time;
+  float m_menu_width;
 
 public:
-  std::vector<std::unique_ptr<MenuItem> > items;
+  std::vector<std::unique_ptr<MenuItem> > m_items;
 
 private:
-  int arrange_left;
+  int m_arrange_left;
 
 protected:
-  int active_item;
+  int m_active_item;
+
+private:
+  Menu(const Menu&) = delete;
+  Menu& operator=(const Menu&) = delete;
 };
 
 #endif
