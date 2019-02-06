@@ -26,7 +26,7 @@
 InputManager::InputManager(KeyboardConfig& keyboard_config,
                            JoystickConfig& joystick_config) :
   controller(new Controller),
-  m_use_game_controller(joystick_config.use_game_controller),
+  m_use_game_controller(joystick_config.m_use_game_controller),
   keyboard_manager(new KeyboardManager(this, keyboard_config))
 #if SDL_VERSION_ATLEAST(2,0,0)
   ,

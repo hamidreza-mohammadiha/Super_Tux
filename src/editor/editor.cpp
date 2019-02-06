@@ -21,7 +21,6 @@
 #ifdef __ANDROID__
 #include <SDL_screenkeyboard.h>
 #endif
-#include <iostream>
 
 #include "audio/sound_manager.hpp"
 #include "control/input_manager.hpp"
@@ -347,24 +346,24 @@ Editor::update_keyboard(const Controller& controller)
     return;
   }
 
-  if (controller.pressed(Controller::ESCAPE)) {
+  if (controller.pressed(Control::ESCAPE)) {
     esc_press();
     return;
   }
 
-  if (controller.hold(Controller::LEFT)) {
+  if (controller.hold(Control::LEFT)) {
     scroll({-32.0f, 0.0f});
   }
 
-  if (controller.hold(Controller::RIGHT)) {
+  if (controller.hold(Control::RIGHT)) {
     scroll({32.0f, 0.0f});
   }
 
-  if (controller.hold(Controller::UP)) {
+  if (controller.hold(Control::UP)) {
     scroll({0.0f, -32.0f});
   }
 
-  if (controller.hold(Controller::DOWN)) {
+  if (controller.hold(Control::DOWN)) {
     scroll({0.0f, 32.0f});
   }
 }
@@ -445,11 +444,15 @@ Editor::set_level(std::unique_ptr<Level> level, bool reset)
   }
 
   load_sector(sector_name);
-  m_sector->activate(sector_name);
-  m_sector->get_camera().set_mode(Camera::Mode::MANUAL);
 
-  if (!reset) {
-    m_sector->get_camera().set_translation(translation);
+  if (m_sector != nullptr)
+  {
+    m_sector->activate(sector_name);
+    m_sector->get_camera().set_mode(Camera::Mode::MANUAL);
+
+    if (!reset) {
+      m_sector->get_camera().set_translation(translation);
+    }
   }
 
   m_layers_widget->refresh_sector_text();

@@ -542,7 +542,7 @@ OptionsMenu::menu_action(MenuItem& item)
           break;
 
         default:
-          assert(false && "never reached");
+          assert(false);
           break;
       }
       break;

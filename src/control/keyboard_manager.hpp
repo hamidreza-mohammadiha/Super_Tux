@@ -18,6 +18,8 @@
 #ifndef HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 #define HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 
+#include <boost/optional.hpp>
+
 #include "control/controller.hpp"
 
 class InputManager;
@@ -27,12 +29,6 @@ struct SDL_TextInputEvent;
 
 class KeyboardManager final
 {
-private:
-  InputManager* m_parent;
-  KeyboardConfig& m_keyboard_config;
-  int wait_for_key;
-  bool m_lock_text_input;
-
 public:
   KeyboardManager(InputManager* parent, KeyboardConfig& keyboard_config);
 
@@ -44,7 +40,13 @@ public:
   void process_mouse_event(const SDL_MouseMotionEvent& event);
   void process_mouse_event(const SDL_MouseButtonEvent& event);
 
-  void bind_next_event_to(Controller::Control id);
+  void bind_next_event_to(Control id);
+
+private:
+  InputManager* m_parent;
+  KeyboardConfig& m_keyboard_config;
+  boost::optional<Control> m_wait_for_key;
+  bool m_lock_text_input;
 
 private:
   KeyboardManager(const KeyboardManager&) = delete;

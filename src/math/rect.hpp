@@ -20,6 +20,7 @@
 #include <iosfwd>
 
 #include <algorithm>
+#include <tuple>
 #include <SDL.h>
 
 #include "math/size.hpp"
@@ -97,6 +98,7 @@ public:
   int get_width()  const { return right - left; }
   int get_height() const { return bottom - top; }
   Size get_size() const { return Size(right - left, bottom - top); }
+  int get_area() const { return get_width() * get_height(); }
 
   bool empty() const
   {
@@ -140,6 +142,10 @@ public:
 #else
     return {(Sint16) left, (Sint16) top, (Uint16) get_width(), (Uint16) get_height()};
 #endif
+  }
+
+  bool operator<(const Rect& other) const {
+    return std::tie(left, top, right, bottom) < std::tie(other.left, other.top, other.right, other.bottom);
   }
 };
 
