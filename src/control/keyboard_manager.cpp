@@ -83,7 +83,7 @@ KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
   }
 }
 
-#if 0
+#if SDL_VERSION_ATLEAST(2,0,0)
 void
 KeyboardManager::process_text_input_event(const SDL_TextInputEvent& event)
 {
@@ -94,7 +94,7 @@ KeyboardManager::process_text_input_event(const SDL_TextInputEvent& event)
     }
   }
 }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 void
 KeyboardManager::process_console_key_event(const SDL_KeyboardEvent& event)
@@ -174,7 +174,7 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
     return;
   }
 
-#if 0
+#if SDL_VERSION_ATLEAST(2,0,0)
   if (m_parent->joystick_manager->wait_for_joystick >= 0)
   {
     if (event.keysym.sym == SDLK_ESCAPE)
@@ -185,7 +185,7 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
     }
     return;
   }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   Control control;
   /* we use default keys when the menu is open (to avoid problems when
@@ -236,20 +236,6 @@ void
 KeyboardManager::bind_next_event_to(Control id)
 {
   m_wait_for_key = id;
-}
-
-void
-KeyboardManager::process_mouse_event(const SDL_MouseMotionEvent& event)
-{
-  m_parent->get_controller()->set_mouse(event.x, event.y, event.state & SDL_BUTTON_LMASK);
-}
-
-void
-KeyboardManager::process_mouse_event(const SDL_MouseButtonEvent& event)
-{
-  if (event.button != SDL_BUTTON_LEFT)
-    return;
-  m_parent->get_controller()->set_mouse(event.x, event.y, event.state == SDL_PRESSED);
 }
 
 /* EOF */

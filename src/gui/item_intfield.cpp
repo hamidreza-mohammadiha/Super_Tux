@@ -60,7 +60,7 @@ ItemIntField::event(const SDL_Event& ev) {
       add_char(c);
     }
   }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 }
 
 void

@@ -635,7 +635,10 @@ Editor::event(const SDL_Event& ev)
     }
 
     // unreliable heuristic to snapshot the current state for future undo
-    if (((ev.type == SDL_KEYUP && ev.key.repeat == 0 &&
+    if (((ev.type == SDL_KEYUP &&
+#if SDL_VERSION_ATLEAST(2,0,0)
+         ev.key.repeat == 0 &&
+#endif // SDL_VERSION_ATLEAST(2,0,0)
          ev.key.keysym.sym != SDLK_LSHIFT &&
          ev.key.keysym.sym != SDLK_RSHIFT &&
          ev.key.keysym.sym != SDLK_LCTRL &&

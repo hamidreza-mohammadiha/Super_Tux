@@ -33,7 +33,7 @@ Widget::event(const SDL_Event& ev)
 #if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_MOUSEWHEEL:
       return on_mouse_wheel(ev.wheel);
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
     case SDL_KEYDOWN:
       return on_key_down(ev.key);

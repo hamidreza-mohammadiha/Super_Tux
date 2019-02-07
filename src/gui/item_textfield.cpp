@@ -69,7 +69,7 @@ ItemTextField::event(const SDL_Event& ev) {
   if (ev.type == SDL_TEXTINPUT) {
     *input += ev.text.text;
   }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 }
 
 void

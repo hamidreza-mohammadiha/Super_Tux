@@ -274,11 +274,11 @@ ScreenManager::process_events(DrawingContext &context)
             break;
         }
         break;
-#else
+#else // SDL_VERSION_ATLEAST(2,0,0)
       case SDL_VIDEORESIZE:
         VideoSystem::current()->resize(event.resize.w, event.resize.h);
         break;
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
       case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_F10)

@@ -15,8 +15,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "control/controller.hpp"
-#include "video/renderer.hpp"
 #include "video/video_system.hpp"
+#include "video/viewport.hpp"
 
 #include <ostream>
 
@@ -135,7 +135,7 @@ void
 Controller::set_mouse(int x, int y, bool pressed)
 {
   mousePressed = pressed;
-  mousePos = VideoSystem::current()->get_renderer().to_logical(x, y);
+  mousePos = VideoSystem::current()->get_viewport().to_logical(x, y);
 }
 
 /* EOF */

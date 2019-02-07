@@ -17,6 +17,7 @@
 #ifndef HEADER_SUPERTUX_CONTROL_GAME_CONTROLLER_MANAGER_HPP
 #define HEADER_SUPERTUX_CONTROL_GAME_CONTROLLER_MANAGER_HPP
 
+#include <SDL.h>
 #include <vector>
 #include <array>
 
@@ -54,7 +55,7 @@ private:
   GameControllerManager& operator=(const GameControllerManager&) = delete;
 };
 
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 #endif
 
 /* EOF */

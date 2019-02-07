@@ -60,7 +60,7 @@ public:
   virtual bool on_mouse_motion(const SDL_MouseMotionEvent& motion) override;
 #if SDL_VERSION_ATLEAST(2,0,0)
   virtual bool on_mouse_wheel(const SDL_MouseWheelEvent& wheel) override;
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   virtual void setup() override;
   virtual void resize() override;

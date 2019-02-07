@@ -236,6 +236,6 @@ JoystickManager::set_joy_controls(Control id, bool value)
   parent->get_controller().set_control(id, value);
 }
 
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 /* EOF */

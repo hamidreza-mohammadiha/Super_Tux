@@ -18,6 +18,7 @@
 #ifndef HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 #define HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 
+#include <SDL.h>
 #include <boost/optional.hpp>
 
 #include "control/controller.hpp"
@@ -33,12 +34,11 @@ public:
   KeyboardManager(InputManager* parent, KeyboardConfig& keyboard_config);
 
   void process_key_event(const SDL_KeyboardEvent& event);
-  //void process_text_input_event(const SDL_TextInputEvent& event);
+#if SDL_VERSION_ATLEAST(2,0,0)
+  void process_text_input_event(const SDL_TextInputEvent& event);
+#endif // SDL_VERSION_ATLEAST(2,0,0)
   void process_console_key_event(const SDL_KeyboardEvent& event);
   void process_menu_key_event(const SDL_KeyboardEvent& event);
-
-  void process_mouse_event(const SDL_MouseMotionEvent& event);
-  void process_mouse_event(const SDL_MouseButtonEvent& event);
 
   void bind_next_event_to(Control id);
 

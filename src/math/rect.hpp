@@ -139,9 +139,9 @@ public:
   {
 #if SDL_VERSION_ATLEAST(2,0,0)
     return {left, top, get_width(), get_height()};
-#else
+#else // SDL_VERSION_ATLEAST(2,0,0)
     return {(Sint16) left, (Sint16) top, (Uint16) get_width(), (Uint16) get_height()};
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
   }
 
   bool operator<(const Rect& other) const {

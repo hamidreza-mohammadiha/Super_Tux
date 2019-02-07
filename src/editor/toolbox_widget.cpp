@@ -439,7 +439,7 @@ EditorToolboxWidget::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
   }
   return false;
 }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 void
 EditorToolboxWidget::resize()

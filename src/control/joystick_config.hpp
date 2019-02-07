@@ -32,7 +32,11 @@ class JoystickConfig final
   friend class JoystickMenu;
 
 public:
+#if SDL_VERSION_ATLEAST(2,0,0)
   using JoystickID = SDL_JoystickID;
+#else // SDL_VERSION_ATLEAST(2,0,0)
+  typedef int JoystickID;
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 public:
   JoystickConfig();

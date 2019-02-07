@@ -216,6 +216,6 @@ GameControllerManager::on_controller_removed(int instance_id)
                            m_game_controllers.end());
 }
 
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 /* EOF */

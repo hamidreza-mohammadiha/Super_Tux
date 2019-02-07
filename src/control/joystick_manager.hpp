@@ -73,7 +73,7 @@ private:
   JoystickManager& operator=(const JoystickManager&) = delete;
 };
 
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 #endif
 
 /* EOF */

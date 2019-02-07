@@ -207,9 +207,9 @@ public:
       char* basepath_c = SDL_GetBasePath();
       std::string basepath = basepath_c ? basepath_c : "./";
       SDL_free(basepath_c);
-#else
+#else // SDL_VERSION_ATLEAST(2,0,0)
       std::string basepath = "./";
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
       if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
       {

@@ -40,7 +40,7 @@ public:
   virtual bool on_mouse_motion(const SDL_MouseMotionEvent& motion) { return false; }
 #if SDL_VERSION_ATLEAST(2,0,0)
   virtual bool on_mouse_wheel(const SDL_MouseWheelEvent& wheel) { return false; }
-#endif
+#endif // SDL_VERSION_ATLEAST(2,0,0)
   virtual bool on_key_up(const SDL_KeyboardEvent& key) { return false; }
   virtual bool on_key_down(const SDL_KeyboardEvent& key) { return false; }
 
