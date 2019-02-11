@@ -30,7 +30,7 @@
 #include "util/reader.hpp"
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
-#include "worldmap/level.hpp"
+#include "worldmap/level_tile.hpp"
 #include "worldmap/worldmap.hpp"
 #include "worldmap/worldmap_screen.hpp"
 
@@ -58,7 +58,7 @@ GameManager::start_worldmap(const World& world, const std::string& spawnpoint, c
   try
   {
     m_savegame = Savegame::from_file(world.get_savegame_filename());
-    LevelSaveState::save(LevelSaveState(m_world->get_basedir()));
+    LevelSaveState::save(LevelSaveState(world.get_basedir()));
 
     auto filename = m_savegame->get_player_status().last_worldmap;
     // If we specified a worldmap filename manually,
@@ -90,7 +90,7 @@ GameManager::start_worldmap(const World& world, const std::string& spawnpoint, c
       }
       else
       {
-        std::string levelfile = m_world->get_basedir() + "/" + level->get_name();
+        std::string levelfile = world.get_basedir() + "/" + level->get_name();
         if (LevelSaveState::get().level != levelfile)
         {
           log_warning << "Saved level " << LevelSaveState::get().level << " does not match worlmap level " << levelfile << std::endl;
@@ -98,10 +98,10 @@ GameManager::start_worldmap(const World& world, const std::string& spawnpoint, c
         else
         {
           // Hack: press a button on a controller
-          InputManager::current()->get_controller()->reset();
-          InputManager::current()->get_controller()->set_control(Controller::ACTION, true);
+          InputManager::current()->get_controller().reset();
+          InputManager::current()->get_controller().set_control(Control::ACTION, true);
           worldmap->update(0.0f);
-          InputManager::current()->get_controller()->set_control(Controller::ACTION, false);
+          InputManager::current()->get_controller().set_control(Control::ACTION, false);
         }
       }
     }

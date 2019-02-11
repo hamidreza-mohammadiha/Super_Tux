@@ -262,7 +262,7 @@ WorldMap::finished_level(Level* gamelevel)
   }
 
   save_state();
-  LevelSaveState::save(LevelSaveState(levels_path));
+  LevelSaveState::save(LevelSaveState(m_levels_path));
 
   if (old_level_state != level->is_solved()) {
     // Try to detect the next direction to which we should walk
@@ -483,7 +483,7 @@ WorldMap::at_teleporter(const Vector& pos) const
 void
 WorldMap::draw(DrawingContext& context)
 {
-  if (in_level)
+  if (m_in_level)
   {
     return;
   }

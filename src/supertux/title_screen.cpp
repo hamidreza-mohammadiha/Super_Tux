@@ -32,6 +32,7 @@
 #include "supertux/resources.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
+#include "supertux/world.hpp"
 #include "video/compositor.hpp"
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
@@ -155,8 +156,8 @@ TitleScreen::update(float dt_sec, const Controller& controller)
     {
       try
       {
-        std::unique_ptr<World> world = World::load(worldname);
-        GameManager::current()->start_worldmap(std::move(world));
+        std::unique_ptr<World> world = World::from_directory(worldname);
+        GameManager::current()->start_worldmap(*world);
       }
       catch(const std::exception& e)
       {

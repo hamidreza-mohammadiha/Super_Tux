@@ -73,7 +73,7 @@ GameSession::GameSession(const std::string& levelfile_, Savegame& savegame, Stat
   m_active(false),
   m_end_seq_started(false)
 {
-  if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "" && levelfile.find("levels/misc") != 0) {
+  if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "" && m_levelfile.find("levels/misc") != 0) {
     set_reset_point(LevelSaveState::get().sector, LevelSaveState::get().pos);
   }
   if (restart_level() != 0)
@@ -185,7 +185,7 @@ GameSession::toggle_pause()
     m_currentsector->stop_looping_sounds();
     SoundManager::current()->pause_music();
     m_game_pause = true;
-  } else if (game_pause && MenuManager::instance().is_active()) {
+  } else if (m_game_pause && MenuManager::instance().is_active()) {
     MenuManager::instance().clear_menu_stack();
     ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
   }

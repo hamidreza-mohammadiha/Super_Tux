@@ -24,7 +24,6 @@
 #include "object/player.hpp"
 #include "object/tilemap.hpp"
 #include "supertux/sector.hpp"
-#include "supertux/spawn_point.hpp"
 #include "supertux/screen_manager.hpp"
 
 

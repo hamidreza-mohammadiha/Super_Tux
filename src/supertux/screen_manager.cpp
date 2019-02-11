@@ -40,6 +40,11 @@
 
 #include <stdio.h>
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+#else // SDL_VERSION_ATLEAST(2,0,0)
+#define SDLK_PRINTSCREEN SDLK_PRINT
+#endif // SDL_VERSION_ATLEAST(2,0,0)
+
 /** don't skip more than every 2nd frame */
 static const int MAX_FRAME_SKIP = 2;
 
@@ -230,7 +235,7 @@ ScreenManager::update_gamelogic(float dt_sec)
 }
 
 void
-ScreenManager::process_events(DrawingContext &context)
+ScreenManager::process_events()
 {
   m_input_manager.update();
   SDL_Event event;
@@ -275,7 +280,7 @@ ScreenManager::process_events(DrawingContext &context)
         break;
 #else // SDL_VERSION_ATLEAST(2,0,0)
       case SDL_VIDEORESIZE:
-        m_video_system.on_resize(event.window.data1, event.window.data2);
+        m_video_system.on_resize(event.resize.w, event.resize.h);
         m_menu_manager->on_window_resize();
         if (Editor::is_active()) {
           Editor::current()->resize();
@@ -296,7 +301,7 @@ ScreenManager::process_events(DrawingContext &context)
           m_video_system.apply_config();
           m_menu_manager->on_window_resize();
         }
-        else if (event.key.keysym.sym == SDLK_PRINT ||
+        else if (event.key.keysym.sym == SDLK_PRINTSCREEN ||
                  event.key.keysym.sym == SDLK_F12)
         {
           m_video_system.do_take_screenshot();
@@ -430,7 +435,7 @@ ScreenManager::run()
       timestep *= m_speed;
       g_game_time += timestep;
 
-      process_events(context);
+      process_events();
       update_gamelogic(timestep);
       frames += 1;
     }

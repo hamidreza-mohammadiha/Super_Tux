@@ -16,10 +16,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdexcept>
+#include <physfs.h>
 
 #include "supertux/levelsavestate.hpp"
-
-#include "physfs/ifile_streambuf.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/reader_document.hpp"
 #include "util/writer.hpp"
@@ -39,7 +38,7 @@ const LevelSaveState & LevelSaveState::get()
     {
       try
       {
-        auto doc = ReaderDocument::parse(filename);
+        auto doc = ReaderDocument::from_file(filename);
         auto root = doc.get_root();
         if(root.get_name() != "last-level")
         {
