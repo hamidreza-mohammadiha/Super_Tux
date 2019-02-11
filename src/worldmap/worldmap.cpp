@@ -46,7 +46,6 @@
 #include "supertux/shrinkfade.hpp"
 #include "supertux/tile.hpp"
 #include "supertux/tile_manager.hpp"
-#include "supertux/levelloadinganimation.hpp"
 #include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "util/reader.hpp"
@@ -486,9 +485,6 @@ WorldMap::draw(DrawingContext& context)
 {
   if (in_level)
   {
-    //ScreenManager::current()->draw_loading_screen();
-    LevelLoadingAnimation anim;
-    anim.draw(context);
     return;
   }
 

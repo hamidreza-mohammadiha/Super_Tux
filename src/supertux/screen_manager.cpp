@@ -34,7 +34,6 @@
 #include "supertux/screen_fade.hpp"
 #include "supertux/sector.hpp"
 #include "supertux/timer.hpp"
-#include "supertux/levelloadinganimation.hpp"
 #include "util/log.hpp"
 #include "video/compositor.hpp"
 #include "video/drawing_context.hpp"
@@ -442,23 +441,6 @@ ScreenManager::run()
 
     handle_screen_switch();
   }
-}
-
-
-void
-ScreenManager::draw_loading_screen()
-{
-  m_video_system.get_renderer().start_draw();
-
-  FillRectRequest rr;
-  rr.rect = m_video_system.get_renderer().get_rect(); // Rectf(Vector(0, 0), Vector(m_video_system.get_viewport().get_screen_width(), m_video_system.get_viewport().get_screen_height()));
-  rr.color = Color(0.0f, 0.0f, 0.0f, 1.0f);
-  m_video_system.get_renderer().get_painter().draw_filled_rect(rr);
-
-  LevelLoadingAnimation anim;
-  anim.draw(m_video_system.get_renderer());
-  m_video_system.get_renderer().end_draw();
-  m_video_system.flip();
 }
 
 /* EOF */

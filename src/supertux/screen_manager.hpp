@@ -55,9 +55,6 @@ public:
   void pop_screen(std::unique_ptr<ScreenFade> fade = {});
   void set_screen_fade(std::unique_ptr<ScreenFade> fade);
 
-  // draw a loading screen, outside of the usual drawing loop
-  void draw_loading_screen();
-
 private:
   void draw_fps(DrawingContext& context, float fps);
   void draw_player_pos(DrawingContext& context);
