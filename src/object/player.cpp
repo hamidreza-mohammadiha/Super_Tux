@@ -41,6 +41,7 @@
 #include "trigger/trigger_base.hpp"
 #include "video/renderer.hpp"
 #include "video/surface.hpp"
+#include "video/viewport.hpp"
 
 
 //#define SWIMMING
@@ -176,18 +177,18 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_visible(true),
   m_grabbed_object(nullptr),
   released_object(false),
-  // if/when we have complete penny gfx, we can
-  // load those instead of Tux's sprite in the
-  // constructor
-  m_sprite(SpriteManager::current()->create("images/creatures/tux/tux.sprite")),
-  m_airarrow(Surface::from_file("images/engine/hud/airarrow.png")),
-  jumparrow(Surface::create("images/engine/menu/scroll-down.png")),
+  jumparrow(Surface::from_file("images/engine/menu/scroll-down.png")),
   jump_helper(false),
   jump_helper_jump(false),
   jump_helper_move_left(false),
   jump_helper_move_right(false),
   jump_helper_draw(false),
   jump_helper_x(0),
+  // if/when we have complete penny gfx, we can
+  // load those instead of Tux's sprite in the
+  // constructor
+  m_sprite(SpriteManager::current()->create("images/creatures/tux/tux.sprite")),
+  m_airarrow(Surface::from_file("images/engine/hud/airarrow.png")),
   m_floor_normal(),
   m_ghost_mode(false),
   m_edit_mode(false),
@@ -195,7 +196,6 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_idle_timer(),
   m_idle_stage(0),
   m_climbing(nullptr)
->>>>>>> upstream/master
 {
   m_name = name_;
   m_idle_timer.start(static_cast<float>(IDLE_TIME[0]) / 1000.0f);
@@ -506,7 +506,7 @@ Player::handle_horizontal_input()
 
   float dirsign = 0;
   if (!m_duck || m_physic.get_velocity_y() != 0) {
-    if ((m_controller->hold(Control::LEFT) && !m_controller->hold(Control::RIGHT)
+    if ((m_controller->hold(Control::LEFT) && !m_controller->hold(Control::RIGHT))
         || jump_helper_move_left) {
       m_old_dir = m_dir;
       m_dir = Direction::LEFT;
@@ -841,7 +841,7 @@ Player::handle_input()
   /* Shoot! */
   auto active_bullets = Sector::get().get_object_count<Bullet>();
   if (m_controller->pressed(Control::ACTION) && (m_player_status.bonus == FIRE_BONUS || m_player_status.bonus == ICE_BONUS)
-      && !grabbed_object) {
+      && !m_grabbed_object) {
     if ((m_player_status.bonus == FIRE_BONUS &&
       active_bullets < m_player_status.max_fire_bullets) ||
       (m_player_status.bonus == ICE_BONUS &&
@@ -925,7 +925,7 @@ Player::handle_input()
     }
   }
 
-  if (!controller->hold(Controller::ACTION) && released_object) {
+  if (!m_controller->hold(Control::ACTION) && released_object) {
     released_object = false;
   }
 
@@ -1199,10 +1199,10 @@ Player::draw(DrawingContext& context)
   }
 
   // Show where Tux will land after using jump helper
-  if (jump_helper_draw && Sector::current() && Sector::current()->camera) {
-    float px = jump_helper_x + (get_bbox().p2.x - get_bbox().p1.x) / 2 - jumparrow.get()->get_width() / 2;
-    float py = get_bbox().p2.y - jumparrow.get()->get_height();
-    context.draw_surface(jumparrow, Vector(px, py), LAYER_HUD - 1);
+  if (jump_helper_draw && Sector::current()) {
+    float px = jump_helper_x + (m_col.m_bbox.get_size().width) / 2 - jumparrow.get()->get_width() / 2;
+    float py = m_col.m_bbox.get_bottom() - jumparrow.get()->get_height();
+    context.color().draw_surface(jumparrow, Vector(px, py), LAYER_HUD - 1);
   }
 
   std::string sa_prefix = "";
@@ -1798,20 +1798,20 @@ Player::has_grabbed(const std::string& object_name) const
 void
 Player::handle_jump_helper()
 {
-  if (!Sector::current() || !Sector::current()->camera)
+  if (!Sector::current())
     return;
 
-  Vector screen = VideoSystem::current()->get_renderer().to_logical(SCREEN_WIDTH, SCREEN_HEIGHT);
-  if (controller->mouse_pressed() && can_jump && !jump_helper && controller->mouse_pos().y < screen.y / 2)
+  Vector screen = VideoSystem::current()->get_viewport().to_logical(SCREEN_WIDTH, SCREEN_HEIGHT);
+  if (m_controller->mouse_pressed() && m_can_jump && !jump_helper && m_controller->mouse_pos().y < screen.y / 2)
   { // Select a target to jump
     jump_helper_draw = true;
-    jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
+    jump_helper_x = m_controller->mouse_pos().x + Sector::current()->get_camera().get_translation().x;
   }
 
-  if (!controller->mouse_pressed() && can_jump && !jump_helper && jump_helper_draw && controller->mouse_pos().y < screen.y / 2)
+  if (!m_controller->mouse_pressed() && m_can_jump && !jump_helper && jump_helper_draw && m_controller->mouse_pos().y < screen.y / 2)
   { // Initiate the jump
     jump_helper = true;
-    jump_helper_x = controller->mouse_pos().x + Sector::current()->camera->get_translation().x;
+    jump_helper_x = m_controller->mouse_pos().x + Sector::current()->get_camera().get_translation().x;
     // Do not use scriptiong controller - we need to be able to cancel jump helper mid-jump
     jump_helper_move_left = false;
     jump_helper_move_right = false;
@@ -1823,15 +1823,15 @@ Player::handle_jump_helper()
 
   if (jump_helper)
   {
-    float friction = WALK_ACCELERATION_X * (on_ice ? ICE_FRICTION_MULTIPLIER : NORMAL_FRICTION_MULTIPLIER);
-    float frictionDistance = physic.get_velocity_x() * physic.get_velocity_x() / friction / 2.0f;
+    float friction = WALK_ACCELERATION_X * (m_on_ice ? ICE_FRICTION_MULTIPLIER : NORMAL_FRICTION_MULTIPLIER);
+    float frictionDistance = get_physic().get_velocity_x() * get_physic().get_velocity_x() / friction / 2.0f;
     if (!jump_helper_jump)
     { // Start running before jump for long jumps
       float gravity = Sector::current()->get_gravity();
-      float jumpSpeed = fabs(physic.get_velocity_x()) > MAX_WALK_XM ? 580 : 520;
+      float jumpSpeed = fabs(get_physic().get_velocity_x()) > MAX_WALK_XM ? 580 : 520;
       float jumpTime = jumpSpeed / gravity * 2.0f;
-      float maxRunSpeed = speedlimit > 0 ? speedlimit : MAX_RUN_XM;
-      float actualJumpDistance = fabs(physic.get_velocity_x()) * jumpTime / 100.0f;
+      float maxRunSpeed = get_speedlimit() > 0 ? get_speedlimit() : MAX_RUN_XM;
+      float actualJumpDistance = fabs(get_physic().get_velocity_x()) * jumpTime / 100.0f;
       float maxJumpDistance = maxRunSpeed * jumpTime / 100.0f;
       // Check if we can jump that far at current speed, compensate a bit for velocity we'll gain in the air
       // Empirical coefficients, we should use WALK_ACCELERATION_X / RUN_ACCELERATION_X here
@@ -1841,10 +1841,10 @@ Player::handle_jump_helper()
       if (fabs(jump_helper_x - get_pos().x) <= maxJumpDistance * 0.75f)
         jump_helper_jump = true;
     }
-    if (controller->mouse_pressed() // Cancel a jump if user presses any button
-        || controller->pressed(Controller::JUMP) || controller->pressed(Controller::ACTION)
-        || controller->pressed(Controller::DOWN) || controller->pressed(Controller::UP)
-        || controller->pressed(Controller::LEFT) || controller->pressed(Controller::RIGHT)
+    if (m_controller->mouse_pressed() // Cancel a jump if user presses any button
+        || m_controller->pressed(Control::JUMP) || m_controller->pressed(Control::ACTION)
+        || m_controller->pressed(Control::DOWN) || m_controller->pressed(Control::UP)
+        || m_controller->pressed(Control::LEFT) || m_controller->pressed(Control::RIGHT)
         || (jump_helper_x >= get_pos().x - frictionDistance && jump_helper_move_left) // Reached destination - finish the jump
         || (jump_helper_x <= get_pos().x + frictionDistance && jump_helper_move_right))
     {
@@ -1856,7 +1856,7 @@ Player::handle_jump_helper()
     }
   }
 
-  if (!jump_helper && (!controller->mouse_pressed() || controller->mouse_pos().y >= screen.y / 2))
+  if (!jump_helper && (!m_controller->mouse_pressed() || m_controller->mouse_pos().y >= screen.y / 2))
   {
     jump_helper_draw = false;
   }

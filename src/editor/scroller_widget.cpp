@@ -20,6 +20,7 @@
 
 #include "editor/editor.hpp"
 #include "gui/menu_manager.hpp"
+#include "supertux/globals.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 #include "video/video_system.hpp"
@@ -75,7 +76,7 @@ EditorScrollerWidget::draw(DrawingContext& context)
   context.color().draw_filled_rect(Rectf(Vector(0, ypos), Vector(SIZE, SIZE + ypos)),
                                      Color(0.9f, 0.9f, 1.0f, 0.6f),
                                      MIDDLE, LAYER_GUI-10);
-  context.draw_filled_rect(Rectf(Vector(MIDDLE - 8, MIDDLE - 8 + ypos), Vector(MIDDLE + 8, MIDDLE + 8 + ypos)),
+  context.color().draw_filled_rect(Rectf(Vector(MIDDLE - 8, MIDDLE - 8 + ypos), Vector(MIDDLE + 8, MIDDLE + 8 + ypos)),
                                      Color(0.9f, 0.9f, 1.0f, 0.6f),
                                      8, LAYER_GUI-20);
   if (can_scroll()) {
@@ -126,7 +127,7 @@ EditorScrollerWidget::on_mouse_button_down(const SDL_MouseButtonEvent& button)
 
     int ypos = (rendered == SCROLLER_TOP) ? 0 : SCREEN_HEIGHT - SIZE;
 
-    if (m_mouse_pos.x < SIZE && m_mouse_pos.y < SIZE + ypos && mouse_pos.y >= ypos) {
+    if (m_mouse_pos.x < SIZE && m_mouse_pos.y < SIZE + ypos && m_mouse_pos.y >= ypos) {
       m_scrolling = true;
       return true;
     } else {
@@ -135,6 +136,7 @@ EditorScrollerWidget::on_mouse_button_down(const SDL_MouseButtonEvent& button)
   } else {
     return false;
   }
+  return false;
 }
 
 bool
@@ -144,7 +146,7 @@ EditorScrollerWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
 
   int ypos = (rendered == SCROLLER_TOP) ? 0 : SCREEN_HEIGHT - SIZE;
   m_mouse_pos = VideoSystem::current()->get_viewport().to_logical(motion.x, motion.y);
-  if (m_mouse_pos.x < SIZE && m_mouse_pos.y < SIZE + ypos && mouse_pos.y >= ypos) {
+  if (m_mouse_pos.x < SIZE && m_mouse_pos.y < SIZE + ypos && m_mouse_pos.y >= ypos) {
     m_scrolling_vec = m_mouse_pos - Vector(MIDDLE, MIDDLE + ypos);
     if (m_scrolling_vec.x != 0 || m_scrolling_vec.y != 0) {
       float norm = m_scrolling_vec.norm();

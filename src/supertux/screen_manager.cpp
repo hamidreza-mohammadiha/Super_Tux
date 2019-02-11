@@ -275,7 +275,11 @@ ScreenManager::process_events(DrawingContext &context)
         break;
 #else // SDL_VERSION_ATLEAST(2,0,0)
       case SDL_VIDEORESIZE:
-        VideoSystem::current()->resize(event.resize.w, event.resize.h);
+        m_video_system.on_resize(event.window.data1, event.window.data2);
+        m_menu_manager->on_window_resize();
+        if (Editor::is_active()) {
+          Editor::current()->resize();
+        }
         break;
 #endif // SDL_VERSION_ATLEAST(2,0,0)
 

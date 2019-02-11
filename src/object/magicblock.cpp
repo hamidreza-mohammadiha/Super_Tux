@@ -23,6 +23,7 @@
 #include "object/magicblock.hpp"
 
 #include "editor/editor.hpp"
+#include "object/ambient_light.hpp"
 #include "object/camera.hpp"
 #include "object/lantern.hpp"
 #include "sprite/sprite.hpp"
@@ -195,14 +196,14 @@ MagicBlock::draw(DrawingContext& context)
   // Since magic blocks are designed to be used with lanterns,
   // check the distance to all of the lantern objects on the level
   // This will ignore Tux stone hat light, and other light sources
-  m_light = Color(Sector::current()->get_ambient_red(), Sector::current()->get_ambient_green(), Sector::current()->get_ambient_blue());
-  auto objects = Sector::current()->get_nearby_objects(center, LANTERN_LIGHT_RADIUS);
+  *m_light = Sector::current()->get_singleton_by_type<AmbientLight>().get_ambient_light();
+  auto objects = Sector::current()->get_nearby_objects(m_center, LANTERN_LIGHT_RADIUS);
   for (auto &obj: objects) {
     auto lantern = dynamic_cast<Lantern *> (obj);
     if (lantern) {
-      m_light = Color(std::min(1.0f, m_light.red + lantern->get_color().red),
-                      std::min(1.0f, m_light.green + lantern->get_color().green),
-                      std::min(1.0f, m_light.blue + lantern->get_color().blue));
+      *m_light = Color(std::min(1.0f, m_light->red + lantern->get_color().red),
+                       std::min(1.0f, m_light->green + lantern->get_color().green),
+                       std::min(1.0f, m_light->blue + lantern->get_color().blue));
     }
   }
 

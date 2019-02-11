@@ -43,6 +43,7 @@
 #include "supertux/globals.hpp"
 #include "supertux/resources.hpp"
 #include "supertux/screen_fade.hpp"
+#include "supertux/screen_manager.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 #include "video/video_system.hpp"
@@ -651,9 +652,14 @@ Menu::event(const SDL_Event& ev)
   switch (ev.type)
   {
     case SDL_KEYDOWN:
+#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_TEXTINPUT:
-      if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE) ||
-         false /*ev.type == SDL_TEXTINPUT*/ ) && m_items[m_active_item]->changes_width())
+#endif // SDL_VERSION_ATLEAST(2,0,0)
+      if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE)
+#if SDL_VERSION_ATLEAST(2,0,0)
+          || ev.type == SDL_TEXTINPUT
+#endif // SDL_VERSION_ATLEAST(2,0,0)
+          ) && m_items[m_active_item]->changes_width())
       {
         // Changed item value? Let's recalculate width:
         calculate_width();
