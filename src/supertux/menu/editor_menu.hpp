@@ -25,17 +25,21 @@ private:
   enum MenuIDs {
     MNID_RETURNTOEDITOR,
     MNID_SAVELEVEL,
+    MNID_SAVEASLEVEL,
+    MNID_SAVECOPYLEVEL,
     MNID_TESTLEVEL,
+    MNID_PACK,
     MNID_OPEN_DIR,
     MNID_SHARE,
     MNID_LEVELSEL,
     MNID_LEVELSETSEL,
+	  MNID_HELP,
     MNID_QUITEDITOR
   };
 
 public:
   EditorMenu();
-  ~EditorMenu();
+  ~EditorMenu() override;
 
   void menu_action(MenuItem& item) override;
 

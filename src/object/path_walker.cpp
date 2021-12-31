@@ -21,11 +21,13 @@
 
 #include "editor/editor.hpp"
 #include "editor/object_option.hpp"
+#include "math/bezier.hpp"
 #include "math/random.hpp"
 #include "object/path_gameobject.hpp"
 #include "supertux/d_scope.hpp"
 #include "supertux/sector.hpp"
 #include "util/gettext.hpp"
+#include "math/easing.hpp"
 
 PathWalker::PathWalker(UID path_uid, bool running_) :
   m_path_uid(path_uid),
@@ -107,10 +109,21 @@ PathWalker::get_pos() const
 
   const Path::Node* current_node = &(path->m_nodes[m_current_node_nr]);
   const Path::Node* next_node = & (path->m_nodes[m_next_node_nr]);
-  Vector new_pos = current_node->position +
-    (next_node->position - current_node->position) * m_node_time;
+  
+  easing easeFunc = m_walking_speed > 0 ?
+                          getEasingByName(current_node->easing) :
+                          getEasingByName(get_reverse_easing(next_node->easing));
+  
+  float progress = static_cast<float>(easeFunc(static_cast<double>(m_node_time)));
 
-  return new_pos;
+  Vector p1 = current_node->position,
+         p2 = m_walking_speed > 0 ? current_node->bezier_after : current_node->bezier_before,
+         p3 = m_walking_speed > 0 ? next_node->bezier_before : next_node->bezier_after,
+         p4 = next_node->position;
+
+  return path->m_adapt_speed ?
+                          Bezier::get_point(p1, p2, p3, p4, progress) :
+                          Bezier::get_point_by_length(p1, p2, p3, p4, progress);
 }
 
 void
@@ -122,6 +135,24 @@ PathWalker::goto_node(int node_no)
   if (node_no == m_stop_at_node_nr) return;
   m_running = true;
   m_stop_at_node_nr = node_no;
+}
+
+void
+PathWalker::jump_to_node(int node_no)
+{
+  Path* path = get_path();
+  if (!path) return;
+
+  if (node_no >= static_cast<int>(path->get_nodes().size())) return;
+  m_next_node_nr = static_cast<size_t>(node_no);
+  if (m_walking_speed > 0) {
+    advance_node();
+  } else if (m_walking_speed < 0) {
+    goback_node();
+  } else {
+    m_current_node_nr = m_next_node_nr;
+  }
+  m_node_time = 0.f;
 }
 
 void

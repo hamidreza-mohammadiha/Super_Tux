@@ -20,8 +20,12 @@
 #include <boost/optional.hpp>
 #include <sexp/value.hpp>
 
+#include "control/input_manager.hpp"
 #include "supertux/globals.hpp"
+#include "supertux/fadetoblack.hpp"
 #include "supertux/info_box_line.hpp"
+#include "supertux/screen_manager.hpp"
+#include "supertux/sector.hpp"
 #include "util/log.hpp"
 #include "util/reader.hpp"
 #include "util/reader_collection.hpp"
@@ -34,16 +38,24 @@
 namespace {
 
 const float LEFT_BORDER = 0;
-const float DEFAULT_SPEED = 20;
+const float DEFAULT_SPEED = 60;
+const float SCROLL_JUMP = 60;
 
 } // namespace
 
 TextScroller::TextScroller(const ReaderMapping& mapping) :
+  controller(&InputManager::current()->get_controller()),
   m_filename(),
+  m_finish_script(),
   m_lines(),
   m_scroll(),
-  m_speed(DEFAULT_SPEED),
-  m_finished(false)
+  m_default_speed(DEFAULT_SPEED),
+  m_x_offset(),
+  m_controllable(true),
+  m_finished(),
+  m_fading(),
+  m_x_anchor(XAnchor::SCROLLER_ANCHOR_CENTER),
+  m_text_align(TextAlign::SCROLLER_ALIGN_CENTER)
 {
   if (!mapping.get("file", m_filename))
   {
@@ -54,15 +66,48 @@ TextScroller::TextScroller(const ReaderMapping& mapping) :
     parse_file(m_filename);
   }
 
-  mapping.get("speed", m_speed);
+  mapping.get("finish-script", m_finish_script, "");
+  mapping.get("speed", m_default_speed);
+  mapping.get("x-offset", m_x_offset);
+  mapping.get("controllable", m_controllable, true);
+
+  std::string x_anchor_str;
+  if (mapping.get("x-anchor", x_anchor_str))
+  {
+    if (x_anchor_str == "left")
+      m_x_anchor = XAnchor::SCROLLER_ANCHOR_LEFT;
+    else if (x_anchor_str == "right")
+      m_x_anchor = XAnchor::SCROLLER_ANCHOR_RIGHT;
+    else
+      m_x_anchor = XAnchor::SCROLLER_ANCHOR_CENTER;
+  }
+
+  std::string text_align_str;
+  if (mapping.get("text-align", text_align_str))
+  {
+    if (text_align_str == "left")
+      m_text_align = TextAlign::SCROLLER_ALIGN_LEFT;
+    else if (text_align_str == "right")
+      m_text_align = TextAlign::SCROLLER_ALIGN_RIGHT;
+    else
+      m_text_align = TextAlign::SCROLLER_ALIGN_CENTER;
+  }
+
 }
 
 TextScroller::TextScroller(const ReaderObject& root) :
+  controller(&InputManager::current()->get_controller()),
   m_filename(),
+  m_finish_script(),
   m_lines(),
   m_scroll(),
-  m_speed(DEFAULT_SPEED),
-  m_finished(false)
+  m_default_speed(DEFAULT_SPEED),
+  m_x_offset(),
+  m_controllable(true),
+  m_finished(),
+  m_fading(),
+  m_x_anchor(XAnchor::SCROLLER_ANCHOR_CENTER),
+  m_text_align(TextAlign::SCROLLER_ALIGN_CENTER)
 {
   parse_root(root);
 }
@@ -128,9 +173,7 @@ TextScroller::parse_content(const ReaderCollection& collection)
       bool simple;
       std::string name, info, image_file;
 
-      if (!item.get_mapping().get("simple", simple)) {
-        simple = false;
-      }
+      item.get_mapping().get("simple", simple, false);
 
       if (simple) {
         if (!item.get_mapping().get("name", name) || !item.get_mapping().get("info", info)) {
@@ -204,16 +247,20 @@ TextScroller::draw(DrawingContext& context)
   const float ctx_w = static_cast<float>(context.get_width());
   const float ctx_h = static_cast<float>(context.get_height());
 
-  float y = ctx_h - m_scroll;
+  float y = floorf(ctx_h - m_scroll);
 
   { // draw text
     for (const auto& line : m_lines)
     {
       if (y + line->get_height() >= 0 && ctx_h - y >= 0) {
-        line->draw(context, Rectf(LEFT_BORDER, y, ctx_w - 2*LEFT_BORDER, y), LAYER_GUI);
+        line->draw(context, Rectf(LEFT_BORDER, y, ctx_w * (m_x_anchor == XAnchor::SCROLLER_ANCHOR_LEFT ? 0.f :
+           m_x_anchor == XAnchor::SCROLLER_ANCHOR_RIGHT ? 2.f : 1.f) + m_x_offset, y), LAYER_GUI,
+          (m_text_align == TextAlign::SCROLLER_ALIGN_LEFT ? line->LineAlignment::LEFT :
+           m_text_align == TextAlign::SCROLLER_ALIGN_RIGHT ? line->LineAlignment::RIGHT :
+           line->LineAlignment::CENTER));
       }
 
-      y += line->get_height();
+      y += floorf(line->get_height());
     }
   }
 
@@ -223,22 +270,64 @@ TextScroller::draw(DrawingContext& context)
   if (y < 0)
   {
     m_finished = true;
+    set_default_speed(0.f);
   }
 }
 
 void
 TextScroller::update(float dt_sec)
 {
-  m_scroll += m_speed * dt_sec;
+  float speed = m_default_speed;
+
+  if (controller && m_controllable) {
+    // allow changing speed with up and down keys
+    if (controller->hold(Control::UP)) {
+      speed = -m_default_speed * 5;
+    } else if (controller->hold(Control::DOWN)) {
+      speed = m_default_speed * 5;
+    }
+
+    // allow jumping ahead with certain keys
+    if ((controller->pressed(Control::JUMP) ||
+         controller->pressed(Control::ACTION) ||
+         controller->pressed(Control::MENU_SELECT)) &&
+        !(controller->pressed(Control::UP))) { // prevent skipping if jump with up is enabled
+      scroll(SCROLL_JUMP);
+    }
+
+    // use start or escape keys to exit
+    if ((controller->pressed(Control::START) ||
+        controller->pressed(Control::ESCAPE)) &&
+        !m_fading  && m_finish_script.empty()) {
+      m_fading = true;
+      ScreenManager::current()->pop_screen(std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5f));
+      return;
+    }
+  }
+
+  m_scroll += speed * dt_sec;
 
   if (m_scroll < 0)
     m_scroll = 0;
+  if (!m_finish_script.empty())
+  {
+    Sector::get().run_script(m_finish_script, "finishscript");
+  }
+  else
+  {
+    // close when done
+    if (m_finished && !m_fading)
+    {
+	  m_fading = true;
+      ScreenManager::current()->pop_screen(std::unique_ptr<ScreenFade>(new FadeToBlack(FadeToBlack::FADEOUT, 0.25f)));
+    }
+  }
 }
 
 void
-TextScroller::set_speed(float speed)
+TextScroller::set_default_speed(float default_speed)
 {
-  m_speed = speed;
+  m_default_speed = default_speed;
 }
 
 void
@@ -256,8 +345,20 @@ TextScroller::get_settings()
 {
   ObjectSettings result = GameObject::get_settings();
 
-  result.add_float(_("Speed"), &m_speed, "speed", DEFAULT_SPEED);
   result.add_file(_("File"), &m_filename, "file");
+  result.add_script(_("Finish Script"), &m_finish_script, "finish-script");
+  result.add_float(_("Speed"), &m_default_speed, "speed", DEFAULT_SPEED);
+  result.add_float(_("X-offset"), &m_x_offset, "x-offset");
+  result.add_bool(_("Controllable"), &m_controllable, "controllable", true);
+  result.add_enum(_("Anchor"), reinterpret_cast<int*>(&m_x_anchor),
+    { _("Left"), _("Center"), _("Right") },
+    { "left", "center", "right" },
+    static_cast<int>(XAnchor::SCROLLER_ANCHOR_CENTER), "x-anchor");
+  result.add_enum(_("Text Alignment"), reinterpret_cast<int*>(&m_text_align),
+    { _("Left"), _("Center"), _("Right") },
+    { "left", "center", "right" },
+    static_cast<int>(TextAlign::SCROLLER_ALIGN_CENTER), "text-align");
+  result.add_remove();
 
   return result;
 }

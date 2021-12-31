@@ -30,7 +30,7 @@ LiveFire::LiveFire(const ReaderMapping& reader) :
 {
   walk_speed = 80;
   max_drop_height = 20;
-  m_lightsprite->set_color(Color(1.0f, 1.0f, 1.0f));
+  m_lightsprite->set_color(Color(0.89f, 0.75f, 0.44f));
   m_glowing = true;
 }
 
@@ -122,7 +122,7 @@ LiveFire::kill_fall()
   Vector ppos = m_col.m_bbox.get_middle();
   Vector pspeed = Vector(0, -150);
   Vector paccel = Vector(0,0);
-  Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
+  Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                          "default", ppos, ANCHOR_MIDDLE,
                                          pspeed, paccel,
                                          LAYER_BACKGROUNDTILES+2);
@@ -134,6 +134,7 @@ LiveFire::kill_fall()
   m_lightsprite->set_blend(Blend::ADD);
   m_lightsprite->set_color(Color(1.0f, 0.9f, 0.8f));
   set_group(COLGROUP_DISABLED);
+  state = STATE_DEAD;
 
   // start dead-script
   run_dead_script();

@@ -24,6 +24,8 @@
 
 #include "util/log.hpp"
 
+#include <iostream>
+
 namespace {
 
 #if SDL_VERSION_ATLEAST(2,0,0)
@@ -63,8 +65,10 @@ int funcSeek(struct SDL_RWops *context, int offset, int whence)
     log_warning << "Error seeking in file: " << PHYSFS_getLastErrorCode() << std::endl;
     return -1;
   }
+  int i = static_cast<int>(PHYSFS_tell(file));
 
-  return static_cast<int>(PHYSFS_tell(file));
+
+  return i;
 }
 
 #if SDL_VERSION_ATLEAST(2,0,0)

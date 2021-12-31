@@ -29,6 +29,7 @@
 #include "object/tilemap.hpp"
 #include "physfs/ifile_stream.hpp"
 #include "physfs/physfs_file_system.hpp"
+#include "scripting/worldmap.hpp"
 #include "sprite/sprite.hpp"
 #include "squirrel/squirrel_environment.hpp"
 #include "supertux/d_scope.hpp"
@@ -403,6 +404,7 @@ WorldMap::update(float dt_sec)
           save_state();
           ScreenManager::current()->push_screen(std::make_unique<GameSession>(levelfile, m_savegame, &level_->get_statistics()),
                                                 std::make_unique<ShrinkFade>(shrinkpos, 1.0f));
+
           m_in_level = true;
         } catch(std::exception& e) {
           log_fatal << "Couldn't load level: " << e.what() << std::endl;
@@ -493,9 +495,7 @@ WorldMap::draw(DrawingContext& context)
   if (get_width() < static_cast<float>(context.get_width()) ||
       get_height() < static_cast<float>(context.get_height()))
   {
-    context.color().draw_filled_rect(Rectf(0, 0,
-                                           static_cast<float>(context.get_width()),
-                                           static_cast<float>(context.get_height())),
+    context.color().draw_filled_rect(context.get_rect(),
                                      Color(0.0f, 0.0f, 0.0f, 1.0f), LAYER_BACKGROUND0);
   }
 
@@ -604,7 +604,7 @@ WorldMap::setup()
   music_object.play_music(MusicType::LEVEL_MUSIC);
 
   MenuManager::instance().clear_menu_stack();
-  ScreenManager::current()->set_screen_fade(std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 1));
+  ScreenManager::current()->set_screen_fade(std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 1.0f));
 
   load_state();
 
@@ -637,6 +637,8 @@ WorldMap::setup()
 
   // register worldmap_table as worldmap in scripting
   m_squirrel_environment->expose_self();
+
+  m_squirrel_environment->expose("settings", std::make_unique<scripting::WorldMap>(this));
 
   //Run default.nut just before init script
   try {
@@ -718,6 +720,12 @@ WorldMap::set_passive_message(const std::string& message, float time)
 {
    m_passive_message = message;
    m_passive_message_timer.start(time);
+}
+
+Vector
+WorldMap::get_tux_pos()
+{
+  return m_tux->get_pos();
 }
 
 } // namespace worldmap

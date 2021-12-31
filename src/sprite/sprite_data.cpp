@@ -37,6 +37,7 @@ SpriteData::Action::Action() :
   fps(10),
   loops(-1),
   has_custom_loops(false),
+  family_name(),
   surfaces()
 {
 }
@@ -93,6 +94,11 @@ SpriteData::parse_action(const ReaderMapping& mapping)
     action->has_custom_loops = true;
   }
 
+  if (!mapping.get("family_name", action->family_name))
+  {
+    action->family_name = "::" + action->name;
+  }
+
   std::string mirror_action;
   std::string clone_action;
   if (mapping.get("mirror-action", mirror_action)) {
@@ -111,21 +117,48 @@ SpriteData::parse_action(const ReaderMapping& mapping)
         max_h = std::max(max_h, static_cast<float>(surface->get_height()));
         action->surfaces.push_back(surface);
       }
-      if (action->hitbox_w < 1) action->hitbox_w = max_w - action->x_offset;
-      if (action->hitbox_h < 1) action->hitbox_h = max_h - action->y_offset;
+
+      if (action->hitbox_w < 1 && action->hitbox_h < 1)
+      {
+        action->hitbox_w = act_tmp->hitbox_w;
+        action->hitbox_h = act_tmp->hitbox_h;
+        action->x_offset = act_tmp->x_offset;
+        action->y_offset = act_tmp->y_offset;
+      }
+
+      if (!action->has_custom_loops && act_tmp->has_custom_loops)
+      {
+        action->has_custom_loops = act_tmp->has_custom_loops;
+        action->loops = act_tmp->loops;
+      }
+
+      if (action->fps == 0)
+      {
+        action->fps = act_tmp->fps;
+      }
+
+      if (action->family_name == "::" + action->name) {
+        action->family_name = act_tmp->family_name;
+      }
     }
   } else if (mapping.get("clone-action", clone_action)) {
     const auto* act_tmp = get_action(clone_action);
     if (act_tmp == nullptr) {
       std::ostringstream msg;
       msg << "Could not clone action. Action not found: \"" << clone_action << "\"\n"
-          << "Mirror actions must be defined after the real one!";
+          << "Clone actions must be defined after the real one!";
       throw std::runtime_error(msg.str());
     } else {
-      // copy everything except the name
+      // copy everything except the name (Semphris: and the family name)
       const std::string oldname = action->name;
+      const std::string oldfam = action->family_name;
       *action = *act_tmp;
       action->name = oldname;
+      action->family_name = oldfam;
+
+      if (action->family_name == "::" + action->name) {
+        action->family_name = act_tmp->family_name;
+      }
     }
   } else { // Load images
     boost::optional<ReaderCollection> surfaces_collection;

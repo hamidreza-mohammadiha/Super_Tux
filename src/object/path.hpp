@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "math/vector.hpp"
+#include "math/easing.hpp"
 
 class ObjectOption;
 class ReaderMapping;
@@ -49,11 +50,20 @@ public:
   {
   public:
     Vector position; /**< the position of this node */
+    Vector bezier_before; /**< the position of the bezier handle towards the preceeding node */
+    Vector bezier_after; /**< the position of the bezier handle towards the following node */
     float time; /**< time (in seconds) to get from this node to next node */
+    float speed; /**< speed (in px/seconds); editor use only */
+    EasingMode easing; /**< speed variations during travel
+            (constant speed, start slow and go progressively quicker, etc.) */
 
     Node() :
-      position(),
-      time()
+      position(0.0f, 0.0f),
+      bezier_before(0.0f, 0.0f),
+      bezier_after(0.0f, 0.0f),
+      time(),
+      speed(),
+      easing()
     {}
   };
 
@@ -87,6 +97,12 @@ public:
   std::vector<Node> m_nodes;
 
   WalkMode m_mode;
+
+  bool m_adapt_speed; /**< Whether or not to adapt the speed to bezier curves,
+                          cancelling the code that forces traveling bezier
+                          curves at constant speed */
+
+  void on_flip(float height);
 
 private:
   Path(const Path&) = delete;

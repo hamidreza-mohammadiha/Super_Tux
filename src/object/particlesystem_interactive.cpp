@@ -24,6 +24,7 @@
 #include "supertux/sector.hpp"
 #include "supertux/tile.hpp"
 #include "video/drawing_context.hpp"
+#include "video/surface_batch.hpp"
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
@@ -61,9 +62,28 @@ ParticleSystem_Interactive::draw(DrawingContext& context)
     return;
 
   context.push_transform();
+  const auto& region = Sector::current()->get_active_region();
+  std::unordered_map<SurfacePtr, SurfaceBatch> batches;
+  for (const auto& particle : particles) {
+    if(!region.contains(particle->pos))
+      continue;
 
-  for (auto& particle : particles) {
-    context.color().draw_surface(particle->texture, particle->pos, z_pos);
+    auto it = batches.find(particle->texture);
+    if (it == batches.end()) {
+      const auto& batch_it = batches.emplace(particle->texture,
+        SurfaceBatch(particle->texture));
+      batch_it.first->second.draw(particle->pos, particle->angle);
+    } else {
+      it->second.draw(particle->pos, particle->angle);
+    }
+  }
+
+  for(auto& it : batches) {
+    auto& surface = it.first;
+    auto& batch = it.second;
+    // FIXME: What is the colour used for?
+    context.color().draw_surface_batch(surface, batch.move_srcrects(),
+      batch.move_dstrects(), batch.move_angles(), Color::WHITE, z_pos);
   }
 
   context.pop_transform();

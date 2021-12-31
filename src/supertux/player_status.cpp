@@ -17,11 +17,11 @@
 
 #include "supertux/player_status.hpp"
 
-#include <algorithm>
 #include <sstream>
 
 #include "audio/sound_manager.hpp"
 #include "supertux/globals.hpp"
+#include "supertux/game_session.hpp"
 #include "util/log.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
@@ -48,6 +48,16 @@ PlayerStatus::PlayerStatus() :
   }
 }
 
+void
+PlayerStatus::take_checkpoint_coins()
+{
+  int subtract_value = std::max(coins / 10, 25);
+  if (coins - subtract_value >= 0)
+    coins -= subtract_value;
+  else
+    coins = 0;
+}
+
 void PlayerStatus::reset()
 {
   coins = START_COINS;
@@ -58,6 +68,12 @@ int
 PlayerStatus::get_max_coins() const
 {
   return MAX_COINS;
+}
+
+bool
+PlayerStatus::can_reach_checkpoint() const
+{
+  return !GameSession::current()->get_reset_point_sectorname().empty();
 }
 
 void

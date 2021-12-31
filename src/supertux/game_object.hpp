@@ -22,6 +22,7 @@
 
 #include "editor/object_settings.hpp"
 #include "supertux/game_object_component.hpp"
+#include "util/fade_helper.hpp"
 #include "util/gettext.hpp"
 #include "util/uid.hpp"
 
@@ -72,7 +73,7 @@ public:
   virtual void draw(DrawingContext& context) = 0;
 
   /** This function saves the object. Editor will use that. */
-  void save(Writer& writer);
+  virtual void save(Writer& writer);
   virtual std::string get_class() const { return "game-object"; }
   virtual std::string get_display_name() const { return _("Unknown object"); }
 
@@ -95,11 +96,14 @@ public:
 
   virtual void after_editor_set() {}
 
-  /** returns true if the object is not scheduled to be removed yet */
-  bool is_valid() const { return !m_scheduled_for_removal; }
+  /** When level is flipped vertically */
+  virtual void on_flip(float height) {}
 
   /** schedules this object to be removed at the end of the frame */
-  void remove_me() { m_scheduled_for_removal = true; }
+  virtual void remove_me() { m_scheduled_for_removal = true; }
+
+  /** returns true if the object is not scheduled to be removed yet */
+  bool is_valid() const { return !m_scheduled_for_removal; }
 
   /** registers a remove listener which will be called if the object
       gets removed/destroyed */
@@ -166,6 +170,9 @@ protected:
   /** a name for the gameobject, this is mostly a hint for scripts and
       for debugging, don't rely on names being set or being unique */
   std::string m_name;
+
+  /** Fade Helpers are for easing/fading script functions */
+  std::vector<std::unique_ptr<FadeHelper>> m_fade_helpers;
 
 private:
   /** A unique id for the object to safely refer to it. This will be

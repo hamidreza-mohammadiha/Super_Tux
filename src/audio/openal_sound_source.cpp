@@ -25,14 +25,11 @@ OpenALSoundSource::OpenALSoundSource() :
   m_volume(1.0f)
 {
   alGenSources(1, &m_source);
-  try
-  {
-    SoundManager::check_al_error("Couldn't create audio source: ");
-  }
-  catch(std::exception& e)
-  {
-    log_warning << e.what() << std::endl;
-  }
+
+  // Don't catch anything here: force the caller to catch the error, so that
+  // the caller won't handle an object in an invalid state thinking it's clean
+  SoundManager::check_al_error("Couldn't create audio source: ");
+
   set_reference_distance(128);
 }
 
@@ -45,7 +42,12 @@ OpenALSoundSource::~OpenALSoundSource()
 void
 OpenALSoundSource::stop()
 {
+#ifdef WIN32
+  // See commit 417a8e7a8c599bfc2dceaec7b6f64ac865318ef1
   alSourceRewindv(1, &m_source); // Stops the source
+#else
+  alSourceStop(m_source);
+#endif
   alSourcei(m_source, AL_BUFFER, AL_NONE);
   try
   {
@@ -86,7 +88,14 @@ void
 OpenALSoundSource::pause()
 {
   alSourcePause(m_source);
-  SoundManager::check_al_error("Couldn't pause audio source: ");
+  try
+  {
+    SoundManager::check_al_error("Couldn't pause audio source: ");
+  }
+  catch(const std::exception& e)
+  {
+    log_warning << e.what() << std::endl;
+  }
 }
 
 void

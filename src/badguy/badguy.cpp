@@ -50,6 +50,7 @@ BadGuy::BadGuy(const Vector& pos, const std::string& sprite_name_, int layer_,
 BadGuy::BadGuy(const Vector& pos, Direction direction, const std::string& sprite_name_, int layer_,
                const std::string& light_sprite_name) :
   MovingSprite(pos, sprite_name_, layer_, COLGROUP_DISABLED),
+  ExposedObject<BadGuy, scripting::BadGuy>(this),
   m_physic(),
   m_countMe(true),
   m_is_initialized(false),
@@ -63,13 +64,13 @@ BadGuy::BadGuy(const Vector& pos, Direction direction, const std::string& sprite
   m_melting_time(0),
   m_lightsprite(SpriteManager::current()->create(light_sprite_name)),
   m_glowing(false),
+  m_parent_dispenser(),
   m_state(STATE_INIT),
   m_is_active_flag(),
   m_state_timer(),
   m_on_ground_flag(false),
-  m_floor_normal(),
-  m_colgroup_active(COLGROUP_MOVING),
-  m_parent_dispenser()
+  m_floor_normal(0.0f, 0.0f),
+  m_colgroup_active(COLGROUP_MOVING)
 {
   SoundManager::current()->preload("sounds/squish.wav");
   SoundManager::current()->preload("sounds/fall.wav");
@@ -83,6 +84,7 @@ BadGuy::BadGuy(const Vector& pos, Direction direction, const std::string& sprite
 BadGuy::BadGuy(const ReaderMapping& reader, const std::string& sprite_name_, int layer_,
                const std::string& light_sprite_name) :
   MovingSprite(reader, sprite_name_, layer_, COLGROUP_DISABLED),
+  ExposedObject<BadGuy, scripting::BadGuy>(this),
   m_physic(),
   m_countMe(true),
   m_is_initialized(false),
@@ -96,13 +98,13 @@ BadGuy::BadGuy(const ReaderMapping& reader, const std::string& sprite_name_, int
   m_melting_time(0),
   m_lightsprite(SpriteManager::current()->create(light_sprite_name)),
   m_glowing(false),
+  m_parent_dispenser(),
   m_state(STATE_INIT),
   m_is_active_flag(),
   m_state_timer(),
   m_on_ground_flag(false),
-  m_floor_normal(),
-  m_colgroup_active(COLGROUP_MOVING),
-  m_parent_dispenser()
+  m_floor_normal(0.0f, 0.0f),
+  m_colgroup_active(COLGROUP_MOVING)
 {
   std::string dir_str = "auto";
   reader.get("direction", dir_str);
@@ -152,20 +154,24 @@ void
 BadGuy::update(float dt_sec)
 {
   if (!Sector::get().inside(m_col.m_bbox)) {
-    run_dead_script();
-    m_is_active_flag = false;
-    remove_me();
-    // This was removed due to fixing a bug. If is it needed somewhere, then I'm sorry. --Hume2
-    /**if(countMe) {
-      // get badguy name from sprite_name ignoring path and extension
-      std::string badguy = sprite_name.substr(0, sprite_name.length() - 7);
-      int path_chars = badguy.rfind("/",badguy.length());
-      badguy = badguy.substr(path_chars + 1, badguy.length() - path_chars);
-      // log warning since badguys_killed can no longer reach total_badguys
-      std::string current_level = "[" + Sector::get().get_level()->filename + "] ";
-      log_warning << current_level << "Counted badguy " << badguy << " starting at " << start_position << " has left the sector" <<std::endl;;
-    }*/
-    return;
+    auto this_portable = dynamic_cast<Portable*> (this);
+    if (!this_portable || !this_portable->is_grabbed())
+    {
+      run_dead_script();
+      m_is_active_flag = false;
+      remove_me();
+      // This was removed due to fixing a bug. If is it needed somewhere, then I'm sorry. --Hume2
+      /**if(countMe) {
+        // get badguy name from sprite_name ignoring path and extension
+        std::string badguy = sprite_name.substr(0, sprite_name.length() - 7);
+        int path_chars = badguy.rfind("/",badguy.length());
+        badguy = badguy.substr(path_chars + 1, badguy.length() - path_chars);
+        // log warning since badguys_killed can no longer reach total_badguys
+        std::string current_level = "[" + Sector::get().get_level()->filename + "] ";
+        log_warning << current_level << "Counted badguy " << badguy << " starting at " << start_position << " has left the sector" <<std::endl;
+      }*/
+      return;
+    }
   }
   if ((m_state != STATE_INACTIVE) && is_offscreen()) {
     if (m_state == STATE_ACTIVE) deactivate();
@@ -190,7 +196,7 @@ BadGuy::update(float dt_sec)
 
     case STATE_BURNING: {
       m_is_active_flag = false;
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       if ( m_sprite->animation_done() ) {
         remove_me();
       }
@@ -203,12 +209,12 @@ BadGuy::update(float dt_sec)
         remove_me();
         break;
       }
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       break;
 
     case STATE_MELTING: {
       m_is_active_flag = false;
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       if ( m_sprite->animation_done() || on_ground() ) {
         Sector::get().add<WaterDrop>(m_col.m_bbox.p1(), get_water_sprite(), m_physic.get_velocity());
         remove_me();
@@ -218,7 +224,7 @@ BadGuy::update(float dt_sec)
 
     case STATE_GROUND_MELTING:
       m_is_active_flag = false;
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       if ( m_sprite->animation_done() ) {
         remove_me();
       }
@@ -226,7 +232,7 @@ BadGuy::update(float dt_sec)
 
     case STATE_INSIDE_MELTING: {
       m_is_active_flag = false;
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       if ( on_ground() && m_sprite->animation_done() ) {
         m_sprite->set_action(m_dir == Direction::LEFT ? "gear-left" : "gear-right", 1);
         set_state(STATE_GEAR);
@@ -243,7 +249,7 @@ BadGuy::update(float dt_sec)
 
     case STATE_FALLING:
       m_is_active_flag = false;
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+      m_col.set_movement(m_physic.get_movement(dt_sec));
       break;
   }
 
@@ -261,7 +267,7 @@ BadGuy::str2dir(const std::string& dir_str) const
     return Direction::RIGHT;
 
   //default to "auto"
-  log_warning << "Badguy::str2dir: unknown direction \"" << dir_str << "\"" << std::endl;;
+  log_warning << "Badguy::str2dir: unknown direction \"" << dir_str << "\"" << std::endl;
   return Direction::AUTO;
 }
 
@@ -283,7 +289,7 @@ BadGuy::deactivate()
 void
 BadGuy::active_update(float dt_sec)
 {
-  m_col.m_movement = m_physic.get_movement(dt_sec);
+  m_col.set_movement(m_physic.get_movement(dt_sec));
   if (m_frozen)
     m_sprite->stop_animation();
 }
@@ -309,15 +315,23 @@ BadGuy::collision_tile(uint32_t tile_attributes)
     m_in_water = false;
   }
 
-  if (tile_attributes & Tile::HURTS && is_hurtable()) {    
-    if (tile_attributes & Tile::FIRE) {
-      if (is_flammable()) ignite();
-    }
-    else if (tile_attributes & Tile::ICE) {
-      if (is_freezable()) freeze();
-    }
-    else {
-      kill_fall();
+  if (tile_attributes & Tile::HURTS && is_hurtable())
+  {
+    Rectf hurtbox = get_bbox().grown(-6.f);
+    if (!Sector::get().is_free_of_tiles(hurtbox, true, Tile::HURTS) || tile_attributes & Tile::UNISOLID)
+    {
+      if (tile_attributes & Tile::FIRE)
+      {
+        if (is_flammable()) ignite();
+      }
+      else if (tile_attributes & Tile::ICE)
+      {
+        if (is_freezable()) freeze();
+      }
+      else
+      {
+        kill_fall();
+      }
     }
   }
 }
@@ -380,9 +394,22 @@ BadGuy::collision_solid(const CollisionHit& hit)
   update_on_ground_flag(hit);
 }
 
+void
+BadGuy::on_flip(float height)
+{
+  MovingObject::on_flip(height);
+  Vector pos = get_start_position();
+  pos.y = height - pos.y;
+  set_start_position(pos);
+}
+
 HitResponse
 BadGuy::collision_player(Player& player, const CollisionHit& )
 {
+  if (player.is_invincible()) {
+    kill_fall();
+    return ABORT_MOVE;
+  }
   if(player.get_grabbed_object() != nullptr)
   {
       auto badguy = dynamic_cast<BadGuy*>(player.get_grabbed_object());
@@ -394,10 +421,6 @@ BadGuy::collision_player(Player& player, const CollisionHit& )
         kill_fall();
         return ABORT_MOVE;
       }
-  }
-  if (player.is_invincible()) {
-    kill_fall();
-    return ABORT_MOVE;
   }
 
   //TODO: unfreeze timer
@@ -504,7 +527,7 @@ BadGuy::kill_fall()
 
   if (m_frozen) {
     SoundManager::current()->play("sounds/brick.wav");
-    Vector pr_pos;
+    Vector pr_pos(0.0f, 0.0f);
     float cx = m_col.m_bbox.get_width() / 2;
     float cy = m_col.m_bbox.get_height() / 2;
     for (pr_pos.x = 0; pr_pos.x < m_col.m_bbox.get_width(); pr_pos.x += 16) {
@@ -540,7 +563,7 @@ void
 BadGuy::run_dead_script()
 {
   if (m_countMe)
-    Sector::get().get_level().m_stats.m_badguys++;
+    Sector::get().get_level().m_stats.increment_badguys();
 
   m_countMe = false;
 
@@ -595,20 +618,25 @@ BadGuy::set_state(State state_)
 bool
 BadGuy::is_offscreen() const
 {
-  Vector dist;
+  Vector cam_dist(0.0f, 0.0f);
+  Vector player_dist(0.0f, 0.0f);
+  Camera& cam = Sector::get().get_camera();
+  cam_dist = cam.get_center() - m_col.m_bbox.get_middle();
   if (Editor::is_active()) {
-    Camera& cam = Sector::get().get_camera();
-    dist = cam.get_center() - m_col.m_bbox.get_middle();
+      if ((fabsf(cam_dist.x) <= X_OFFSCREEN_DISTANCE) && (fabsf(cam_dist.y) <= Y_OFFSCREEN_DISTANCE)) {
+        return false;
+    }
   }
   auto player = get_nearest_player();
   if (!player)
     return false;
   if (!Editor::is_active()) {
-    dist = player->get_bbox().get_middle() - m_col.m_bbox.get_middle();
+    player_dist = player->get_bbox().get_middle() - m_col.m_bbox.get_middle();
   }
   // In SuperTux 0.1.x, Badguys were activated when Tux<->Badguy center distance was approx. <= ~668px
   // This doesn't work for wide-screen monitors which give us a virt. res. of approx. 1066px x 600px
-  if ((fabsf(dist.x) <= X_OFFSCREEN_DISTANCE) && (fabsf(dist.y) <= Y_OFFSCREEN_DISTANCE)) {
+  if (((fabsf(player_dist.x) <= X_OFFSCREEN_DISTANCE) && (fabsf(player_dist.y) <= Y_OFFSCREEN_DISTANCE))
+      ||((fabsf(cam_dist.x) <= X_OFFSCREEN_DISTANCE) && (fabsf(cam_dist.y) <= Y_OFFSCREEN_DISTANCE))) {
     return false;
   }
   return true;
@@ -837,6 +865,8 @@ BadGuy::get_settings()
 void
 BadGuy::after_editor_set()
 {
+  MovingSprite::after_editor_set();
+
   if (m_dir == Direction::AUTO)
   {
     if (m_sprite->has_action("editor-left")) {
@@ -892,6 +922,26 @@ BadGuy::after_editor_set()
                   << get_class() << std::endl;
     }
   }
+}
+
+bool
+BadGuy::can_be_affected_by_wind() const
+{
+  return !on_ground();
+}
+
+void
+BadGuy::add_wind_velocity(const Vector& velocity, const Vector& end_speed)
+{
+  // only add velocity in the same direction as the wind
+  if (end_speed.x > 0 && m_physic.get_velocity_x() < end_speed.x)
+    m_physic.set_velocity_x(std::min(m_physic.get_velocity_x() + velocity.x, end_speed.x));
+  if (end_speed.x < 0 && m_physic.get_velocity_x() > end_speed.x)
+    m_physic.set_velocity_x(std::max(m_physic.get_velocity_x() + velocity.x, end_speed.x));
+  if (end_speed.y > 0 && m_physic.get_velocity_y() < end_speed.y)
+    m_physic.set_velocity_y(std::min(m_physic.get_velocity_y() + velocity.y, end_speed.y));
+  if (end_speed.y < 0 && m_physic.get_velocity_y() > end_speed.y)
+    m_physic.set_velocity_y(std::max(m_physic.get_velocity_y() + velocity.y, end_speed.y));
 }
 
 /* EOF */

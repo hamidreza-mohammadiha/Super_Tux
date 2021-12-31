@@ -36,7 +36,7 @@ Compositor::Compositor(VideoSystem& video_system) :
 Compositor::~Compositor()
 {
   m_drawing_contexts.clear();
-  obstack_free(&m_obst, 0);
+  obstack_free(&m_obst, nullptr);
 }
 
 DrawingContext&
@@ -122,10 +122,10 @@ Compositor::render()
         request.alpha = 1.0f;
         request.blend = Blend::MOD;
 
-        request.srcrects.emplace_back(0, 0,
+        request.srcrects.emplace_back(0.0f, 0.0f,
                                       static_cast<float>(texture->get_image_width()),
                                       static_cast<float>(texture->get_image_height()));
-        request.dstrects.emplace_back(Vector(0, 0), lightmap.get_logical_size());
+        request.dstrects.emplace_back(Vector(0.0f, 0.0f), lightmap.get_logical_size());
         request.angles.emplace_back(0.0f);
 
         request.texture = texture.get();
@@ -153,7 +153,7 @@ Compositor::render()
   }
   m_video_system.flip();
 
-  obstack_free(&m_obst, 0);
+  obstack_free(&m_obst, nullptr);
   obstack_init(&m_obst);
 }
 

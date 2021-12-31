@@ -25,12 +25,13 @@
 #include "gui/item_colordisplay.hpp"
 #include "gui/item_controlfield.hpp"
 #include "gui/item_file.hpp"
+#include "gui/item_floatfield.hpp"
 #include "gui/item_goto.hpp"
 #include "gui/item_hl.hpp"
 #include "gui/item_inactive.hpp"
 #include "gui/item_intfield.hpp"
 #include "gui/item_label.hpp"
-#include "gui/item_floatfield.hpp"
+#include "gui/item_paths.hpp"
 #include "gui/item_script.hpp"
 #include "gui/item_script_line.hpp"
 #include "gui/item_stringselect.hpp"
@@ -219,7 +220,7 @@ Menu::add_entry(int id, const std::string& text)
 }
 
 ItemAction&
-Menu::add_entry(const std::string& text, std::function<void()> callback)
+Menu::add_entry(const std::string& text, const std::function<void()>& callback)
 {
   auto item = std::make_unique<ItemAction>(text, -1, callback);
   auto item_ptr = item.get();
@@ -247,8 +248,8 @@ Menu::add_toggle(int id, const std::string& text, bool* toggled)
 
 ItemToggle&
 Menu::add_toggle(int id, const std::string& text,
-                 std::function<bool()> get_func,
-                 std::function<void(bool)> set_func)
+                 const std::function<bool()>& get_func,
+                 const std::function<void(bool)>& set_func)
 {
   auto item = std::make_unique<ItemToggle>(text, get_func, set_func, id);
   auto item_ptr = item.get();
@@ -293,9 +294,25 @@ Menu::add_submenu(const std::string& text, int submenu, int id)
   return *item_ptr;
 }
 
-ItemColorChannel&
-Menu::add_color_channel(float* input, Color channel, int id) {
-  auto item = std::make_unique<ItemColorChannel>(input, channel, id);
+ItemColorChannelRGBA&
+Menu::add_color_channel_rgba(float* input, Color channel, int id, bool is_linear) {
+  auto item = std::make_unique<ItemColorChannelRGBA>(input, channel, id, is_linear);
+  auto item_ptr = item.get();
+  add_item(std::move(item));
+  return *item_ptr;
+}
+
+ItemColorChannelOKLab&
+Menu::add_color_channel_oklab(Color* color, int channel) {
+  auto item = std::make_unique<ItemColorChannelOKLab>(color, channel, this);
+  auto item_ptr = item.get();
+  add_item(std::move(item));
+  return *item_ptr;
+}
+
+ItemPaths&
+Menu::add_path_settings(const std::string& text, PathObject& target, const std::string& path_ref) {
+  auto item = std::make_unique<ItemPaths>(text, target, path_ref);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
@@ -428,6 +445,7 @@ Menu::process_input(const Controller& controller)
   }
 
   if (controller.pressed(Control::ACTION) ||
+     controller.pressed(Control::JUMP) ||
      controller.pressed(Control::MENU_SELECT) ||
      (!is_sensitive() && controller.pressed(Control::MENU_SELECT_SPACE))) {
     menuaction = MenuAction::HIT;
@@ -498,18 +516,22 @@ Menu::process_action(const MenuAction& menuaction)
       break;
   }
 
-  if (m_items[m_active_item]->no_other_action()) {
-    m_items[m_active_item]->process_action(menuaction);
-    return;
+  if (last_active_item != m_active_item) {
+    // Selection caused by Up or Down keyboard action
+    if (last_active_item != -1)
+      m_items[last_active_item]->process_action(MenuAction::UNSELECT);
+    m_items[m_active_item]->process_action(MenuAction::SELECT);
   }
 
+  bool last_action = m_items[m_active_item]->no_other_action();
   m_items[m_active_item]->process_action(menuaction);
-  if (m_items[m_active_item]->changes_width()) {
+  if (last_action)
+    return;
+
+  if (m_items[m_active_item]->changes_width())
     calculate_width();
-  }
-  if (menuaction == MenuAction::HIT) {
+  if (menuaction == MenuAction::HIT)
     menu_action(*m_items[m_active_item]);
-  }
 }
 
 void
@@ -613,13 +635,13 @@ Menu::draw(DrawingContext& context)
 MenuItem&
 Menu::get_item_by_id(int id)
 {
-  for (const auto& item : m_items)
+  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
   {
-    if (item->get_id() == id)
-    {
-      return *item;
-    }
-  }
+    return i->get_id() == id;
+  });
+
+  if(item != m_items.end())
+    return *item->get();
 
   char c[32];
   sprintf(c, "%d", id);
@@ -629,15 +651,15 @@ Menu::get_item_by_id(int id)
 const MenuItem&
 Menu::get_item_by_id(int id) const
 {
-  for (const auto& item : m_items)
+  auto item = std::find_if(m_items.begin(), m_items.end(), [id](const std::unique_ptr<MenuItem>& i)
   {
-    if (item->get_id() == id)
-    {
-      return *item;
-    }
-  }
+    return i->get_id() == id;
+  });
 
-  throw std::runtime_error("MenuItem not found");
+  if(item != m_items.end())
+    return *item->get();
+
+  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
 }
 
 int Menu::get_active_item_id() const
@@ -696,8 +718,14 @@ Menu::event(const SDL_Event& ev)
           = static_cast<int> ((y - (m_pos.y - get_height()/2)) / 24);
 
         /* only change the mouse focus to a selectable item */
-        if (!m_items[new_active_item]->skippable())
+        if (!m_items[new_active_item]->skippable() &&
+            new_active_item != m_active_item) {
+          // Selection caused by mouse movement
+          if (m_active_item != -1)
+            process_action(MenuAction::UNSELECT);
           m_active_item = new_active_item;
+          process_action(MenuAction::SELECT);
+        }
 
         if (MouseCursor::current())
           MouseCursor::current()->set_state(MouseCursorState::LINK);

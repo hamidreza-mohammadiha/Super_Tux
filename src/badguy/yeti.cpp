@@ -189,7 +189,7 @@ Yeti::active_update(float dt_sec)
       break;
   }
 
-  m_col.m_movement = m_physic.get_movement(dt_sec);
+  m_col.set_movement(m_physic.get_movement(dt_sec));
 }
 
 void
@@ -349,7 +349,8 @@ Yeti::collision_solid(const CollisionHit& hit)
     }
   } else if (hit.left || hit.right) {
     // hit wall
-    jump_up();
+    if(state != SQUISHED && state != FALLING)
+      jump_up();
   }
 }
 
@@ -375,9 +376,9 @@ void
 Yeti::add_snow_explosions()
 {
   for (int i = 0; i < SNOW_EXPLOSIONS_COUNT; i++) {
-    Vector pos = get_pos(), velocity;
-    velocity.x = SNOW_EXPLOSIONS_VX * graphicsRandom.randf(0.5f, 2.0f) * (graphicsRandom.rand(2) ? 1.0f : -1.0f);
-    velocity.y = SNOW_EXPLOSIONS_VY * graphicsRandom.randf(0.5f, 2.0f);
+    Vector pos = get_pos();
+    Vector velocity(SNOW_EXPLOSIONS_VX * graphicsRandom.randf(0.5f, 2.0f) * (graphicsRandom.rand(2) ? 1.0f : -1.0f),
+                    SNOW_EXPLOSIONS_VY * graphicsRandom.randf(0.5f, 2.0f));
     pos.x += static_cast<float>(m_sprite->get_width()) / 2.0f;
     pos.x += static_cast<float>(m_sprite->get_width()) * graphicsRandom.randf(0.3f, 0.5f) * ((velocity.x > 0) ? 1.0f : -1.0f);
     pos.y += static_cast<float>(m_sprite->get_height()) * graphicsRandom.randf(-0.3f, 0.3f);

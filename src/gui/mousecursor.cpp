@@ -18,6 +18,8 @@
 
 #include <SDL.h>
 
+#include "supertux/gameconfig.hpp"
+#include "supertux/globals.hpp"
 #include "sprite/sprite.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
@@ -31,6 +33,11 @@ MouseCursor::MouseCursor(SpritePtr sprite) :
   m_state(MouseCursorState::NORMAL),
   m_applied_state(MouseCursorState::HIDE),
   m_sprite(std::move(sprite)),
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  m_x(),
+  m_y(),
+  m_mobile_mode(false),
+#endif
   m_icon()
 {
 }
@@ -77,10 +84,19 @@ MouseCursor::apply_state(MouseCursorState state)
 void
 MouseCursor::draw(DrawingContext& context)
 {
+  if (!g_config->custom_mouse_cursor) return;
   if (m_state != MouseCursorState::HIDE)
   {
     int x, y;
     Uint32 ispressed = SDL_GetMouseState(&x, &y);
+
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+    if (m_mobile_mode)
+    {
+      x = m_x;
+      y = m_y;
+    }
+#endif
 
     if (ispressed & SDL_BUTTON(1) || ispressed & SDL_BUTTON(2))
     {

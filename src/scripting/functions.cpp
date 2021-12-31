@@ -80,19 +80,112 @@ bool is_christmas()
   return g_config->christmas_mode;
 }
 
+void start_cutscene()
+{
+  auto session = GameSession::current();
+  if (session == nullptr)
+  {
+    log_info << "No game session" << std::endl;
+    return;
+  }
+
+  if (session->get_current_level().m_is_in_cutscene)
+  {
+    log_warning << "start_cutscene(): starting a new cutscene above another one, ending preceeding cutscene (use end_cutscene() in scripts!)" << std::endl;
+
+    // Remove all sounds that started playing while skipping
+    if (session->get_current_level().m_skip_cutscene)
+      SoundManager::current()->stop_sounds();
+  }
+
+  session->get_current_level().m_is_in_cutscene = true;
+  session->get_current_level().m_skip_cutscene = false;
+}
+
+void end_cutscene()
+{
+  auto session = GameSession::current();
+  if (session == nullptr)
+  {
+    log_info << "No game session" << std::endl;
+    return;
+  }
+
+  if (!session->get_current_level().m_is_in_cutscene)
+  {
+    log_warning << "end_cutscene(): no cutscene to end, resetting status anyways" << std::endl;
+  }
+
+  // Remove all sounds that started playing while skipping
+  if (session->get_current_level().m_skip_cutscene)
+    SoundManager::current()->stop_sounds();
+
+  session->get_current_level().m_is_in_cutscene = false;
+  session->get_current_level().m_skip_cutscene = false;
+}
+
+bool check_cutscene()
+{
+  auto session = GameSession::current();
+  if (session == nullptr)
+  {
+    log_info << "No game session" << std::endl;
+    return false;
+  }
+
+  return session->get_current_level().m_is_in_cutscene;
+}
+
 void wait(HSQUIRRELVM vm, float seconds)
 {
-  if (auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm)))
+  if(GameSession::current()->get_current_level().m_skip_cutscene)
   {
-    squirrelenv->wait_for_seconds(vm, seconds);
+    if (auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm)))
+    {
+      // wait anyways, to prevent scripts like `while (true) {wait(0.1); ...}`
+      squirrelenv->wait_for_seconds(vm, 0);
+    }
+    else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm)))
+    {
+      squirrelvm->wait_for_seconds(vm, 0);
+    }
+    else
+    {
+      log_warning << "wait(): no VM or environment available\n";
+    }
   }
-  else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm)))
+  else if(GameSession::current()->get_current_level().m_is_in_cutscene)
   {
-    squirrelvm->wait_for_seconds(vm, seconds);
+    if (auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm)))
+    {
+      // wait anyways, to prevent scripts like `while (true) {wait(0.1); ...}` from freezing the game
+      squirrelenv->skippable_wait_for_seconds(vm, seconds);
+      //GameSession::current()->set_scheduler(squirrelenv->get_scheduler());
+    }
+    else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm)))
+    {
+      squirrelvm->skippable_wait_for_seconds(vm, seconds);
+      //GameSession::current()->set_scheduler(squirrelvm->get_scheduler());
+    }
+    else
+    {
+      log_warning << "wait(): no VM or environment available\n";
+    }
   }
   else
   {
-    log_warning << "wait(): no VM or environment available\n";
+    if (auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm)))
+    {
+      squirrelenv->wait_for_seconds(vm, seconds);
+    }
+    else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm)))
+    {
+      squirrelvm->wait_for_seconds(vm, seconds);
+    }
+    else
+    {
+      log_warning << "wait(): no VM or environment available\n";
+    }
   }
 }
 
@@ -137,14 +230,14 @@ void load_worldmap(const std::string& filename)
 {
   using namespace worldmap;
 
-  if (!WorldMap::current())
+  if (!::worldmap::WorldMap::current())
   {
     throw std::runtime_error("Can't start Worldmap without active WorldMap");
   }
   else
   {
     ScreenManager::current()->push_screen(std::make_unique<WorldMapScreen>(
-                                            std::make_unique<WorldMap>(filename, WorldMap::current()->get_savegame())));
+                                            std::make_unique<::worldmap::WorldMap>(filename, ::worldmap::WorldMap::current()->get_savegame())));
   }
 }
 
@@ -235,6 +328,26 @@ void play_music(const std::string& filename)
   SoundManager::current()->play_music(filename);
 }
 
+void stop_music(float fadetime)
+{
+  SoundManager::current()->stop_music(fadetime);
+}
+
+void fade_in_music(const std::string& filename, float fadetime)
+{
+  SoundManager::current()->play_music(filename, fadetime);
+}
+
+void resume_music(float fadetime)
+{
+  SoundManager::current()->resume_music(fadetime);
+}
+
+void pause_music(float fadetime)
+{
+  SoundManager::current()->pause_music(fadetime);
+}
+
 void play_sound(const std::string& filename)
 {
   SoundManager::current()->play(filename);
@@ -310,7 +423,7 @@ void warp(float offset_x, float offset_y)
 void camera()
 {
   if (!validate_sector_player()) return;
-  auto& cam_pos = ::Sector::get().get_camera().get_translation();
+  const auto& cam_pos = ::Sector::get().get_camera().get_translation();
   log_info << "Camera is at " << cam_pos.x << "," << cam_pos.y << std::endl;
 }
 
@@ -331,6 +444,15 @@ int rand()
 
 void set_game_speed(float speed)
 {
+  if (speed < 0.05f)
+  {
+    // Always put a minimum speed above 0 - if the user enabled transitions,
+    // executing transitions would take an unreaonably long time if we allow
+    // game speeds like 0.00001
+    log_warning << "Cannot set game speed to less than 0.05" << std::endl;
+    throw std::runtime_error("Cannot set game speed to less than 0.05");
+  }
+
   ::g_debug.set_game_speed_multiplier(speed);
 }
 

@@ -36,6 +36,7 @@ Candle::Candle(const ReaderMapping& mapping) :
   mapping.get("flicker", flicker, true);
   std::vector<float> vColor;
   if (!mapping.get("color", vColor)) vColor = {1.0f, 1.0f, 1.0f};
+  mapping.get("layer", m_layer, 0);
 
   //change the light color if defined
   if (vColor.size() >= 3) {
@@ -60,6 +61,8 @@ Candle::Candle(const ReaderMapping& mapping) :
 void
 Candle::after_editor_set()
 {
+  MovingSprite::after_editor_set();
+
   candle_light_1->set_color(lightcolor);
   candle_light_2->set_color(lightcolor);
 
@@ -74,8 +77,9 @@ Candle::get_settings()
   result.add_bool(_("Burning"), &burning, "burning", true);
   result.add_bool(_("Flicker"), &flicker, "flicker", true);
   result.add_color(_("Color"), &lightcolor, "color", Color::WHITE);
+  result.add_int(_("Layer"), &m_layer, "layer", 0);
 
-  result.reorder({"burning", "flicker", "name", "sprite", "color", "x", "y"});
+  result.reorder({"burning", "flicker", "name", "sprite", "color", "layer", "x", "y"});
 
   return result;
 }
@@ -92,10 +96,10 @@ Candle::draw(DrawingContext& context)
     // draw approx. 1 in 10 frames darker. Makes the candle flicker
     if (gameRandom.rand(10) != 0 || !flicker) {
       //context.color().draw_surface(candle_light_1, pos, layer);
-      candle_light_1->draw(context.light(), m_col.m_bbox.get_middle(), 0);
+      candle_light_1->draw(context.light(), m_col.m_bbox.get_middle(), m_layer);
     } else {
       //context.color().draw_surface(candle_light_2, pos, layer);
-      candle_light_2->draw(context.light(), m_col.m_bbox.get_middle(), 0);
+      candle_light_2->draw(context.light(), m_col.m_bbox.get_middle(), m_layer);
     }
   }
 }
@@ -112,7 +116,7 @@ Candle::puff_smoke()
   Vector ppos = m_col.m_bbox.get_middle();
   Vector pspeed = Vector(0, -150);
   Vector paccel = Vector(0,0);
-  Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
+  Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                          "default",
                                          ppos, ANCHOR_MIDDLE,
                                          pspeed, paccel,

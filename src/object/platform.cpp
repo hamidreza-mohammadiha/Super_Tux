@@ -19,6 +19,7 @@
 #include "editor/editor.hpp"
 #include "object/player.hpp"
 #include "supertux/sector.hpp"
+#include "supertux/flip_level_transformer.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
@@ -34,13 +35,16 @@ Platform::Platform(const ReaderMapping& reader, const std::string& default_sprit
   m_speed(Vector(0,0)),
   m_automatic(false),
   m_player_contact(false),
-  m_last_player_contact(false)
+  m_last_player_contact(false),
+  m_starting_node(0)
 {
   bool running = true;
   reader.get("running", running);
   if ((get_name().empty()) && (!running)) {
     m_automatic = true;
   }
+
+  reader.get("starting-node", m_starting_node, 0.f);
 
   init_path(reader, true);
 }
@@ -54,7 +58,12 @@ Platform::finish_construction()
     init_path_pos(m_col.m_bbox.p1(), false);
   }
 
-  m_col.m_bbox.set_pos(get_path()->get_base());
+  if (m_starting_node >= static_cast<int>(get_path()->get_nodes().size()))
+    m_starting_node = static_cast<int>(get_path()->get_nodes().size()) - 1;
+
+  get_walker()->jump_to_node(m_starting_node);
+
+  m_col.m_bbox.set_pos(get_path()->get_nodes()[m_starting_node].position);
 }
 
 ObjectSettings
@@ -62,11 +71,13 @@ Platform::get_settings()
 {
   ObjectSettings result = MovingSprite::get_settings();
 
-  result.add_path_ref(_("Path"), get_path_ref(), "path-ref");
+  result.add_path_ref(_("Path"), *this, get_path_ref(), "path-ref");
   result.add_walk_mode(_("Path Mode"), &get_path()->m_mode, {}, {});
+  result.add_bool(_("Adapt Speed"), &get_path()->m_adapt_speed, {}, {});
   result.add_bool(_("Running"), &get_walker()->m_running, "running", true, 0);
+  result.add_int(_("Starting Node"), &m_starting_node, "starting-node", 0, 0U);
 
-  result.reorder({"running", "name", "path-ref", "sprite", "x", "y"});
+  result.reorder({"running", "name", "path-ref", "starting-node", "sprite", "x", "y"});
 
   return result;
 }
@@ -117,9 +128,10 @@ Platform::update(float dt_sec)
   }
 
   get_walker()->update(dt_sec);
-  Vector new_pos = get_walker()->get_pos();
-    m_col.m_movement = new_pos - get_pos();
-    m_speed = m_col.m_movement / dt_sec;
+  Vector movement = get_walker()->get_pos() - get_pos();
+  m_col.set_movement(movement);
+  m_col.propagate_movement(movement);
+  m_speed = movement / dt_sec;
 }
 
 void
@@ -128,7 +140,10 @@ Platform::editor_update()
   if (!get_path()) return;
   if (!get_path()->is_valid()) return;
 
-  set_pos(get_walker()->get_pos());
+  if (m_starting_node >= static_cast<int>(get_path()->get_nodes().size()))
+    m_starting_node = static_cast<int>(get_path()->get_nodes().size()) - 1;
+
+  set_pos(get_path()->get_nodes()[m_starting_node].position);
 }
 
 void
@@ -147,6 +162,12 @@ void
 Platform::stop_moving()
 {
   get_walker()->stop_moving();
+}
+
+void
+Platform::set_action(const std::string& action, int repeat)
+{
+  MovingSprite::set_action(action, repeat);
 }
 
 void

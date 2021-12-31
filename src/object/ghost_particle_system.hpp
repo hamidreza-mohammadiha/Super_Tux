@@ -27,13 +27,13 @@ class GhostParticleSystem final : public ParticleSystem
 public:
   GhostParticleSystem();
   GhostParticleSystem(const ReaderMapping& reader);
-  virtual ~GhostParticleSystem();
+  ~GhostParticleSystem() override;
 
   void init();
   virtual void update(float dt_sec) override;
 
   virtual std::string get_class() const override { return "particles-ghosts"; }
-  virtual std::string get_display_name() const override { return _("Ghost particles"); }
+  virtual std::string get_display_name() const override { return _("Ghost Particles"); }
 
   virtual const std::string get_icon_path() const override {
     return "images/engine/editor/ghostparticles.png";

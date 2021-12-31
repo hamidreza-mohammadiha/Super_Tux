@@ -49,7 +49,7 @@ class ParticleSystem : public GameObject,
 public:
   ParticleSystem(const ReaderMapping& reader, float max_particle_size = 60);
   ParticleSystem(float max_particle_size = 60);
-  virtual ~ParticleSystem();
+  ~ParticleSystem() override;
 
   virtual void draw(DrawingContext& context) override;
 
@@ -67,9 +67,11 @@ protected:
   {
   public:
     Particle() :
-      pos(),
+      pos(0.0f, 0.0f),
       angle(),
-      texture()
+      texture(),
+      alpha(),
+      scale(1.f) // This currently only works in the custom particle system
     {}
 
     virtual ~Particle()
@@ -79,6 +81,8 @@ protected:
     // angle at which to draw particle
     float angle;
     SurfacePtr texture;
+    float alpha;
+    float scale; // see initializer
 
   private:
     Particle(const Particle&) = delete;

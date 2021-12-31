@@ -33,8 +33,8 @@ ScriptedObject::ScriptedObject(const ReaderMapping& mapping) :
   visible(),
   hit_script(),
   new_vel_set(false),
-  new_vel(),
-  new_size()
+  new_vel(0.0f, 0.0f),
+  new_size(0.0f, 0.0f)
 {
   m_default_sprite_name = {};
 
@@ -177,7 +177,7 @@ ScriptedObject::update(float dt_sec)
     physic.set_velocity(new_vel.x, new_vel.y);
     new_vel_set = false;
   }
-  m_col.m_movement = physic.get_movement(dt_sec);
+  m_col.set_movement(physic.get_movement(dt_sec));
 }
 
 void

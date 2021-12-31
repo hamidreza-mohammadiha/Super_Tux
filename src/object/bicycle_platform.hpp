@@ -33,6 +33,8 @@ public:
   virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
   virtual bool is_saveable() const override { return false; }
 
+  virtual void editor_delete() override;
+
 private:
   BicyclePlatform& m_parent;
   float m_angle_offset;
@@ -53,13 +55,14 @@ class BicyclePlatform final : public GameObject
 
 public:
   BicyclePlatform(const ReaderMapping& reader);
-  virtual ~BicyclePlatform();
+  ~BicyclePlatform() override;
 
   virtual void draw(DrawingContext& context) override;
   virtual void update(float dt_sec) override;
+  virtual void on_flip(float height) override;
 
   virtual std::string get_class() const override { return "bicycle-platform"; }
-  virtual std::string get_display_name() const override { return _("Bicycle platform"); }
+  virtual std::string get_display_name() const override { return _("Bicycle Platform"); }
 
   virtual ObjectSettings get_settings() override;
   virtual void editor_delete() override;

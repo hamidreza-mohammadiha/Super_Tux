@@ -57,6 +57,8 @@ private:
   Physic m_physic;
   std::string m_collect_script;
 
+  int m_starting_node;
+
 private:
   Coin(const Coin&) = delete;
   Coin& operator=(const Coin&) = delete;
@@ -72,13 +74,14 @@ public:
   virtual void collision_solid(const CollisionHit& hit) override;
 
   virtual std::string get_class() const override { return "heavycoin"; }
-  virtual std::string get_display_name() const override { return _("Heavy coin"); }
+  virtual std::string get_display_name() const override { return _("Heavy Coin"); }
 
   virtual ObjectSettings get_settings() override;
   virtual void after_editor_set() override;
 
 private:
   Physic m_physic;
+  CollisionHit m_last_hit;
 
 private:
   HeavyCoin(const HeavyCoin&) = delete;

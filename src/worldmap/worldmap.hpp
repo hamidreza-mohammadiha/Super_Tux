@@ -60,7 +60,7 @@ public:
 
 public:
   WorldMap(const std::string& filename, Savegame& savegame, const std::string& force_spawnpoint = "");
-  ~WorldMap();
+  ~WorldMap() override;
 
   void finish_construction();
 
@@ -157,6 +157,8 @@ public:
   void set_passive_message(const std::string& message, float time);
 
   Camera& get_camera() const { return *m_camera; }
+
+  Vector get_tux_pos();
 
 protected:
   virtual bool before_object_add(GameObject& object) override;

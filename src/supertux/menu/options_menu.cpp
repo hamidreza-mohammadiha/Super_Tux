@@ -18,19 +18,24 @@
 #include "supertux/menu/options_menu.hpp"
 
 #include "audio/sound_manager.hpp"
+#include "gui/dialog.hpp"
 #include "gui/item_goto.hpp"
 #include "gui/item_stringselect.hpp"
 #include "gui/item_toggle.hpp"
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
-#include "supertux/game_session.hpp"
 #include "supertux/gameconfig.hpp"
+#include "supertux/game_session.hpp"
 #include "supertux/globals.hpp"
 #include "supertux/menu/menu_storage.hpp"
-#include "supertux/screen_manager.hpp"
 #include "util/gettext.hpp"
 #include "util/log.hpp"
 #include "video/renderer.hpp"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
 
 namespace {
 
@@ -53,10 +58,12 @@ enum OptionsMenuIDs {
   MNID_WINDOW_RESOLUTION,
   MNID_FULLSCREEN,
   MNID_FULLSCREEN_RESOLUTION,
+#ifdef __EMSCRIPTEN__
+  MNID_FIT_WINDOW,
+#endif
   MNID_MAGNIFICATION,
   MNID_ASPECTRATIO,
   MNID_VSYNC,
-  MNID_FRAMERATE,
   MNID_SOUND,
   MNID_MUSIC,
   MNID_SOUND_VOLUME,
@@ -65,7 +72,11 @@ enum OptionsMenuIDs {
   MNID_CHRISTMAS_MODE,
   MNID_TRANSITIONS,
   MNID_CONFIRMATION_DIALOG,
-  MNID_PAUSE_ON_FOCUSLOSS
+  MNID_PAUSE_ON_FOCUSLOSS,
+  MNID_CUSTOM_CURSOR
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  , MNID_MOBILE_CONTROLS
+#endif
 };
 
 OptionsMenu::OptionsMenu(bool complete) :
@@ -74,7 +85,6 @@ OptionsMenu::OptionsMenu(bool complete) :
   next_window_resolution(0),
   next_resolution(0),
   next_vsync(0),
-  next_framerate(0),
   next_sound_volume(0),
   next_music_volume(0),
   magnifications(),
@@ -82,7 +92,6 @@ OptionsMenu::OptionsMenu(bool complete) :
   window_resolutions(),
   resolutions(),
   vsyncs(),
-  framerates(),
   sound_volumes(),
   music_volumes()
 {
@@ -93,10 +102,12 @@ OptionsMenu::OptionsMenu(bool complete) :
   // These values go from screen:640/projection:1600 to
   // screen:1600/projection:640 (i.e. 640, 800, 1024, 1280, 1600)
   magnifications.push_back(_("auto"));
+#ifndef ENABLE_TOUCHSCREEN_SUPPORT
   magnifications.push_back("40%");
   magnifications.push_back("50%");
   magnifications.push_back("62.5%");
   magnifications.push_back("80%");
+#endif
   magnifications.push_back("100%");
   magnifications.push_back("125%");
   magnifications.push_back("160%");
@@ -228,30 +239,10 @@ OptionsMenu::OptionsMenu(bool complete) :
     resolutions.push_back(fullscreen_size_str);
   }
 
-  framerates.push_back("30");
-  framerates.push_back("60");
-  framerates.push_back("75");
-  framerates.push_back("90");
-  framerates.push_back("120");
-  framerates.push_back("144");
-  framerates.push_back("240");
-  framerates.push_back("288");
-  framerates.push_back("500");
-  framerates.push_back("1000");
-  next_framerate = 1;
-  const int target_framerate = static_cast<int>(ScreenManager::current()->get_target_framerate());
-  for (size_t i = 0; i < framerates.size(); ++i)
-  {
-    if (std::to_string(target_framerate) == framerates[i])
-    {
-      next_framerate = static_cast<int>(i);
-    }
-  }
-
   { // vsync
-    vsyncs.push_back("on");
-    vsyncs.push_back("off");
-    vsyncs.push_back("adaptive");
+    vsyncs.push_back(_("on"));
+    vsyncs.push_back(_("off"));
+    vsyncs.push_back(_("adaptive"));
     int mode = VideoSystem::current()->get_vsync();
 
     switch (mode)
@@ -355,6 +346,7 @@ OptionsMenu::OptionsMenu(bool complete) :
       .set_help(_("Select a profile to play with"));
   }
 
+#if !defined(ENABLE_TOUCHSCREEN_SUPPORT) && !defined(__EMSCRIPTEN__)
   add_toggle(MNID_FULLSCREEN,_("Window Resizable"), &g_config->window_resizable)
     .set_help(_("Allow window resizing, might require a restart to take effect"));
 
@@ -366,6 +358,14 @@ OptionsMenu::OptionsMenu(bool complete) :
 
   MenuItem& fullscreen_res = add_string_select(MNID_FULLSCREEN_RESOLUTION, _("Fullscreen Resolution"), &next_resolution, resolutions);
   fullscreen_res.set_help(_("Determine the resolution used in fullscreen mode (you must toggle fullscreen to complete the change)"));
+#endif
+
+#if 0
+#ifdef __EMSCRIPTEN__
+  MenuItem& fit_window = add_toggle(MNID_FIT_WINDOW, _("Fit to browser"), &g_config->fit_window);
+  fit_window.set_help(_("Fit the resolution to the size of your browser"));
+#endif
+#endif
 
   MenuItem& magnification = add_string_select(MNID_MAGNIFICATION, _("Magnification"), &next_magnification, magnifications);
   magnification.set_help(_("Change the magnification of the game area"));
@@ -373,13 +373,10 @@ OptionsMenu::OptionsMenu(bool complete) :
   MenuItem& vsync = add_string_select(MNID_VSYNC, _("VSync"), &next_vsync, vsyncs);
   vsync.set_help(_("Set the VSync mode"));
 
-  if (g_config->developer_mode) {
-    MenuItem& framerate = add_string_select(MNID_FRAMERATE, _("Framerate"), &next_framerate, framerates);
-    framerate.set_help(_("Change the maximum framerate of the game"));
-  }
-
+#if !defined(ENABLE_TOUCHSCREEN_SUPPORT) && !defined(__EMSCRIPTEN__)
   MenuItem& aspect = add_string_select(MNID_ASPECTRATIO, _("Aspect Ratio"), &next_aspect_ratio, aspect_ratios);
   aspect.set_help(_("Adjust the aspect ratio"));
+#endif
 
   if (SoundManager::current()->is_audio_enabled())
   {
@@ -403,9 +400,15 @@ OptionsMenu::OptionsMenu(bool complete) :
   add_submenu(_("Setup Keyboard"), MenuStorage::KEYBOARD_MENU)
     .set_help(_("Configure key-action mappings"));
 
+#ifndef UBUNTU_TOUCH
   add_submenu(_("Setup Joystick"), MenuStorage::JOYSTICK_MENU)
     .set_help(_("Configure joystick control-action mappings"));
+#endif
 
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  add_toggle(MNID_MOBILE_CONTROLS, _("On-screen controls"), &g_config->mobile_controls)
+      .set_help(_("Toggle on-screen controls for mobile devices"));
+#endif
   MenuItem& enable_transitions = add_toggle(MNID_TRANSITIONS, _("Enable transitions"), &g_config->transitions_enabled);
   enable_transitions.set_help(_("Enable screen transitions and smooth menu animation"));
 
@@ -419,9 +422,14 @@ OptionsMenu::OptionsMenu(bool complete) :
     add_toggle(MNID_CHRISTMAS_MODE, _("Christmas Mode"), &g_config->christmas_mode);
   }
 
-  add_toggle(MNID_CONFIRMATION_DIALOG, _("Confirmation Dialog"), &g_config->confirmation_dialog).set_help("Confirm aborting level");
-  add_toggle(MNID_CONFIRMATION_DIALOG, _("Pause on focus loss"), &g_config->pause_on_focusloss)
-    .set_help("Automatically pause the game when the window loses focus");
+  add_toggle(MNID_CONFIRMATION_DIALOG, _("Confirmation Dialog"), &g_config->confirmation_dialog).set_help(_("Confirm aborting level"));
+  add_toggle(MNID_PAUSE_ON_FOCUSLOSS, _("Pause on focus loss"), &g_config->pause_on_focusloss)
+    .set_help(_("Automatically pause the game when the window loses focus"));
+  add_toggle(MNID_CUSTOM_CURSOR, _("Use custom mouse cursor"), &g_config->custom_mouse_cursor).set_help(_("Whether the game renders its own cursor or uses the system's cursor"));
+
+  add_submenu(_("Integrations and presence"), MenuStorage::INTEGRATIONS_MENU)
+      .set_help(_("Manage whether SuperTux should display the levels you play on your social media profiles (Discord)"));
+
   add_hl();
   add_back(_("Back"));
 }
@@ -522,9 +530,31 @@ OptionsMenu::menu_action(MenuItem& item)
       }
       break;
 
-    case MNID_FRAMERATE:
-      ScreenManager::current()->set_target_framerate(std::stof(framerates[next_framerate]));
+#ifdef __EMSCRIPTEN__
+    case MNID_FIT_WINDOW:
+      {
+        // Emscripten's Clang detects the "$" in the macro as part of C++ code
+        // although it isn't even Javascript, it's Emscripten's way to pass
+        // arguments from C++ to Javascript
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+        int resultds = EM_ASM_INT({
+          if (window.supertux_setAutofit)
+            window.supertux_setAutofit($0);
+
+          return !!window.supertux_setAutofit;
+        }, g_config->fit_window);
+#pragma GCC diagnostic pop
+
+        if (!resultds)
+        {
+          Dialog::show_message(_("The game couldn't detect your browser resolution.\n"
+                                 "This most likely happens because it is not embedded\n"
+                                 "in the SuperTux custom HTML template.\n"));
+        }
+      }
       break;
+#endif
 
     case MNID_VSYNC:
       switch (next_vsync)
@@ -581,6 +611,10 @@ OptionsMenu::menu_action(MenuItem& item)
         SoundManager::current()->set_music_volume(g_config->music_volume);
         g_config->save();
       }
+      break;
+
+    case MNID_CUSTOM_CURSOR:
+      SDL_ShowCursor(g_config->custom_mouse_cursor ? 0 : 1);
       break;
 
     default:

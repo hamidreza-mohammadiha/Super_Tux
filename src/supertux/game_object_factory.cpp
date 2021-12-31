@@ -29,8 +29,10 @@
 #include "badguy/flyingsnowball.hpp"
 #include "badguy/ghostflame.hpp"
 #include "badguy/ghosttree.hpp"
+#include "badguy/ghoul.hpp"
 #include "badguy/goldbomb.hpp"
 #include "badguy/haywire.hpp"
+#include "badguy/icecrusher.hpp"
 #include "badguy/iceflame.hpp"
 #include "badguy/igel.hpp"
 #include "badguy/jumpy.hpp"
@@ -44,6 +46,7 @@
 #include "badguy/owl.hpp"
 #include "badguy/plant.hpp"
 #include "badguy/poisonivy.hpp"
+#include "badguy/rcrystallo.hpp"
 #include "badguy/short_fuse.hpp"
 #include "badguy/skullyhop.hpp"
 #include "badguy/skydive.hpp"
@@ -53,6 +56,7 @@
 #include "badguy/snowball.hpp"
 #include "badguy/snowman.hpp"
 #include "badguy/spidermite.hpp"
+#include "badguy/scrystallo.hpp"
 #include "badguy/spiky.hpp"
 #include "badguy/sspiky.hpp"
 #include "badguy/stalactite.hpp"
@@ -73,17 +77,21 @@
 #include "object/bicycle_platform.hpp"
 #include "object/bonus_block.hpp"
 #include "object/brick.hpp"
+#include "object/bumper.hpp"
 #include "object/camera.hpp"
 #include "object/candle.hpp"
+#include "object/circleplatform.hpp"
 #include "object/cloud_particle_system.hpp"
+#include "object/custom_particle_system.hpp"
+#include "object/custom_particle_system_file.hpp"
 #include "object/coin.hpp"
 #include "object/decal.hpp"
 #include "object/explosion.hpp"
+#include "object/fallblock.hpp"
 #include "object/firefly.hpp"
 #include "object/ghost_particle_system.hpp"
 #include "object/gradient.hpp"
 #include "object/hurting_platform.hpp"
-#include "object/icecrusher.hpp"
 #include "object/infoblock.hpp"
 #include "object/invisible_block.hpp"
 #include "object/invisible_wall.hpp"
@@ -92,13 +100,16 @@
 #include "object/level_time.hpp"
 #include "object/magicblock.hpp"
 #include "object/path_gameobject.hpp"
+#include "object/particle_zone.hpp"
 #include "object/platform.hpp"
 #include "object/pneumatic_platform.hpp"
 #include "object/powerup.hpp"
 #include "object/pushbutton.hpp"
 #include "object/rain_particle_system.hpp"
+#include "object/rublight.hpp"
 #include "object/rusty_trampoline.hpp"
 #include "object/scripted_object.hpp"
+#include "object/shard.hpp"
 #include "object/skull_tile.hpp"
 #include "object/snow_particle_system.hpp"
 #include "object/spawnpoint.hpp"
@@ -151,6 +162,7 @@ GameObjectFactory::init_factories()
   add_factory<FlyingSnowBall>("flyingsnowball");
   add_factory<Ghostflame>("ghostflame");
   add_factory<GhostTree>("ghosttree");
+  add_factory<Ghoul>("ghoul");
   add_factory<GoldBomb>("goldbomb");
   add_factory<Haywire>("haywire");
   add_factory<Iceflame>("iceflame");
@@ -170,6 +182,8 @@ GameObjectFactory::init_factories()
   add_factory<Owl>("owl");
   add_factory<Plant>("plant");
   add_factory<PoisonIvy>("poisonivy");
+  add_factory<RCrystallo>("rcrystallo");
+  add_factory<SCrystallo>("scrystallo");
   add_factory<ShortFuse>("short_fuse");
   add_factory<SSpiky>("sspiky");
   add_factory<SkyDive>("skydive");
@@ -201,12 +215,17 @@ GameObjectFactory::init_factories()
   add_factory<BicyclePlatform>("bicycle-platform");
   add_factory<BonusBlock>("bonusblock");
   add_factory<Brick>("brick");
+  add_factory<Bumper>("bumper");
   add_factory<Camera>("camera");
   add_factory<Candle>("candle");
+  add_factory<CirclePlatform>("circleplatform");
   add_factory<CloudParticleSystem>("particles-clouds");
+  add_factory<CustomParticleSystem>("particles-custom");
+  add_factory<CustomParticleSystemFile>("particles-custom-file");
   add_factory<Coin>("coin");
   add_factory<Decal>("decal");
   add_factory<Explosion>("explosion");
+  add_factory<FallBlock>("fallblock");
   add_factory<Firefly>("firefly");
   add_factory<GhostParticleSystem>("particles-ghosts");
   add_factory<Gradient>("gradient");
@@ -220,13 +239,16 @@ GameObjectFactory::init_factories()
   add_factory<Lantern>("lantern");
   add_factory<LevelTime>("leveltime");
   add_factory<MagicBlock>("magicblock");
+  add_factory<ParticleZone>("particle-zone");
   add_factory<Platform>("platform");
   add_factory<PneumaticPlatform>("pneumatic-platform");
   add_factory<PowerUp>("powerup");
   add_factory<PushButton>("pushbutton");
   add_factory<RainParticleSystem>("particles-rain");
   add_factory<Rock>("rock");
+  add_factory<RubLight>("rublight");
   add_factory<ScriptedObject>("scriptedobject");
+  add_factory<Shard>("shard");
   add_factory<SkullTile>("skull_tile");
   add_factory<SnowParticleSystem>("particles-snow");
   add_factory<Spotlight>("spotlight");

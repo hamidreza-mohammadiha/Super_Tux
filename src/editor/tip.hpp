@@ -20,14 +20,17 @@
 #include <string>
 #include <vector>
 
+#include "math/fwd.hpp"
+
 class DrawingContext;
 class GameObject;
-class Vector;
 
 class Tip final
 {
 public:
   Tip(GameObject& object);
+  Tip(std::string text);
+  Tip(std::string header, std::vector<std::string> text);
 
   void draw(DrawingContext& context, const Vector& pos);
   void draw_up(DrawingContext& context, const Vector& pos);

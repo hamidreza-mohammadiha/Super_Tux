@@ -20,6 +20,7 @@
 
 #include "audio/sound_manager.hpp"
 #include "audio/sound_source.hpp"
+#include "badguy/dispenser.hpp"
 #include "badguy/ghosttree.hpp"
 #include "math/util.hpp"
 #include "object/lantern.hpp"
@@ -40,7 +41,7 @@ TreeWillOWisp::TreeWillOWisp(GhostTree* tree_, const Vector& pos,
   speed(speed_),
   sound_source(),
   tree(tree_),
-  suck_target()
+  suck_target(0.0f, 0.0f)
 {
   SoundManager::current()->preload(TREEWILLOSOUND);
   set_colgroup_active(COLGROUP_MOVING);
@@ -56,7 +57,7 @@ TreeWillOWisp::activate()
   sound_source = SoundManager::current()->create_sound_source(TREEWILLOSOUND);
   sound_source->set_position(get_pos());
   sound_source->set_looping(true);
-  sound_source->set_gain(2.0);
+  sound_source->set_gain(1.0f);
   sound_source->set_reference_distance(32);
   sound_source->play();
 }
@@ -67,6 +68,11 @@ TreeWillOWisp::vanish()
   mystate = STATE_VANISHING;
   m_sprite->set_action("vanishing", 1);
   set_colgroup_active(COLGROUP_DISABLED);
+
+  if (m_parent_dispenser != nullptr)
+  {
+    m_parent_dispenser->notify_dead();
+  }
 }
 
 void
@@ -117,18 +123,18 @@ TreeWillOWisp::active_update(float dt_sec)
 
   if (mystate == STATE_SUCKED) {
     Vector dir_ = suck_target - get_pos();
-    if (dir_.norm() < 5) {
+    if (glm::length(dir_) < 5) {
       vanish();
       return;
     }
     Vector newpos = get_pos() + dir_ * dt_sec;
-    m_col.m_movement = newpos - get_pos();
+    m_col.set_movement(newpos - get_pos());
     return;
   }
 
   angle = fmodf(angle + dt_sec * speed, math::TAU);
   Vector newpos(m_start_position + Vector(sinf(angle) * radius, 0));
-  m_col.m_movement = newpos - get_pos();
+  m_col.set_movement(newpos - get_pos());
   float sizemod = cosf(angle) * 0.8f;
   /* TODO: modify sprite size */
 

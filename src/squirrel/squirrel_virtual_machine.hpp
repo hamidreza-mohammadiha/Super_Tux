@@ -31,11 +31,12 @@ class SquirrelVirtualMachine final : public Currenton<SquirrelVirtualMachine>
 {
 public:
   SquirrelVirtualMachine(bool enable_debugger);
-  ~SquirrelVirtualMachine();
+  ~SquirrelVirtualMachine() override;
 
   SquirrelVM& get_vm() { return m_vm; }
 
   void wait_for_seconds(HSQUIRRELVM vm, float seconds);
+  void skippable_wait_for_seconds(HSQUIRRELVM vm, float seconds);
   void update(float dt_sec);
 
   /** adds thread waiting for a screen switch event */

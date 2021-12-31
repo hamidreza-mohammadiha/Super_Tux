@@ -30,8 +30,6 @@
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
   tstate(STATE_NORMAL),
-  grabbed(false),
-  grabber(nullptr),
   ticking()
 {
   walk_speed = 80;
@@ -80,7 +78,7 @@ GoldBomb::collision(GameObject& object, const CollisionHit& hit)
       return ABORT_MOVE;
     }
   }
-  if (grabbed)
+  if (is_grabbed())
     return FORCE_MOVE;
   return WalkingBadguy::collision(object, hit);
 }
@@ -90,7 +88,7 @@ GoldBomb::collision_player(Player& player, const CollisionHit& hit)
 {
   if (tstate == STATE_TICKING)
     return FORCE_MOVE;
-  if (grabbed)
+  if (is_grabbed())
     return FORCE_MOVE;
   return WalkingBadguy::collision_player(player, hit);
 }
@@ -120,11 +118,11 @@ GoldBomb::collision_squished(GameObject& object)
 
     if (player)
       player->bounce(*this);
-
+    SoundManager::current()->play("sounds/squish.wav", get_pos());
     ticking = SoundManager::current()->create_sound_source("sounds/fizz.wav");
     ticking->set_position(get_pos());
     ticking->set_looping(true);
-    ticking->set_gain(2.0);
+    ticking->set_gain(1.0f);
     ticking->set_reference_distance(32);
     ticking->play();
   }
@@ -140,12 +138,12 @@ GoldBomb::active_update(float dt_sec)
     if (m_sprite->animation_done()) {
       kill_fall();
     }
-    else if (!grabbed) {
-      m_col.m_movement = m_physic.get_movement(dt_sec);
+    else if (!is_grabbed()) {
+      m_col.set_movement(m_physic.get_movement(dt_sec));
     }
     return;
   }
-  if (grabbed)
+  if (is_grabbed())
     return;
   WalkingBadguy::active_update(dt_sec);
 }
@@ -159,8 +157,8 @@ GoldBomb::kill_fall()
   // Make the player let go before we explode, otherwise the player is holding
   // an invalid object. There's probably a better way to do this than in the
   // GoldBomb class.
-  if (grabber != nullptr) {
-    Player* player = dynamic_cast<Player*>(grabber);
+  if (is_grabbed()) {
+    Player* player = dynamic_cast<Player*>(m_owner);
 
     if (player)
       player->stop_grabbing();
@@ -168,7 +166,8 @@ GoldBomb::kill_fall()
 
   if (is_valid()) {
     remove_me();
-    Sector::get().add<Explosion>(m_col.m_bbox.get_middle());
+    Sector::get().add<Explosion>(m_col.m_bbox.get_middle(),
+      EXPLOSION_STRENGTH_DEFAULT);
     Sector::get().add<CoinExplode>(get_pos() + Vector (0, -40));
   }
 
@@ -184,52 +183,58 @@ GoldBomb::ignite()
 void
 GoldBomb::grab(MovingObject& object, const Vector& pos, Direction dir_)
 {
+  Portable::grab(object,pos,dir_);
   if (tstate == STATE_TICKING){
-    m_col.m_movement = pos - get_pos();
+    m_col.set_movement(pos - get_pos());
     m_dir = dir_;
 
     // We actually face the opposite direction of Tux here to make the fuse more
     // visible instead of hiding it behind Tux
     m_sprite->set_action_continued(m_dir == Direction::LEFT ? "ticking-right" : "ticking-left");
     set_colgroup_active(COLGROUP_DISABLED);
-    grabbed = true;
-    grabber = &object;
   }
   else if (m_frozen){
-    m_col.m_movement = pos - get_pos();
+    m_col.set_movement(pos - get_pos());
     m_dir = dir_;
     m_sprite->set_action(dir_ == Direction::LEFT ? "iced-left" : "iced-right");
     set_colgroup_active(COLGROUP_DISABLED);
-    grabbed = true;
   }
 }
 
 void
 GoldBomb::ungrab(MovingObject& object, Direction dir_)
 {
-  int toss_velocity_x = 0;
-  int toss_velocity_y = 0;
   auto player = dynamic_cast<Player*> (&object);
-
-  // toss upwards
-  if (dir_ == Direction::UP)
-    toss_velocity_y += -500;
-
-  // toss to the side when moving sideways
-  if (player && player->get_physic().get_velocity_x()*(dir_ == Direction::LEFT ? -1 : 1) > 1) {
-    toss_velocity_x += (dir_ == Direction::LEFT) ? -200 : 200;
-    toss_velocity_y = (toss_velocity_y < -200) ? toss_velocity_y : -200;
-    // toss farther when running
-    if (player && player->get_physic().get_velocity_x()*(dir_ == Direction::LEFT ? -1 : 1) > 200)
-      toss_velocity_x += static_cast<int>(player->get_physic().get_velocity_x() - (190*(dir_ == Direction::LEFT ? -1 : 1)));
+  //handle swimming
+  if (player && (player->is_swimming() || player->is_water_jumping()))
+  {
+    float swimangle = player->get_swimming_angle();
+    m_physic.set_velocity(Vector(std::cos(swimangle) * 40.f, std::sin(swimangle) * 40.f) +
+      player->get_physic().get_velocity());
   }
-  log_warning << toss_velocity_x << toss_velocity_y << std::endl;////
-
-  //set_pos(object.get_pos() + Vector((dir_ == LEFT ? -33 : 33), get_bbox().get_height()*0.66666 - 32));
-  m_physic.set_velocity(static_cast<float>(toss_velocity_x),
-                      static_cast<float>(toss_velocity_y));
+  //handle non-swimming
+  else
+  {
+    if (player)
+    {
+      //handle x-movement
+      if (fabsf(player->get_physic().get_velocity_x()) < 1.0f)
+        m_physic.set_velocity_x(0.f);
+      else if ((player->m_dir == Direction::LEFT && player->get_physic().get_velocity_x() <= -1.0f)
+        || (player->m_dir == Direction::RIGHT && player->get_physic().get_velocity_x() >= 1.0f))
+        m_physic.set_velocity_x(player->get_physic().get_velocity_x()
+          + (player->m_dir == Direction::LEFT ? -10.f : 10.f));
+      else
+        m_physic.set_velocity_x(player->get_physic().get_velocity_x()
+          + (player->m_dir == Direction::LEFT ? -330.f : 330.f));
+      //handle y-movement
+      m_physic.set_velocity_y(dir_ == Direction::UP ? -500.f :
+        dir_ == Direction::DOWN ? 500.f :
+        player->get_physic().get_velocity_x() != 0.f ? -200.f : 0.f);
+    }
+  }
   set_colgroup_active(COLGROUP_MOVING);
-  grabbed = false;
+  Portable::ungrab(object, dir_);
 }
 
 void

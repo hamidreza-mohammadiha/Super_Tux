@@ -53,7 +53,7 @@ private:
 public:
   AddonManager(const std::string& addon_directory,
                std::vector<Config::Addon>& addon_config);
-  ~AddonManager();
+  ~AddonManager() override;
 
   bool has_online_support() const;
   bool has_been_updated() const;
@@ -83,6 +83,13 @@ public:
 
   void update();
   void check_for_langpack_updates();
+
+#ifdef EMSCRIPTEN
+  void onDownloadProgress(int id, int loaded, int total);
+  void onDownloadFinished(int id);
+  void onDownloadError(int id);
+  void onDownloadAborted(int id);
+#endif
 
 private:
   std::vector<std::string> scan_for_archives() const;

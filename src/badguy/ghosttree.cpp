@@ -163,15 +163,13 @@ GhostTree::active_update(float /*dt_sec*/)
       assert (suck_lantern);
       Vector pos = suck_lantern->get_pos();
       Vector delta = m_col.m_bbox.get_middle() + SUCK_TARGET_OFFSET - pos;
-      Vector dir_ = delta.unit();
-      if (delta.norm() < 1) {
-        dir_ = delta;
+      if (glm::length(delta) < 1) {
         suck_lantern->ungrab(*this, Direction::RIGHT);
         suck_lantern->remove_me();
         suck_lantern = nullptr;
         m_sprite->set_action("swallow", 1);
       } else {
-        pos += dir_;
+        pos += glm::normalize(delta);
         suck_lantern->grab(*this, pos, Direction::RIGHT);
       }
     } else {
@@ -204,7 +202,7 @@ GhostTree::willowisp_died(TreeWillOWisp* willowisp)
     mystate = STATE_IDLE;
   }
   willowisps.erase(std::find_if(willowisps.begin(), willowisps.end(),
-                                [willowisp](GameObject* lhs)
+                                [willowisp](const GameObject* lhs)
                                 {
                                   return lhs == willowisp;
                                 }));

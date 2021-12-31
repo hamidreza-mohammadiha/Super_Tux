@@ -21,6 +21,8 @@
 #include <vector>
 #include <string>
 
+#include <physfs.h>
+
 #include "editor/overlay_widget.hpp"
 #include "editor/toolbox_widget.hpp"
 #include "editor/layers_widget.hpp"
@@ -30,6 +32,7 @@
 #include "util/currenton.hpp"
 #include "util/file_system.hpp"
 #include "util/log.hpp"
+#include "util/string_util.hpp"
 #include "video/surface_ptr.hpp"
 
 class GameObject;
@@ -48,18 +51,35 @@ class Editor final : public Screen,
 public:
   static bool is_active();
 
+  static PHYSFS_EnumerateCallbackResult foreach_recurse(void *data,
+                                                        const char *origdir,
+                                                        const char *fname);
+
+private:
+  static bool is_autosave_file(const std::string& filename) {
+    return StringUtil::has_suffix(filename, "~");
+  }
+  static std::string get_levelname_from_autosave(const std::string& filename) {
+    return is_autosave_file(filename) ? filename.substr(0, filename.size() - 1) : filename;
+  }
+  static std::string get_autosave_from_levelname(const std::string& filename) {
+    return is_autosave_file(filename) ? filename : filename + "~";
+  }
+
 public:
   static bool s_resaving_in_progress;
 
 public:
   Editor();
-  ~Editor();
+  ~Editor() override;
 
   virtual void draw(Compositor&) override;
   virtual void update(float dt_sec, const Controller& controller) override;
 
   virtual void setup() override;
   virtual void leave() override;
+
+  virtual IntegrationStatus get_status() const override;
 
   void event(const SDL_Event& ev);
   void resize();
@@ -93,6 +113,8 @@ public:
 
   bool is_testing_level() const { return m_leveltested; }
 
+  void remove_autosave_file();
+
   /** Checks whether the level can be saved and does not contain
       obvious issues (currently: check if main sector and a spawn point
       named "main" is present) */
@@ -118,26 +140,34 @@ public:
 
   bool is_level_loaded() const { return m_levelloaded; }
 
-  void edit_path(Path* path, GameObject* new_marked_object) {
+  void edit_path(PathGameObject* path, GameObject* new_marked_object) {
     m_overlay_widget->edit_path(path, new_marked_object);
   }
 
   void add_layer(GameObject* layer) { m_layers_widget->add_layer(layer); }
 
-  GameObject* get_selected_tilemap() const { return m_layers_widget->get_selected_tilemap(); }
+  TileMap* get_selected_tilemap() const { return m_layers_widget->get_selected_tilemap(); }
 
   Sector* get_sector() { return m_sector; }
 
   void undo();
   void redo();
 
+  void pack_addon();
+
 private:
   void set_sector(Sector* sector);
   void set_level(std::unique_ptr<Level> level, bool reset = true);
   void reload_level();
   void quit_editor();
-  void save_level();
-  void test_level();
+  /**
+   * @param filename    If non-empty, save to this file instead.
+   * @param switch_file If true, the level editor will bind itself to the new
+   *                    filename; subsequest saves will by default save to the
+   *                    new filename.
+   */
+  void save_level(const std::string& filename = "", bool switch_file = false);
+  void test_level(const boost::optional<std::pair<std::string, Vector>>& test_pos);
   void update_keyboard(const Controller& controller);
 
 protected:
@@ -145,7 +175,7 @@ protected:
   std::unique_ptr<World> m_world;
 
   std::string m_levelfile;
-  std::string m_test_levelfile;
+  std::string m_autosave_levelfile;
 
 public:
   bool m_quit_request;
@@ -154,9 +184,14 @@ public:
   bool m_reactivate_request;
   bool m_deactivate_request;
   bool m_save_request;
+  std::string m_save_request_filename;
+  bool m_save_request_switch;
   bool m_test_request;
+  bool m_particle_editor_request;
+  boost::optional<std::pair<std::string, Vector>> m_test_pos;
 
   std::unique_ptr<Savegame> m_savegame;
+  std::string* m_particle_editor_filename;
 
 private:
   Sector* m_sector;
@@ -170,13 +205,18 @@ private:
   EditorOverlayWidget* m_overlay_widget;
   EditorToolboxWidget* m_toolbox_widget;
   EditorLayersWidget* m_layers_widget;
-  EditorScrollerWidget* m_scroller_widget;
 
   bool m_enabled;
   SurfacePtr m_bgr_surface;
 
   std::unique_ptr<UndoManager> m_undo_manager;
   bool m_ignore_sector_change;
+  
+  bool m_level_first_loaded;
+  
+  float m_time_since_last_save;
+
+  float m_scroll_speed;
 
 private:
   Editor(const Editor&) = delete;

@@ -22,6 +22,8 @@
 #include <squirrel.h>
 
 #include "math/vector.hpp"
+#include "squirrel/squirrel_scheduler.hpp"
+#include "supertux/game_object.hpp"
 #include "supertux/game_session_recorder.hpp"
 #include "supertux/player_status.hpp"
 #include "supertux/screen.hpp"
@@ -49,12 +51,16 @@ public:
   virtual void update(float dt_sec, const Controller& controller) override;
   virtual void setup() override;
   virtual void leave() override;
+  virtual IntegrationStatus get_status() const override;
 
   /** ends the current level */
   void finish(bool win = true);
   void respawn(const std::string& sectorname, const std::string& spawnpointname,
                const bool invincibility = false, const int invincibilityperiod = 0);
   void reset_level();
+  void set_start_point(const std::string& sectorname,
+                       const std::string& spawnpointname);
+  void set_start_pos(const std::string& sectorname, const Vector& pos);
   void set_reset_point(const std::string& sectorname, const Vector& pos);
   std::string get_reset_point_sectorname() const { return m_reset_sector; }
 
@@ -72,6 +78,7 @@ public:
   std::string get_working_directory() const;
   int restart_level(bool after_death = false);
   bool reset_button;
+  bool reset_checkpoint_button;
 
   void toggle_pause();
   void abort_level();
@@ -85,13 +92,15 @@ public:
 
   Savegame& get_savegame() const { return m_savegame; }
 
+  void set_scheduler(SquirrelScheduler& new_scheduler);
+
 private:
   void check_end_conditions();
 
   void drawstatus(DrawingContext& context);
   void draw_pause(DrawingContext& context);
 
-  void on_escape_press();
+  void on_escape_press(bool force_quick_respawn);
 
 private:
   std::unique_ptr<Level> m_level;
@@ -110,6 +119,12 @@ private:
   float m_speed_before_pause;
 
   std::string m_levelfile;
+
+  // spawn point (the point where tux respawns at startup). Usually both "main".
+  // If m_start_spawnpoint is set, m_start_pos shall not, and vice versa.
+  std::string m_start_sector;
+  std::string m_start_spawnpoint;
+  Vector m_start_pos;
 
   // reset point (the point where tux respawns if he dies)
   std::string m_reset_sector;
@@ -139,6 +154,8 @@ private:
   bool m_active; /** Game active? **/
 
   bool m_end_seq_started;
+
+  std::unique_ptr<GameObject> m_current_cutscene_text;
 
 private:
   GameSession(const GameSession&) = delete;

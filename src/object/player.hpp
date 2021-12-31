@@ -22,10 +22,12 @@
 #include "squirrel/exposed_object.hpp"
 #include "supertux/direction.hpp"
 #include "supertux/moving_object.hpp"
+#include "supertux/object_remove_listener.hpp"
 #include "supertux/physic.hpp"
 #include "supertux/player_status.hpp"
 #include "supertux/sequence.hpp"
 #include "supertux/timer.hpp"
+#include "video/layer.hpp"
 #include "video/surface_ptr.hpp"
 
 class BadGuy;
@@ -42,17 +44,39 @@ class Player final : public MovingObject,
 public:
   enum FallMode { ON_GROUND, JUMPING, TRAMPOLINE_JUMP, FALLING };
 
+private:
+  class GrabListener final : public ObjectRemoveListener
+  {
+  public:
+    GrabListener(Player& player) : m_player(player)
+    {}
+
+    virtual void object_removed(GameObject* object) override {
+      m_player.ungrab_object(object);
+    }
+
+  private:
+    Player& m_player;
+
+  private:
+    GrabListener(const GrabListener&) = delete;
+    GrabListener& operator=(const GrabListener&) = delete;
+  };
+
 public:
   Player(PlayerStatus& player_status, const std::string& name);
-  virtual ~Player();
+  ~Player() override;
 
   virtual void update(float dt_sec) override;
   virtual void draw(DrawingContext& context) override;
   virtual void collision_solid(const CollisionHit& hit) override;
   virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
   virtual void collision_tile(uint32_t tile_attributes) override;
+  virtual void on_flip(float height) override;
   virtual bool is_saveable() const override { return false; }
   virtual bool is_singleton() const override { return true; }
+
+  virtual int get_layer() const override { return LAYER_OBJECTS + 1; }
 
   void set_controller(const Controller* controller);
   /** Level solved. Don't kill Tux any more. */
@@ -108,7 +132,7 @@ public:
   void do_duck();
 
   /** stand back up if possible. */
-  void do_standup();
+  void do_standup(bool force_standup);
 
   /** do a backflip if possible. */
   void do_backflip();
@@ -132,11 +156,17 @@ public:
   bool is_dead() const { return m_dead; }
   bool is_big() const;
   bool is_stone() const { return m_stone; }
+  bool is_swimming() const { return m_swimming; }
+  bool is_swimboosting() const { return m_swimboosting; }
+  bool is_water_jumping() const { return m_water_jump; }
+  bool is_skidding() const { return m_skidding_timer.started(); }
+  float get_swimming_angle() const { return m_swimming_angle; }
 
   void set_visible(bool visible);
   bool get_visible() const;
 
   bool on_ground() const;
+  void set_on_ground(bool flag);
 
   Portable* get_grabbed_object() const { return m_grabbed_object; }
   void stop_grabbing() { m_grabbed_object = nullptr; }
@@ -158,7 +188,7 @@ public:
 
   /** Changes height of bounding box.
       Returns true if successful, false otherwise */
-  bool adjust_height(float new_height);
+  bool adjust_height(float new_height, float bottom_offset = 0);
 
   /** Orders the current GameSession to start a sequence
       @param sequence_name Name of the sequence to start
@@ -188,10 +218,15 @@ public:
   void position_grabbed_object();
   bool try_grab();
 
+  /** Boosts Tux in a certain direction, sideways. Useful for bumpers/walljumping. */
+  void sideways_push(float delta);
+
 private:
   void handle_input();
   void handle_input_ghost(); /**< input handling while in ghost mode */
   void handle_input_climbing(); /**< input handling while climbing */
+
+  void handle_input_swimming();
 
   void handle_horizontal_input();
   void handle_vertical_input();
@@ -199,6 +234,8 @@ private:
 
   void do_jump_apex();
   void early_jump_apex();
+
+  void swim(float pointx, float pointy, bool boost);
 
   bool slightly_above_ground() const;
 
@@ -208,6 +245,12 @@ private:
   void apply_friction();
 
   void check_bounds();
+
+  /**
+   * Ungrabs the currently grabbed object, if any. Only call with its argument
+   * from an ObjectRemoveListener.
+   */
+  void ungrab_object(GameObject* gameobject = nullptr);
 
 private:
   bool m_deactivated;
@@ -225,7 +268,14 @@ private:
   Direction m_peekingY;
   float m_ability_time;
   bool m_stone;
+  bool m_falling_below_water;
   bool m_swimming;
+  bool m_swimboosting;
+  bool m_on_left_wall;
+  bool m_on_right_wall;
+  bool m_in_walljump_tile;
+  bool m_can_walljump;
+  float m_boost;
   float m_speedlimit;
   const Controller* m_scripting_controller_old; /**< Saves the old controller while the scripting_controller is used */
   bool m_jump_early_apex;
@@ -249,6 +299,7 @@ private:
   bool m_jumping;
   bool m_can_jump;
   Timer m_jump_button_timer; /**< started when player presses the jump button; runs until Tux jumps or JUMP_GRACE_TIME runs out */
+  Timer m_coyote_timer; /**< started when Tux falls off a ledge; runs until Tux jumps or COYOTE_TIME runs out */
   bool m_wants_buttjump;
 
 public:
@@ -276,6 +327,7 @@ private:
   bool m_visible;
 
   Portable* m_grabbed_object;
+  std::unique_ptr<ObjectRemoveListener> m_grabbed_object_remove_listener;
   bool released_object;
 
   SurfacePtr jumparrow; /**< arrow indicating wherer Tux' will jump */
@@ -287,6 +339,10 @@ private:
   float jump_helper_x;
 
   SpritePtr m_sprite; /**< The main sprite representing Tux */
+
+  float m_swimming_angle;
+  float m_swimming_accel_modifier;
+  bool m_water_jump;
 
   SurfacePtr m_airarrow; /**< arrow indicating Tux' position when he's above the camera */
 
@@ -301,6 +357,7 @@ private:
   unsigned int m_idle_stage;
 
   Climbable* m_climbing; /**< Climbable object we are currently climbing, null if none */
+  std::unique_ptr<ObjectRemoveListener> m_climbing_remove_listener;
 
 private:
   Player(const Player&) = delete;

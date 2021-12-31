@@ -1,7 +1,6 @@
 # SuperTux
 
-[![Build Status](https://travis-ci.org/SuperTux/supertux.svg?branch=master)](https://travis-ci.org/SuperTux/supertux)
-[![AppVeyor Build Satus](https://ci.appveyor.com/api/projects/status/github/SuperTux/supertux?svg=true&branch=master)](https://ci.appveyor.com/project/supertux/supertux-9ml4d/branch/master)
+[![Build](https://github.com/SuperTux/supertux/workflows/main/badge.svg?branch=master)](https://github.com/SuperTux/supertux/actions?query=workflow%3Amain)
 [![Github All Releases](https://img.shields.io/github/downloads/supertux/supertux/total.svg?maxAge=2592000)](https://github.com/SuperTux/supertux)
 
 SuperTux is a jump'n'run game with strong inspiration from the
@@ -11,7 +10,7 @@ Run and jump through multiple worlds, fighting off enemies by jumping
 on them, bumping them from below or tossing objects at them, grabbing
 power-ups and other stuff on the way.
 
-![Screenshot](https://www.supertux.org/images/0_5_1/0_5_1_3.png)
+![Screenshot](https://www.supertux.org/images/0_6_0/0_6_0_3.png)
 
 
 ## Story: Penny gets captured!
@@ -55,8 +54,6 @@ Please see them:
 * `LICENSE.txt` - The GNU General Public License, under whose terms SuperTux is
 licensed. (Most of the data subdirectory is also licensed under
 CC-by-SA)
-* `docs/levelguidelines.txt` - Very useful information for those that want to
-design levels for SuperTux.
 * `data/credits.stxt` - Credits for people that contributed to the creation of
 SuperTux. (You can view these in the game menu as well.)
 
@@ -82,11 +79,11 @@ enter the current level.
 
 In case you need help, feel free to reach out using the following means:
 
-* **IRC:** [#supertux](ircs://chat.freenode.net/#supertux) on
-  [freenode](https://freenode.net) hosts most of the discussions between
+* **IRC:** [#supertux](ircs://irc.libera.chat/#supertux) on
+  [Libera Chat](https://libera.chat) hosts most of the discussions between
   developers. Also, real-time support can be provided here. If you don't know
   how to use an IRC client, you access the channel using a web-based
-  [client](https://kiwiirc.com/client/chat.freenode.net:+6697/?nick=Guest?#supertux).
+  [client](https://kiwiirc.com/nextclient/irc.libera.chat:+6697/?nick=Guest?#supertux).
   Please stay around after asking questions, otherwise you will be disconnected
   and might miss potential answers.
 * **Matrix:** [#supertux:matrix.org](https://matrix.to/#/#supertux:matrix.org)
@@ -97,24 +94,16 @@ In case you need help, feel free to reach out using the following means:
   add-ons are published there first, so this is worth checking.
 * **Mailing Lists:** The
   [supertux-devel](http://lists.lethargik.org/listinfo.cgi/supertux-devel-lethargik.org)
-  mailing list is intended for development purposes. However, it is not very
-  active at the moment.
+  mailing list is dead. Here is the [archive](https://github.com/supertux-community/supertux-devel-maillist).
 * **Social Media:** Mostly on [Twitter](https://twitter.com/supertux_team) at
   the moment.
+* **Discord:** Also, you can join our [Discord server](https://discord.com/invite/AcvtHWz) to get in touch with us.
 
 ## Development status
 
-With the release of SuperTux 0.4.0 (December 2015), we wanted to provide a
-fairly stable release. The release of SuperTux 0.5.0 should have fixed some
-stability issues from 0.4.0 and introduced a new level editor. Development of
-the game will continue (of course), now working towards more releases.
-Most notably, development focus will be shifted on providing a better gameplay
-experience.
-
-The Forest World (you can check it out: Start Game > Contrib Levels > Forest
-World) is relatively unstable, which is why it resides only in the contrib
-levels menu. We (SuperTux Team) intend to continue with the development of the
-Forest World, but decided that in order to allow more access to the most recent
-version (in repositories etc.) we would have to release Milestone 2 without the
-Forest World included in the Story Mode. Constructive feedback with regards to
-the Forest World is welcome.
+As of now, with the release of SuperTux 0.6.3 (December 2021), the Forest World is almost
+finished, since the ghost forest section has been included. However, some levels, especially
+the Ghostree Level, are considered to be placeholders, because for the next version (0.7.0) a
+great overhaul is planned with new features like reworked boss fights, graphics, and worlds.
+If you have some Constructive Feedback, Contributions or ideas to share, don't hestitate
+to contact us with one of the possibilities given above.

@@ -39,7 +39,7 @@ const float MIN_INTENSITY = 0.8f;
 const float ALPHA_SOLID = 0.7f;
 const float ALPHA_NONSOLID = 0.3f;
 const float MIN_SOLIDTIME = 1.0f;
-const float SWITCH_DELAY = 0.06f; /**< seconds to wait for stable conditions until switching solidity */
+const float SWITCH_DELAY = 0.0f; /**< seconds to wait for stable conditions until switching solidity */
 
 } // namespace
 
@@ -54,7 +54,7 @@ MagicBlock::MagicBlock(const ReaderMapping& mapping) :
   m_solid_box(),
   m_color(),
   m_light(std::make_shared<Color>(1.0f,1.0f,1.0f)),
-  m_center(),
+  m_center(0.0f, 0.0f),
   m_black()
 {
   set_group(COLGROUP_STATIC);
@@ -103,6 +103,8 @@ MagicBlock::get_settings()
 void
 MagicBlock::after_editor_set()
 {
+  MovingSprite::after_editor_set();
+
   if (m_color.red == 0 && m_color.green == 0 && m_color.blue == 0) { //is it black?
     m_black = true;
     m_trigger_red = MIN_INTENSITY;

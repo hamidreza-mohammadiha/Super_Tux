@@ -127,7 +127,7 @@ MovingSprite::set_action_centered(const std::string& action, int loops)
   Vector old_size = m_col.m_bbox.get_size().as_vector();
   m_sprite->set_action(action, loops);
   m_col.set_size(m_sprite->get_current_hitbox_width(), m_sprite->get_current_hitbox_height());
-  set_pos(get_pos() - (m_col.m_bbox.get_size().as_vector() - old_size) / 2);
+  set_pos(get_pos() - (m_col.m_bbox.get_size().as_vector() - old_size) / 2.0f);
 }
 
 void
@@ -166,6 +166,8 @@ MovingSprite::after_editor_set()
   std::string current_action = m_sprite->get_action();
   m_sprite = SpriteManager::current()->create(m_sprite_name);
   m_sprite->set_action(current_action);
+
+  m_col.m_bbox.set_size(m_sprite->get_current_hitbox_width(), m_sprite->get_current_hitbox_height());
 }
 
 void

@@ -19,10 +19,13 @@
 #include <math.h>
 
 #include "supertux/globals.hpp"
+#include "supertux/sector.hpp"
 #include "util/reader.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
+#include "object/camera.hpp"
 #include "video/drawing_context.hpp"
+#include "video/surface.hpp"
 #include "video/surface_batch.hpp"
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
@@ -80,6 +83,7 @@ ParticleSystem::draw(DrawingContext& context)
 
   float scrollx = context.get_translation().x;
   float scrolly = context.get_translation().y;
+  const auto& region = Sector::current()->get_active_region();
 
   context.push_transform();
   context.set_translation(Vector(max_particle_size,max_particle_size));
@@ -88,13 +92,18 @@ ParticleSystem::draw(DrawingContext& context)
   for (const auto& particle : particles)
   {
     // remap x,y coordinates onto screencoordinates
-    Vector pos;
+    Vector pos(0.0f, 0.0f);
 
+    // horizontal wrap when particle goes off screen to the left
+    const int particle_width = particle->texture->get_width();
     pos.x = fmodf(particle->pos.x - scrollx, virtual_width);
-    if (pos.x < 0) pos.x += virtual_width;
+    if ((pos.x + static_cast<float>(particle_width)) < 0) pos.x += virtual_width;
 
     pos.y = fmodf(particle->pos.y - scrolly, virtual_height);
     if (pos.y < 0) pos.y += virtual_height;
+
+    if(!region.contains(pos + Sector::get().get_camera().get_translation()))
+      continue;
 
     //if(pos.x > virtual_width) pos.x -= virtual_width;
     //if(pos.y > virtual_height) pos.y -= virtual_height;
@@ -115,7 +124,8 @@ ParticleSystem::draw(DrawingContext& context)
                                        batch.move_srcrects(),
                                        batch.move_dstrects(),
                                        batch.move_angles(),
-                                       Color::WHITE, z_pos);
+                                       batch.get_color(),
+                                       z_pos);
   }
 
   context.pop_transform();

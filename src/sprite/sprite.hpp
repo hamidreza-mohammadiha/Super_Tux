@@ -43,6 +43,10 @@ public:
   /** Set number of animation cycles until animation stops */
   void set_animation_loops(int loops = -1) { m_animation_loops = loops; }
 
+  void set_frame_progress(float frame_progress) { m_frame = frame_progress; }
+
+  void set_frame(int frame) { m_frameidx = frame; }
+
   /* Stop animation */
   void stop_animation() { m_animation_loops = 0; }
 
@@ -54,6 +58,9 @@ public:
 
   /** Get currently drawn frame */
   int get_current_frame() const { return m_frameidx; }
+
+  /** Get current frame progress */
+  float get_current_frame_progress() const { return m_frame; }
 
   /** Get sprite's name */
   const std::string& get_name() const { return m_data.name; }
@@ -84,6 +91,9 @@ public:
   void set_color(const Color& color);
   Color get_color() const;
 
+  void set_alpha(float alpha);
+  float get_alpha() const;
+
   void set_blend(const Blend& blend);
   Blend get_blend() const;
 
@@ -101,6 +111,7 @@ private:
   int m_animation_loops;
   float m_last_ticks;
   float m_angle;
+  float m_alpha;
   Color m_color;
   Blend m_blend;
 

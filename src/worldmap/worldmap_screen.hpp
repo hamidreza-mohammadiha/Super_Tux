@@ -32,13 +32,14 @@ class WorldMapScreen final : public Screen,
 {
 public:
   WorldMapScreen(std::unique_ptr<WorldMap> worldmap);
-  ~WorldMapScreen();
+  ~WorldMapScreen() override;
 
   virtual void setup() override;
   virtual void leave() override;
 
   virtual void draw(Compositor& compositor) override;
   virtual void update(float dt_sec, const Controller& controller) override;
+  virtual IntegrationStatus get_status() const override;
 
 private:
   std::unique_ptr<WorldMap> m_worldmap;

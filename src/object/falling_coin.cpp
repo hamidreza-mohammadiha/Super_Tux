@@ -22,13 +22,13 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-FallingCoin::FallingCoin(const Vector& start_position, const int vel_x) :
+FallingCoin::FallingCoin(const Vector& start_position, float vel_x) :
   physic(),
   pos(start_position),
   sprite(SpriteManager::current()->create("images/objects/coin/coin.sprite"))
 {
   physic.set_velocity_y(-800.0f);
-  physic.set_velocity_x(static_cast<float>(vel_x));
+  physic.set_velocity_x(vel_x);
 }
 
 void
@@ -41,7 +41,8 @@ void
 FallingCoin::update(float dt_sec)
 {
   pos += physic.get_movement(dt_sec);
-  if (pos.y > static_cast<float>(SCREEN_HEIGHT))
+  if (pos.y > static_cast<float>(SCREEN_HEIGHT) &&
+      physic.get_velocity_y() > 0.0f)
     remove_me();
 }
 

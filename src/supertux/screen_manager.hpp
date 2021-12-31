@@ -19,7 +19,11 @@
 #define HEADER_SUPERTUX_SUPERTUX_SCREEN_MANAGER_HPP
 
 #include <memory>
+#include <SDL2/SDL.h>
 
+#include "config.h"
+
+#include "control/mobile_controller.hpp"
 #include "squirrel/squirrel_thread_queue.hpp"
 #include "supertux/screen.hpp"
 #include "util/currenton.hpp"
@@ -40,13 +44,11 @@ class ScreenManager final : public Currenton<ScreenManager>
 {
 public:
   ScreenManager(VideoSystem& video_system, InputManager& input_manager);
-  ~ScreenManager();
+  ~ScreenManager() override;
 
   void run();
   void quit(std::unique_ptr<ScreenFade> fade = {});
   void set_speed(float speed);
-  void set_target_framerate(float framerate);
-  float get_target_framerate() const;
   float get_speed() const;
   bool has_pending_fadeout() const;
 
@@ -55,10 +57,13 @@ public:
   void pop_screen(std::unique_ptr<ScreenFade> fade = {});
   void set_screen_fade(std::unique_ptr<ScreenFade> fade);
 
+  void loop_iter();
+
 private:
-  void draw_fps(DrawingContext& context, float fps);
+  struct FPS_Stats;
+  void draw_fps(DrawingContext& context, FPS_Stats& fps_statistics);
   void draw_player_pos(DrawingContext& context);
-  void draw(Compositor& compositor);
+  void draw(Compositor& compositor, FPS_Stats& fps_statistics);
   void update_gamelogic(float dt_sec);
   void process_events();
   void handle_screen_switch();
@@ -69,10 +74,17 @@ private:
   std::unique_ptr<MenuStorage> m_menu_storage;
   std::unique_ptr<MenuManager> m_menu_manager;
   std::unique_ptr<ControllerHUD> m_controller_hud;
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  MobileController m_mobile_controller;
+#endif
+
+  Uint32 last_ticks;
+  Uint32 elapsed_ticks;
+  const Uint32 ms_per_step;
+  const float seconds_per_step;
+  std::unique_ptr<FPS_Stats> m_fps_statistics;
 
   float m_speed;
-  float m_target_framerate;
-
   struct Action
   {
     enum Type { PUSH_ACTION, POP_ACTION, QUIT_ACTION };
@@ -88,8 +100,6 @@ private:
 
   std::vector<Action> m_actions;
 
-  /// measured fps
-  float m_fps;
   std::unique_ptr<ScreenFade> m_screen_fade;
   std::vector<std::unique_ptr<Screen> > m_screen_stack;
 };

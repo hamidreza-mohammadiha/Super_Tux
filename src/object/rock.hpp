@@ -42,10 +42,12 @@ public:
   virtual std::string get_display_name() const override { return _("Rock"); }
   virtual ObjectSettings get_settings() override;
 
+  /** Adds velocity from wind */
+  virtual void add_wind_velocity(const Vector& velocity, const Vector& end_speed);
+
 protected:
   Physic physic;
   bool on_ground;
-  bool grabbed;
   Vector last_movement;
   std::string on_grab_script;
   std::string on_ungrab_script;

@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 
+#include "util/gettext.hpp"
 #include "video/font_ptr.hpp"
 #include "video/surface_ptr.hpp"
 
@@ -47,6 +48,9 @@ public:
   /** Big font for menu titles and headers in text scrolls */
   static FontPtr big_font;
 
+  /** Font used for control interface elements (particle editor) */
+  static FontPtr control_font;
+
   static SurfacePtr checkbox;
   static SurfacePtr checkbox_checked;
   static SurfacePtr back;
@@ -60,7 +64,7 @@ public:
 
 private:
   static std::string current_font;
-  static std::string get_font_for_locale(const std::string& locale);
+  static std::string get_font_for_locale(const tinygettext::Language& locale);
 
 public:
   Resources();

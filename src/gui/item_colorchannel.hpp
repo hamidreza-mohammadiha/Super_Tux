@@ -19,12 +19,15 @@
 
 #include "gui/menu_item.hpp"
 
+#include "util/colorspace_oklab.hpp"
 #include "video/color.hpp"
 
-class ItemColorChannel final : public MenuItem
+
+class ItemColorChannelRGBA final : public MenuItem
 {
 public:
-  ItemColorChannel(float* input_, Color channel_, int id_ = -1);
+  ItemColorChannelRGBA(float* input_, Color channel_, int id_ = -1,
+    bool is_linear = false);
 
   /** Draws the menu item. */
   virtual void draw(DrawingContext&, const Vector& pos, int menu_width, bool active) override;
@@ -45,17 +48,52 @@ public:
   void change_input(const std::string& input_) { set_text(input_); }
 
 private:
+  void enable_edit_mode();
   void add_char(char c);
   void remove_char();
 
 private:
   float* m_number;
+  float m_number_prev;
+  bool m_is_linear;
+  bool m_edit_mode;
   int m_flickw;
   Color m_channel;
 
 private:
-  ItemColorChannel(const ItemColorChannel&) = delete;
-  ItemColorChannel& operator=(const ItemColorChannel&) = delete;
+  ItemColorChannelRGBA(const ItemColorChannelRGBA&) = delete;
+  ItemColorChannelRGBA& operator=(const ItemColorChannelRGBA&) = delete;
+};
+
+
+class ItemColorChannelOKLab final : public MenuItem
+{
+public:
+  enum class ChannelType { CHANNEL_L, CHANNEL_C, CHANNEL_H };
+
+public:
+  ItemColorChannelOKLab(Color* col, int channel, Menu* menu);
+  virtual void draw(DrawingContext&, const Vector& pos, int menu_width,
+    bool active) override;
+  /** Returns the minimum width of the menu item. */
+  virtual int get_width() const override { return 64; }
+  virtual void process_action(const MenuAction& action) override;
+  virtual void event(const SDL_Event& ev) override;
+  virtual bool changes_width() const override { return true; }
+
+private:
+  void set_color(ColorOKLCh& col_oklch_clipped, ColorOKLCh& col_oklch_store);
+
+private:
+  Color* m_color;
+  ColorOKLCh m_col_prev;
+  ChannelType m_channel;
+  Menu* m_menu;
+  bool m_mousedown;
+
+private:
+  ItemColorChannelOKLab(const ItemColorChannelOKLab&) = delete;
+  ItemColorChannelOKLab& operator=(const ItemColorChannelOKLab&) = delete;
 };
 
 #endif

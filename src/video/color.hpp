@@ -19,11 +19,42 @@
 
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include <SDL_image.h>
 
 class Color final
 {
+public:
+  // CalculateColor is the same as Color but without validation
+  class CalculateColor final
+  {
+  public:
+    CalculateColor(float r_, float g_, float b_, float a_ = 1.f) :
+      r(r_),
+      g(g_),
+      b(b_),
+      a(a_)
+    {
+    }
+
+    Color validate() const { return Color(r, g, b, a); }
+
+    CalculateColor operator+(const CalculateColor& o) const { return CalculateColor(r + o.r, g + o.g, b + o.b, a + o.a); }
+    CalculateColor operator-(const CalculateColor& o) const { return CalculateColor(r - o.r, g - o.g, b - o.b, a - o.a); }
+    CalculateColor operator*(const CalculateColor& o) const { return CalculateColor(r * o.r, g * o.g, b * o.b, a * o.a); }
+    CalculateColor operator/(const CalculateColor& o) const { return CalculateColor(r / o.r, g / o.g, b / o.b, a / o.a); }
+    CalculateColor operator+(const Color& o) const { return CalculateColor(r + o.red, g + o.green, b + o.blue, a + o.alpha); }
+    CalculateColor operator-(const Color& o) const { return CalculateColor(r - o.red, g - o.green, b - o.blue, a - o.alpha); }
+    CalculateColor operator*(const Color& o) const { return CalculateColor(r * o.red, g * o.green, b * o.blue, a * o.alpha); }
+    CalculateColor operator/(const Color& o) const { return CalculateColor(r / o.red, g / o.green, b / o.blue, a / o.alpha); }
+    CalculateColor operator*(float m) const { return CalculateColor(r * m, g * m, b * m, a * m); }
+    CalculateColor operator/(float d) const { return CalculateColor(r / d, g / d, b / d, a / d); }
+
+  public:
+    float r, g, b, a;
+  };
+
 public:
   static const Color BLACK;
   static const Color RED;
@@ -50,6 +81,15 @@ public:
                  static_cast<float>(a) / 255.0f);
   }
 
+  static Color from_linear(float r, float g, float b, float a = 1.0f)
+  {
+    return Color(add_gamma(r), add_gamma(g), add_gamma(b), a);
+  }
+
+  // Helper functions to approximately transform to/from sRGB colours
+  static float add_gamma(float x) { return powf(x, 1.0f / 2.2f); }
+  static float remove_gamma(float x) { return powf(x, 2.2f); }
+
 public:
   Color();
 
@@ -61,6 +101,9 @@ public:
   bool operator!=(const Color& other) const;
 
   float greyscale() const;
+
+  // Multiplies the sRGB color values by v gamma-correctly
+  Color multiply_linearly(float v) const;
 
   bool operator < (const Color& other) const;
 
@@ -89,6 +132,17 @@ public:
   {
     return { r8(), g8(), b8(), a8() };
   }
+
+  CalculateColor operator+(const Color& o) const { return CalculateColor(red + o.red, green + o.green, blue + o.blue, alpha + o.alpha); }
+  CalculateColor operator-(const Color& o) const { return CalculateColor(red - o.red, green - o.green, blue - o.blue, alpha - o.alpha); }
+  CalculateColor operator*(const Color& o) const { return CalculateColor(red * o.red, green * o.green, blue * o.blue, alpha * o.alpha); }
+  CalculateColor operator/(const Color& o) const { return CalculateColor(red / o.red, green / o.green, blue / o.blue, alpha / o.alpha); }
+  CalculateColor operator+(const CalculateColor& o) const { return CalculateColor(red + o.r, green + o.g, blue + o.b, alpha + o.a); }
+  CalculateColor operator-(const CalculateColor& o) const { return CalculateColor(red - o.r, green - o.g, blue - o.b, alpha - o.a); }
+  CalculateColor operator*(const CalculateColor& o) const { return CalculateColor(red * o.r, green * o.g, blue * o.b, alpha * o.a); }
+  CalculateColor operator/(const CalculateColor& o) const { return CalculateColor(red / o.r, green / o.g, blue / o.b, alpha / o.a); }
+  CalculateColor operator*(float m) const { return CalculateColor(red * m, green * m, blue * m, alpha * m); }
+  CalculateColor operator/(float d) const { return CalculateColor(red / d, green / d, blue / d, alpha / d); }
 
 public:
   float red, green, blue, alpha;

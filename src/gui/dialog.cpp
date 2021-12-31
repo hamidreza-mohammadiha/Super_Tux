@@ -31,12 +31,13 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-Dialog::Dialog(bool passive) :
+Dialog::Dialog(bool passive, bool auto_clear_dialogs) :
   m_text(),
   m_buttons(),
   m_selected_button(),
   m_cancel_button(-1),
   m_passive(passive),
+  m_clear_diags(auto_clear_dialogs),
   m_text_size()
 {
 }
@@ -170,6 +171,7 @@ Dialog::process_input(const Controller& controller)
   }
 
   if (controller.pressed(Control::ACTION) ||
+      controller.pressed(Control::JUMP) ||
       controller.pressed(Control::MENU_SELECT))
   {
     on_button_click(m_selected_button);
@@ -260,7 +262,10 @@ Dialog::on_button_click(int button) const
   {
     m_buttons[button].callback();
   }
-  MenuManager::instance().set_dialog({});
+  if (m_clear_diags || button == m_cancel_button)
+  {
+    MenuManager::instance().set_dialog({});
+  }
 }
 
 /* EOF */

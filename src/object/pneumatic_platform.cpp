@@ -40,7 +40,9 @@ void
 PneumaticPlatformChild::update(float dt_sec)
 {
   const float offset_y = m_left ? m_parent.m_offset_y : -m_parent.m_offset_y;
-  m_col.m_movement = Vector(0, (m_parent.m_start_y + offset_y) - get_pos().y);
+  const Vector movement(0, (m_parent.m_start_y + offset_y) - get_pos().y);
+  m_col.set_movement(movement);
+  m_col.propagate_movement(movement);
 }
 
 HitResponse
@@ -63,9 +65,15 @@ PneumaticPlatformChild::collision(GameObject& other, const CollisionHit& )
   return FORCE_MOVE;
 }
 
+void PneumaticPlatformChild::editor_delete()
+{
+  // removing a child removes the whole platform
+  m_parent.editor_delete();
+}
+
 PneumaticPlatform::PneumaticPlatform(const ReaderMapping& mapping) :
   GameObject(mapping),
-  m_pos(),
+  m_pos(0.0f, 0.0f),
   m_sprite_name(),
   m_start_y(),
   m_speed_y(0),
@@ -119,11 +127,22 @@ PneumaticPlatform::update(float dt_sec)
 }
 
 void
+PneumaticPlatform::on_flip(float height)
+{
+  m_pos.y = height - m_pos.y;
+  m_start_y = height - m_start_y;
+}
+
+void
 PneumaticPlatform::editor_delete()
 {
+  // remove children
   for (auto& child : m_children) {
     child->remove_me();
   }
+
+  // remove self
+  remove_me();
 }
 
 ObjectSettings

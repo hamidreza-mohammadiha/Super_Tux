@@ -18,6 +18,8 @@
 
 #include <algorithm>
 
+#include "config.h"
+
 #include "math/rect.hpp"
 #include "math/size.hpp"
 #include "math/vector.hpp"
@@ -81,6 +83,10 @@ calculate_scale(const Size& min_size, const Size& max_size,
                        static_cast<float>(window_size.height) / static_cast<float>(min_size.height));
     }
   }
+
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  scale = std::max(scale, 1.f);
+#endif
 
   return scale;
 }
@@ -161,7 +167,7 @@ Viewport::from_size(const Size& target_size, const Size& desktop_size)
 
   // calculate the viewport
   Rect viewport;
-  Vector scale;
+  Vector scale(0.0f, 0.0f);
   calculate_viewport(s_min_size, s_max_size,
                      target_size,
                      pixel_aspect_ratio,
@@ -173,7 +179,7 @@ Viewport::from_size(const Size& target_size, const Size& desktop_size)
 
 Viewport::Viewport() :
   m_rect(),
-  m_scale()
+  m_scale(0.0f, 0.0f)
 {
 }
 

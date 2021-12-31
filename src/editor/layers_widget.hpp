@@ -21,6 +21,8 @@
 
 #include "control/input_manager.hpp"
 #include "editor/widget.hpp"
+#include "math/fwd.hpp"
+#include "object/tilemap.hpp"
 #include "supertux/screen.hpp"
 
 class DrawingContext;
@@ -28,7 +30,6 @@ class Editor;
 class GameObject;
 class LayerIcon;
 class Tip;
-class Vector;
 
 /** A widget at the bottom of the screen for switching between tilemap
     layers and other non-movable GameObjects */
@@ -48,6 +49,7 @@ public:
   virtual bool on_mouse_button_up(const SDL_MouseButtonEvent& button) override;
   virtual bool on_mouse_button_down(const SDL_MouseButtonEvent& button) override;
   virtual bool on_mouse_motion(const SDL_MouseMotionEvent& motion) override;
+  virtual bool on_mouse_wheel(const SDL_MouseWheelEvent& wheel) override;
 
   virtual void setup() override;
   virtual void resize() override;
@@ -58,7 +60,9 @@ public:
   void sort_layers();
   void add_layer(GameObject* layer);
 
-  GameObject* get_selected_tilemap() const { return m_selected_tilemap; }
+  bool has_mouse_focus() const;
+
+  TileMap* get_selected_tilemap() const { return m_selected_tilemap; }
 
 private:
   Vector get_layer_coords(const int pos) const;
@@ -68,11 +72,13 @@ private:
 private:
   Editor& m_editor;
   std::vector<std::unique_ptr<LayerIcon>> m_layer_icons;
-  GameObject* m_selected_tilemap;
+  TileMap* m_selected_tilemap;
 
   int m_Ypos;
   const int m_Xpos = 32;
   int m_Width;
+  int m_scroll;
+  int m_scroll_speed;
 
   std::string m_sector_text;
   int m_sector_text_width;
@@ -81,6 +87,8 @@ private:
   unsigned int m_hovered_layer;
 
   std::unique_ptr<Tip> m_object_tip;
+
+  bool m_has_mouse_focus;
 
 private:
   EditorLayersWidget(const EditorLayersWidget&) = delete;

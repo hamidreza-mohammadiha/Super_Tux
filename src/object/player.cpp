@@ -22,6 +22,7 @@
 #include "control/codecontroller.hpp"
 #include "control/input_manager.hpp"
 #include "editor/editor.hpp"
+#include "math/util.hpp"
 #include "math/random.hpp"
 #include "object/bullet.hpp"
 #include "object/camera.hpp"
@@ -44,7 +45,7 @@
 #include "video/viewport.hpp"
 
 
-//#define SWIMMING
+#define SWIMMING
 
 const float TUX_INVINCIBLE_TIME_WARNING = 2.0f;
 
@@ -97,8 +98,14 @@ const float MAX_CLIMB_XM = 96;
 const float MAX_CLIMB_YM = 128;
 /** maximum vertical glide velocity */
 const float MAX_GLIDE_YM = 128;
+/** sliding down walls velocity */
+const float MAX_WALLCLING_YM = 64;
 /** instant velocity when tux starts to walk */
 const float WALK_SPEED = 100;
+/** rate at which m_boost decreases */
+const float BOOST_DECREASE_RATE = 500;
+/** rate at which the speed decreases if going above maximum */
+const float OVERSPEED_DECELERATION = 100;
 
 /** multiplied by WALK_ACCELERATION to give friction */
 const float NORMAL_FRICTION_MULTIPLIER = 1.5f;
@@ -116,6 +123,7 @@ const float UNDUCK_HURT_TIME = 0.25f;
 const float JUMP_EARLY_APEX_FACTOR = 3.0;
 
 const float JUMP_GRACE_TIME = 0.25f; /**< time before hitting the ground that the jump button may be pressed (and still trigger a jump) */
+const float COYOTE_TIME = 0.1f; /**< time between the moment leaving a platform without jumping and being able to jump anyways despite being in the air */
 
 /* Tux's collision rectangle */
 const float TUX_WIDTH = 31.8f;
@@ -123,6 +131,9 @@ const float RUNNING_TUX_WIDTH = 34;
 const float SMALL_TUX_HEIGHT = 30.8f;
 const float BIG_TUX_HEIGHT = 62.8f;
 const float DUCKED_TUX_HEIGHT = 31.8f;
+
+/** when Tux swims down and approaches the bottom of the screen, push him back up with that strength */
+const float WATER_FALLOUT_FORCEBACK_STRENGTH = 1024.f;
 
 bool no_water = true;
 
@@ -144,7 +155,14 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_peekingY(Direction::AUTO),
   m_ability_time(),
   m_stone(false),
+  m_falling_below_water(false),
   m_swimming(false),
+  m_swimboosting(false),
+  m_on_left_wall(false),
+  m_on_right_wall(false),
+  m_in_walljump_tile(false),
+  m_can_walljump(false),
+  m_boost(0.f),
   m_speedlimit(0), //no special limit
   m_scripting_controller_old(nullptr),
   m_jump_early_apex(false),
@@ -160,6 +178,7 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_jumping(false),
   m_can_jump(true),
   m_jump_button_timer(),
+  m_coyote_timer(),
   m_wants_buttjump(false),
   m_does_buttjump(false),
   m_invincible_timer(),
@@ -176,6 +195,7 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_physic(),
   m_visible(true),
   m_grabbed_object(nullptr),
+  m_grabbed_object_remove_listener(new GrabListener(*this)),
   released_object(false),
   jumparrow(Surface::from_file("images/engine/menu/scroll-down.png")),
   jump_helper(false),
@@ -188,14 +208,18 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   // load those instead of Tux's sprite in the
   // constructor
   m_sprite(SpriteManager::current()->create("images/creatures/tux/tux.sprite")),
+  m_swimming_angle(0),
+  m_swimming_accel_modifier(100.f),
+  m_water_jump(false),
   m_airarrow(Surface::from_file("images/engine/hud/airarrow.png")),
-  m_floor_normal(),
+  m_floor_normal(0.0f, 0.0f),
   m_ghost_mode(false),
   m_edit_mode(false),
   m_unduck_hurt_timer(),
   m_idle_timer(),
   m_idle_stage(0),
-  m_climbing(nullptr)
+  m_climbing(nullptr),
+  m_climbing_remove_listener(nullptr)
 {
   m_name = name_;
   m_idle_timer.start(static_cast<float>(IDLE_TIME[0]) / 1000.0f);
@@ -221,6 +245,7 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
 
 Player::~Player()
 {
+  ungrab_object();
   if (m_climbing) stop_climbing(*m_climbing);
 }
 
@@ -273,17 +298,17 @@ Player::do_scripting_controller(const std::string& control_text, bool pressed)
 }
 
 bool
-Player::adjust_height(float new_height)
+Player::adjust_height(float new_height, float bottom_offset)
 {
   Rectf bbox2 = m_col.m_bbox;
-  bbox2.move(Vector(0, m_col.m_bbox.get_height() - new_height));
+  bbox2.move(Vector(0, m_col.m_bbox.get_height() - new_height - bottom_offset));
   bbox2.set_height(new_height);
 
 
   if (new_height > m_col.m_bbox.get_height()) {
-    Rectf additional_space = bbox2;
-    additional_space.set_height(new_height - m_col.m_bbox.get_height());
-    if (!Sector::get().is_free_of_statics(additional_space, this, true))
+    //Rectf additional_space = bbox2;
+    //additional_space.set_height(new_height - m_col.m_bbox.get_height());
+    if (!Sector::get().is_free_of_statics(bbox2, this, true))
       return false;
   }
 
@@ -313,10 +338,82 @@ Player::update(float dt_sec)
 {
   check_bounds();
 
-  if ( no_water ){
+  //handling of swimming
+
+#ifdef SWIMMING
+  if (no_water)
+  {
+    if (m_swimming)
+    {
+      m_water_jump = true;
+      if (m_physic.get_velocity_y() > -350.f && m_controller->hold(Control::UP))
+        m_physic.set_velocity_y(-350.f);
+    }
     m_swimming = false;
   }
+
+  if ((on_ground() || m_climbing || m_does_buttjump) && m_water_jump)
+  {
+    if (is_big() && !adjust_height(BIG_TUX_HEIGHT))
+    {
+      //Force Tux's box up a little in order to not phase into floor
+      adjust_height(BIG_TUX_HEIGHT, 10.f);
+      do_duck();
+    }
+    else if (!is_big())
+    {
+      adjust_height(SMALL_TUX_HEIGHT);
+    }
+    m_dir = (m_physic.get_velocity_x() >= 0.f) ? Direction::RIGHT : Direction::LEFT;
+    m_water_jump = false;
+    m_swimboosting = false;
+    m_powersprite->set_angle(0.f);
+    m_lightsprite->set_angle(0.f);
+  }
   no_water = true;
+
+  if ((m_swimming || m_water_jump) && is_big())
+  {
+    m_col.set_size(TUX_WIDTH, TUX_WIDTH);
+    adjust_height(TUX_WIDTH);
+  }
+
+  Rectf swim_here_box = get_bbox();
+  swim_here_box.set_bottom(m_col.m_bbox.get_bottom() - 16.f);
+  bool can_swim_here = !Sector::get().is_free_of_tiles(swim_here_box, true, Tile::WATER);
+
+  if (m_swimming)
+  {
+    if (can_swim_here)
+    {
+      no_water = false;
+    }
+    else
+    {
+      m_swimming = false;
+      m_water_jump = true;
+      if (m_physic.get_velocity_y() > -350.f && m_controller->hold(Control::UP))
+        m_physic.set_velocity_y(-350.f);
+    }
+  }
+  else
+  {
+    if (can_swim_here && !m_stone && !m_climbing)
+    {
+      no_water = false;
+      m_water_jump = false;
+      m_swimming = true;
+      m_swimming_angle = math::angle(Vector(m_physic.get_velocity_x(), m_physic.get_velocity_y()));
+      if (is_big())
+        adjust_height(TUX_WIDTH);
+      m_wants_buttjump = m_does_buttjump = m_backflipping = false;
+      m_dir = (m_physic.get_velocity_x() > 0) ? Direction::LEFT : Direction::RIGHT;
+      SoundManager::current()->play("sounds/splash.wav");
+    }
+  }
+#endif
+
+  //end of swimming handling
 
   if (m_dying && m_dying_timer.check()) {
     Sector::get().stop_looping_sounds();
@@ -336,14 +433,45 @@ Player::update(float dt_sec)
 
   // extend/shrink tux collision rectangle so that we fall through/walk over 1
   // tile holes
-  if (fabsf(m_physic.get_velocity_x()) > MAX_WALK_XM) {
-    m_col.set_width(RUNNING_TUX_WIDTH);
-  } else {
-    m_col.set_width(TUX_WIDTH);
+
+  //wallclinging and walljumping
+
+  Rectf wallclingleft = get_bbox();
+  wallclingleft.set_left(wallclingleft.get_left() - 8.f);
+  m_on_left_wall = !Sector::get().is_free_of_statics(wallclingleft);
+
+  Rectf wallclingright = get_bbox();
+  wallclingright.set_right(wallclingright.get_right() + 8.f);
+  m_on_right_wall = !Sector::get().is_free_of_statics(wallclingright);
+
+  m_can_walljump = ((m_on_right_wall || m_on_left_wall) && !on_ground() && !m_swimming && m_in_walljump_tile);
+  if (m_can_walljump && (m_controller->hold(Control::LEFT) || m_controller->hold(Control::RIGHT)) && m_physic.get_velocity_y() >= 0.f && !m_controller->pressed(Control::JUMP))
+  {
+    m_physic.set_velocity_y(MAX_WALLCLING_YM);
+    m_physic.set_acceleration_y(0);
+    if (m_water_jump)
+    {
+      adjust_height(is_big() ? BIG_TUX_HEIGHT : SMALL_TUX_HEIGHT);
+      m_water_jump = false;
+    }
+    m_powersprite->set_angle(0.f);
+    m_lightsprite->set_angle(0.f);
   }
 
+  m_in_walljump_tile = false;
+
+  //End of wallclinging
+
+    // extend/shrink tux collision rectangle so that we fall through/walk over 1
+    // tile holes
+    if (fabsf(m_physic.get_velocity_x()) > MAX_WALK_XM) {
+      m_col.set_width(RUNNING_TUX_WIDTH);
+    } else {
+      m_col.set_width(TUX_WIDTH);
+    }
+
   // on downward slopes, adjust vertical velocity so tux walks smoothly down
-  if (on_ground() && !m_dying) {
+  if (on_ground() && !m_swimming && !m_dying) {
     if (m_floor_normal.y != 0) {
       if ((m_floor_normal.x * m_physic.get_velocity_x()) >= 0) {
         m_physic.set_velocity_y(250);
@@ -357,13 +485,15 @@ Player::update(float dt_sec)
     m_dir = (m_backflip_direction == 1) ? Direction::LEFT : Direction::RIGHT;
     if (m_backflip_timer.started()) m_physic.set_velocity_x(100.0f * static_cast<float>(m_backflip_direction));
     //rotate sprite during flip
-    m_sprite->set_angle(m_sprite->get_angle() + (m_dir==Direction::LEFT?1:-1) * dt_sec * (360.0f / 0.5f));
-    if (m_player_status.bonus == EARTH_BONUS || m_player_status.bonus == AIR_BONUS ||
-        (m_player_status.bonus == FIRE_BONUS && g_config->christmas_mode)) {
+    m_sprite->set_angle(m_sprite->get_angle() + (m_dir == Direction::LEFT ? 1 : -1) * dt_sec * (360.0f / 0.5f));
+    if (m_player_status.has_hat_sprite() && !m_swimming && !m_water_jump)
       m_powersprite->set_angle(m_sprite->get_angle());
-      if (m_player_status.bonus == EARTH_BONUS)
-        m_lightsprite->set_angle(m_sprite->get_angle());
-    }
+    if (m_player_status.bonus == EARTH_BONUS)
+      m_lightsprite->set_angle(m_sprite->get_angle());
+  }
+
+  if (on_ground()) {
+    m_coyote_timer.start(COYOTE_TIME);
   }
 
   // set fall mode...
@@ -392,29 +522,46 @@ Player::update(float dt_sec)
 
       // if controls are currently deactivated, we take care of standing up ourselves
       if (m_deactivated)
-        do_standup();
+        do_standup(false);
     }
     if (m_player_status.bonus == AIR_BONUS)
       m_ability_time = static_cast<float>(m_player_status.max_air_time) * GLIDE_TIME_PER_FLOWER;
+  }
 
-    if (m_second_growup_sound_timer.check())
-    {
-      SoundManager::current()->play("sounds/grow.wav");
-      m_second_growup_sound_timer.stop();
-    }
+  if (m_second_growup_sound_timer.check())
+  {
+    SoundManager::current()->play("sounds/grow.wav");
+    m_second_growup_sound_timer.stop();
+  }
+
+  // Handle player approaching the bottom of the screen while swimming
+  if (m_falling_below_water) {
+    m_physic.set_velocity_y(std::min(m_physic.get_velocity_y(), 0.f));
+  }
+
+  if ((get_pos().y > Sector::get().get_height() - m_col.m_bbox.get_height()) && (!m_ghost_mode && m_swimming))
+  {
+    m_physic.set_acceleration_y(-WATER_FALLOUT_FORCEBACK_STRENGTH);
+  }
+
+  if (m_boost != 0.f)
+  {
+    bool sign = std::signbit(m_boost);
+    m_boost = (sign ? -1.f : +1.f) * (std::abs(m_boost) - dt_sec * BOOST_DECREASE_RATE);
+    if (std::signbit(m_boost) != sign)
+      m_boost = 0.f;
   }
 
   // calculate movement for this frame
-  m_col.m_movement = m_physic.get_movement(dt_sec);
+  m_col.set_movement(m_physic.get_movement(dt_sec) + Vector(m_boost * dt_sec, 0));
 
-  if (m_grabbed_object != nullptr && !m_dying) {
+  if (m_grabbed_object != nullptr && !m_dying)
+  {
     position_grabbed_object();
   }
 
-  if (m_grabbed_object != nullptr && m_dying){
-    m_grabbed_object->ungrab(*this, m_dir);
-    m_grabbed_object = nullptr;
-  }
+  if (m_dying)
+    ungrab_object();
 
   if (!m_ice_this_frame && on_ground())
     m_on_ice = false;
@@ -425,14 +572,15 @@ Player::update(float dt_sec)
   // when invincible, spawn particles
   if (m_invincible_timer.started())
   {
-    if (graphicsRandom.rand(0, 2) == 0) {
+    if (graphicsRandom.rand(0, 2) == 0)
+    {
       float px = graphicsRandom.randf(m_col.m_bbox.get_left()+0, m_col.m_bbox.get_right()-0);
       float py = graphicsRandom.randf(m_col.m_bbox.get_top()+0, m_col.m_bbox.get_bottom()-0);
       Vector ppos = Vector(px, py);
       Vector pspeed = Vector(0, 0);
       Vector paccel = Vector(0, 0);
       Sector::get().add<SpriteParticle>(
-        "images/objects/particles/sparkle.sprite",
+        "images/particles/sparkle.sprite",
         // draw bright sparkle when there is lots of time left,
         // dark sparkle when invincibility is about to end
         (m_invincible_timer.get_timeleft() > TUX_INVINCIBLE_TIME_WARNING) ?
@@ -449,26 +597,175 @@ Player::update(float dt_sec)
 
   // when climbing animate only while moving
   if (m_climbing){
-    if ((m_physic.get_velocity_x()==0)&&(m_physic.get_velocity_y()==0))
+    if ((m_physic.get_velocity_x() == 0) && (m_physic.get_velocity_y() == 0))
+    {
       m_sprite->stop_animation();
+      m_powersprite->stop_animation();
+    }
     else
+    {
       m_sprite->set_animation_loops(-1);
+      m_powersprite->set_animation_loops(-1);
+    }
   }
 
 }
 
-bool
-Player::slightly_above_ground() const
+void
+Player::handle_input_swimming()
 {
-  float abs_vy = std::abs(m_physic.get_velocity_y());
-  float ground_y_delta = std::abs(m_last_ground_y - get_pos().y);
-  return (abs_vy == 15.625f || abs_vy == 31.25f) && ground_y_delta < 0.85f;
+  float pointx = float(m_controller->hold(Control::RIGHT)) - float(m_controller->hold(Control::LEFT)),
+        pointy = float(m_controller->hold(Control::DOWN)) - float(m_controller->hold(Control::UP));
+
+  bool boost = m_controller->hold(Control::JUMP);
+
+  swim(pointx,pointy,boost);
+}
+
+void
+Player::swim(float pointx, float pointy, bool boost)
+{
+    if (m_swimming)
+      m_physic.set_gravity_modifier(.0f);
+
+    // Angle
+    bool is_ang_defined = (pointx != 0) || (pointy != 0);
+    float pointed_angle = math::angle(Vector(pointx, pointy));
+    float delta = 0;
+
+    if(is_ang_defined)
+    {
+      delta = pointed_angle - m_swimming_angle;
+
+      if(std::abs(delta) > math::PI)
+        delta += delta > 0 ? -math::TAU : math::TAU;
+
+      float epsilon = (boost ? .3f : .15f) * delta;
+      m_swimming_angle += epsilon;
+
+      if (m_swimming_angle > math::PI)
+        m_swimming_angle -= math::TAU;
+
+      if (m_swimming_angle <= -math::PI)
+        m_swimming_angle += math::TAU;
+    }
+
+    float vx = m_physic.get_velocity_x();
+    float vy = m_physic.get_velocity_y();
+
+    if (m_swimming && !m_water_jump)
+    {
+
+      if(is_ang_defined && std::abs(delta) < 0.01f)
+        m_swimming_angle = pointed_angle;
+
+      m_swimming_accel_modifier = is_ang_defined ? 600.f : 0.f;
+      Vector swimming_direction = math::vec2_from_polar(m_swimming_accel_modifier, pointed_angle);
+
+      m_physic.set_acceleration_x((swimming_direction.x - 1.0f * vx) * 2.f);
+      m_physic.set_acceleration_y((swimming_direction.y - 1.0f * vy) * 2.f);
+
+      // Limit speed, if you go above this speed your acceleration is set to opposite (?)
+      float limit = 300.f;
+      if (glm::length(m_physic.get_velocity()) > limit)
+      {
+        m_physic.set_acceleration(-vx,-vy);   // Was too lazy to set it properly ~~zwatotem
+      }
+
+      // Natural friction
+      if (!is_ang_defined)
+      {
+        m_physic.set_acceleration(-3.f*vx, -3.f*vy);
+      }
+
+      //not boosting? let's slow this penguin down!!!
+      if (!boost && is_ang_defined && glm::length(m_physic.get_velocity()) > 310.f)
+      {
+        m_physic.set_acceleration(-5.f*vx, -5.f*vy);
+      }
+
+      // Snapping to prevent unwanted floating
+        if (!is_ang_defined && glm::length(Vector(vx,vy)) < 100.f)
+      {
+        vx = 0;
+        vy = 0;
+      }
+
+      // Turbo, using pointsign
+      float minboostspeed = 100.f;
+      if (boost && glm::length(m_physic.get_velocity()) > minboostspeed)
+      {
+        if (glm::length(m_physic.get_velocity()) < 600.f)
+        {
+          m_swimboosting = true;
+          if (is_ang_defined)
+          {
+            vx += 30.f * pointx;
+            vy += 30.f * pointy;
+          }
+        }
+        else
+        {
+          //cap on boosting
+          m_physic.set_acceleration(-vx, -vy);
+        }
+        m_physic.set_velocity(vx, vy);
+      }
+      else
+      {
+          if (glm::length(m_physic.get_velocity()) < 310.f)
+        {
+          m_swimboosting = false;
+        }
+      }
+    }
+    if (m_water_jump && !m_swimming)
+    {
+      m_swimming_angle = math::angle(Vector(vx, vy));
+    }
+
+  // snap angle dir when water jumping to avoid crazy spinning graphics...
+  if (m_water_jump && !m_swimming && std::abs(m_physic.get_velocity_x()) < 10.f)
+  {
+    m_sprite->set_angle(math::degrees(m_swimming_angle));
+    m_powersprite->set_angle(math::degrees(m_swimming_angle));
+    if (m_lightsprite)
+    {
+      m_lightsprite->set_angle(math::degrees(m_swimming_angle));
+    }
+  }
+  else
+  {
+    // otherwise angle the sprite normally
+    float angle = (std::abs(m_swimming_angle) <= math::PI_2) ?
+                    math::degrees(m_swimming_angle) :
+                    math::degrees(math::PI + m_swimming_angle);
+
+    m_sprite->set_angle(angle);
+    m_powersprite->set_angle(angle);
+    if (m_lightsprite)
+    {
+      m_lightsprite->set_angle(angle);
+    }
+
+    //Force the speed to point in the direction Tux is going
+    if (m_swimming && !m_water_jump && boost)
+    {
+      m_physic.set_velocity(math::at_angle(m_physic.get_velocity(), m_swimming_angle));
+    }
+  }
 }
 
 bool
 Player::on_ground() const
 {
-  return m_on_ground_flag || slightly_above_ground();
+  return m_on_ground_flag;
+}
+
+void
+Player::set_on_ground(bool flag)
+{
+  m_on_ground_flag = flag;
 }
 
 bool
@@ -483,17 +780,23 @@ Player::is_big() const
 void
 Player::apply_friction()
 {
-  if ((on_ground()) && (fabsf(m_physic.get_velocity_x()) < WALK_SPEED)) {
+  bool is_on_ground = on_ground();
+  float velx = m_physic.get_velocity_x();
+  if (is_on_ground && fabsf(velx) < WALK_SPEED) {
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
-  } else {
-    float friction = WALK_ACCELERATION_X * (m_on_ice ? ICE_FRICTION_MULTIPLIER : NORMAL_FRICTION_MULTIPLIER);
-    if (m_physic.get_velocity_x() < 0) {
-      m_physic.set_acceleration_x(friction);
-    } else if (m_physic.get_velocity_x() > 0) {
-      m_physic.set_acceleration_x(-friction);
-    } // no friction for physic.get_velocity_x() == 0
+    return;
   }
+  float friction = WALK_ACCELERATION_X;
+  if (m_on_ice && is_on_ground)
+    friction *= ICE_FRICTION_MULTIPLIER;
+  else
+    friction *= NORMAL_FRICTION_MULTIPLIER;
+  if (velx < 0) {
+    m_physic.set_acceleration_x(friction);
+  } else if (velx > 0) {
+    m_physic.set_acceleration_x(-friction);
+  } // no friction for physic.get_velocity_x() == 0
 }
 
 void
@@ -509,13 +812,13 @@ Player::handle_horizontal_input()
     if ((m_controller->hold(Control::LEFT) && !m_controller->hold(Control::RIGHT))
         || jump_helper_move_left) {
       m_old_dir = m_dir;
-      m_dir = Direction::LEFT;
+      if (!m_water_jump) m_dir = Direction::LEFT;
       dirsign = -1;
     } else if ((!m_controller->hold(Control::LEFT)
               && m_controller->hold(Control::RIGHT))
               || jump_helper_move_right) {
       m_old_dir = m_dir;
-      m_dir = Direction::RIGHT;
+      if (!m_water_jump) m_dir = Direction::RIGHT;
       dirsign = 1;
     }
   }
@@ -525,11 +828,9 @@ Player::handle_horizontal_input()
     ax = dirsign * WALK_ACCELERATION_X;
     // limit speed
     if (vx >= MAX_WALK_XM && dirsign > 0) {
-      vx = MAX_WALK_XM;
-      ax = 0;
+      ax = std::min(ax, -OVERSPEED_DECELERATION);
     } else if (vx <= -MAX_WALK_XM && dirsign < 0) {
-      vx = -MAX_WALK_XM;
-      ax = 0;
+      ax = std::max(ax, OVERSPEED_DECELERATION);
     }
   } else {
     if ( vx * dirsign < MAX_WALK_XM ) {
@@ -538,12 +839,10 @@ Player::handle_horizontal_input()
       ax = dirsign * RUN_ACCELERATION_X;
     }
     // limit speed
-    if (vx >= MAX_RUN_XM + BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0) && dirsign > 0) {
-      vx = MAX_RUN_XM + BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0);
-      ax = 0;
-    } else if (vx <= -MAX_RUN_XM - BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0) && dirsign < 0) {
-      vx = -MAX_RUN_XM - BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0);
-      ax = 0;
+    if (vx >= MAX_RUN_XM + BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0)) {
+      ax = std::min(ax, -OVERSPEED_DECELERATION);
+    } else if (vx <= -MAX_RUN_XM - BONUS_RUN_XM *((m_player_status.bonus == AIR_BONUS) ? 1 : 0)) {
+      ax = std::max(ax, OVERSPEED_DECELERATION);
     }
   }
 
@@ -568,7 +867,7 @@ Player::handle_horizontal_input()
         // dust some particles
         Sector::get().add<Particles>(
             Vector(m_dir == Direction::LEFT ? m_col.m_bbox.get_right() : m_col.m_bbox.get_left(), m_col.m_bbox.get_bottom()),
-            m_dir == Direction::LEFT ? 50 : -70, m_dir == Direction::LEFT ? 70 : -50, 260, 280,
+            m_dir == Direction::LEFT ? 50 : -70, m_dir == Direction::LEFT ? 70 : -50, 260.0f, 280.0f,
             Vector(0, 300), 3, Color(.4f, .4f, .4f), 3, .8f, LAYER_OBJECTS+1);
 
         ax *= 2.5f;
@@ -582,7 +881,7 @@ Player::handle_horizontal_input()
     }
   }
 
-  if (m_on_ice) {
+  if (m_on_ice && on_ground()) {
     ax *= ICE_ACCELERATION_MULTIPLIER;
   }
 
@@ -601,7 +900,7 @@ Player::do_cheer()
 {
   do_duck();
   do_backflip();
-  do_standup();
+  do_standup(false);
 }
 
 void
@@ -611,7 +910,7 @@ Player::do_duck() {
   if (!is_big())
     return;
 
-  if (m_physic.get_velocity_y() != 0)
+  if (!m_swimming && !m_water_jump && m_physic.get_velocity_y() != 0)
     return;
   if (!on_ground())
     return;
@@ -628,7 +927,7 @@ Player::do_duck() {
 }
 
 void
-Player::do_standup() {
+Player::do_standup(bool force_standup) {
   if (!m_duck)
     return;
   if (!is_big())
@@ -638,10 +937,10 @@ Player::do_standup() {
   if (m_stone)
     return;
 
-  if (adjust_height(BIG_TUX_HEIGHT)) {
+  if (m_swimming ? adjust_height(TUX_WIDTH) : adjust_height(BIG_TUX_HEIGHT)) {
     m_duck = false;
     m_unduck_hurt_timer.stop();
-  } else {
+  } else if (force_standup) {
     // if timer is not already running, start it.
     if (m_unduck_hurt_timer.get_period() == 0) {
       m_unduck_hurt_timer.start(UNDUCK_HURT_TIME);
@@ -669,20 +968,23 @@ Player::do_backflip() {
 
 void
 Player::do_jump(float yspeed) {
-  if (!on_ground())
+  if (!m_can_walljump && !m_in_walljump_tile && !on_ground() && !m_coyote_timer.started())
     return;
 
-  m_physic.set_velocity_y(yspeed);
-  //bbox.move(Vector(0, -1));
-  m_jumping = true;
-  m_on_ground_flag = false;
-  m_can_jump = false;
+  // jump only if it would make Tux go faster upwards
+  if (m_physic.get_velocity_y() > yspeed) {
+    m_physic.set_velocity_y(yspeed);
+    //bbox.move(Vector(0, -1));
+    m_jumping = true;
+    m_on_ground_flag = false;
+    m_can_jump = false;
 
-  // play sound
-  if (is_big()) {
-    SoundManager::current()->play("sounds/bigjump.wav");
-  } else {
-    SoundManager::current()->play("sounds/jump.wav");
+    // play sound
+    if (is_big()) {
+      SoundManager::current()->play("sounds/bigjump.wav");
+    } else {
+      SoundManager::current()->play("sounds/jump.wav");
+    }
   }
 }
 
@@ -711,7 +1013,7 @@ Player::handle_vertical_input()
 {
   // Press jump key
   if (m_controller->pressed(Control::JUMP)) m_jump_button_timer.start(JUMP_GRACE_TIME);
-  if (((m_controller->hold(Control::JUMP) && m_jump_button_timer.started()) || jump_helper_jump) && m_can_jump) {
+  if (((m_controller->hold(Control::JUMP) && m_jump_button_timer.started()) || jump_helper_jump) && (m_can_jump || m_coyote_timer.started())) {
     m_jump_button_timer.stop();
     if (m_duck) {
       // when running, only jump a little bit; else do a backflip
@@ -733,6 +1035,8 @@ Player::handle_vertical_input()
       else
         do_jump((fabsf(m_physic.get_velocity_x()) > MAX_WALK_XM) ? -580.0f : -520.0f);
     }
+    //Stop the coyote timer only after calling do_jump, because do_jump also checks for the timer
+    m_coyote_timer.stop();
     // airflower glide only when holding jump key
   } else  if (m_controller->hold(Control::JUMP) && m_player_status.bonus == AIR_BONUS && m_physic.get_velocity_y() > MAX_GLIDE_YM) {
       if (m_ability_time > 0 && !m_ability_timer.started())
@@ -779,15 +1083,16 @@ Player::handle_vertical_input()
     m_does_buttjump = false;
   }
 
-  // swimming
-  m_physic.set_acceleration_y(0);
-#ifdef SWIMMING
-  if (swimming) {
-    if (controller->hold(Control::UP) || controller->hold(Control::JUMP))
-      physic.set_acceleration_y(-2000);
-    physic.set_velocity_y(physic.get_velocity_y() * 0.94);
+  //The real walljumping magic
+  if (m_controller->pressed(Control::JUMP) && m_can_walljump && !m_backflipping)
+  {
+    SoundManager::current()->play((is_big()) ? "sounds/bigjump.wav" : "sounds/jump.wav");
+    m_physic.set_velocity_x(m_player_status.bonus == AIR_BONUS ?
+      m_on_left_wall ? 480.f : -480.f : m_on_left_wall ? 380.f : -380.f);
+    do_jump(-520.f);
   }
-#endif
+
+ m_physic.set_acceleration_y(0);
 }
 
 void
@@ -800,6 +1105,27 @@ Player::handle_input()
   if (m_climbing) {
     handle_input_climbing();
     return;
+  }
+  if (m_swimming) {
+    handle_input_swimming();
+  }
+  else
+  {
+    if (m_water_jump)
+    {
+      swim(0,0,0);
+    }
+  }
+
+  if (!m_swimming)
+  {
+    if (!m_water_jump && !m_backflipping) m_sprite->set_angle(0);
+    if (!m_jump_early_apex) {
+      m_physic.set_gravity_modifier(1.0f);
+    }
+    else {
+      m_physic.set_gravity_modifier(JUMP_EARLY_APEX_FACTOR);
+    }
   }
 
   /* Peeking */
@@ -824,14 +1150,14 @@ Player::handle_input()
   }
 
   /* Handle horizontal movement: */
-  if (!m_backflipping && !m_stone) handle_horizontal_input();
+  if (!m_backflipping && !m_stone && !m_swimming) handle_horizontal_input();
 
   /* Jump/jumping? */
   if (on_ground())
     m_can_jump = true;
 
   /* Handle vertical movement: */
-  if (!m_stone) handle_vertical_input();
+  if (!m_stone && !m_swimming) handle_vertical_input();
 
   handle_jump_helper();
 
@@ -847,15 +1173,25 @@ Player::handle_input()
       (m_player_status.bonus == ICE_BONUS &&
       active_bullets < m_player_status.max_ice_bullets))
     {
-      Vector pos = get_pos() + ((m_dir == Direction::LEFT)? Vector(0, m_col.m_bbox.get_height()/2) : Vector(32, m_col.m_bbox.get_height()/2));
-      Sector::get().add<Bullet>(pos, m_physic.get_velocity_x(), m_dir, m_player_status.bonus);
+      Vector pos = get_pos() + Vector(m_col.m_bbox.get_width() / 2.f, m_col.m_bbox.get_height() / 2.f);
+      Direction swim_dir;
+      swim_dir = ((std::abs(m_swimming_angle) <= math::PI_2)
+        || (m_water_jump && std::abs(m_physic.get_velocity_x()) < 10.f)) ? Direction::RIGHT : Direction::LEFT;
+      if (m_swimming || m_water_jump)
+      {
+        m_dir = swim_dir;
+      }
+      Sector::get().add<Bullet>(pos, (m_swimming || m_water_jump) ?
+        m_physic.get_velocity() + (Vector(std::cos(m_swimming_angle), std::sin(m_swimming_angle)) * 600.f) :
+        Vector(((m_dir == Direction::RIGHT ? 600.f : -600.f) + m_physic.get_velocity_x()), 0.f),
+        m_dir, m_player_status.bonus);
       SoundManager::current()->play("sounds/shoot.wav");
       m_shooting_timer.start(SHOOTING_TIME);
     }
   }
 
   /* Turn to Stone */
-  if (m_controller->pressed(Control::DOWN) && m_player_status.bonus == EARTH_BONUS && !m_cooldown_timer.started() && on_ground()) {
+  if (m_controller->pressed(Control::DOWN) && m_player_status.bonus == EARTH_BONUS && !m_cooldown_timer.started() && on_ground() && !m_swimming) {
     if (m_controller->hold(Control::ACTION) && !m_ability_timer.started()) {
       m_ability_timer.start(static_cast<float>(m_player_status.max_earth_time) * STONE_TIME_PER_FLOWER);
       m_powersprite->stop_animation();
@@ -881,17 +1217,17 @@ Player::handle_input()
                            m_col.m_bbox.get_top() + 16.0f * static_cast<float>(i % 4));
       float grey = graphicsRandom.randf(.4f, .8f);
       Color pcolor = Color(grey, grey, grey);
-      Sector::get().add<Particles>(ppos, -60, 240, 42, 81, Vector(0.0f, 500.0f),
+      Sector::get().add<Particles>(ppos, -60, 240, 42.0f, 81.0f, Vector(0.0f, 500.0f),
                                                                 8, pcolor, 4 + graphicsRandom.randf(-0.4f, 0.4f),
                                                                 0.8f + graphicsRandom.randf(0.0f, 0.4f), LAYER_OBJECTS + 2);
     }
   }
 
   /* Duck or Standup! */
-  if (m_controller->hold(Control::DOWN) && !m_stone) {
+  if (m_controller->hold(Control::DOWN) && !m_stone && !m_swimming) {
     do_duck();
   } else {
-    do_standup();
+    do_standup(false);
   }
 
   if (!m_controller->hold(Control::ACTION) && m_grabbed_object && !just_grabbed) {
@@ -900,23 +1236,52 @@ Player::handle_input()
       // move the grabbed object a bit away from tux
       Rectf grabbed_bbox = moving_object->get_bbox();
       Rectf dest_;
-      dest_.set_bottom(m_col.m_bbox.get_top() + m_col.m_bbox.get_height() * 0.66666f);
-      dest_.set_top(dest_.get_bottom() - grabbed_bbox.get_height());
-      if (m_dir == Direction::LEFT) {
-        dest_.set_right(m_col.m_bbox.get_left() - 1);
-        dest_.set_left(dest_.get_right() - grabbed_bbox.get_width());
-      } else {
-        dest_.set_left(m_col.m_bbox.get_right() + 1);
+      if (m_swimming || m_water_jump)
+      {
+        dest_.set_bottom(m_col.m_bbox.get_bottom() + (std::sin(m_swimming_angle) * 32.f));
+        dest_.set_top(dest_.get_bottom() - grabbed_bbox.get_height());
+        dest_.set_left(m_col.m_bbox.get_left() + (std::cos(m_swimming_angle) * 32.f));
         dest_.set_right(dest_.get_left() + grabbed_bbox.get_width());
       }
+      else
+      {
+        dest_.set_bottom(m_col.m_bbox.get_top() + m_col.m_bbox.get_height() * 0.66666f);
+        dest_.set_top(dest_.get_bottom() - grabbed_bbox.get_height());
+
+        if (m_dir == Direction::LEFT)
+        {
+          dest_.set_right(m_col.m_bbox.get_left() - 1);
+          dest_.set_left(dest_.get_right() - grabbed_bbox.get_width());
+        }
+        else
+        {
+          dest_.set_left(m_col.m_bbox.get_right() + 1);
+          dest_.set_right(dest_.get_left() + grabbed_bbox.get_width());
+        }
+      }
+
       if (Sector::get().is_free_of_tiles(dest_, true) &&
-         Sector::get().is_free_of_statics(dest_, moving_object, true)) {
+         Sector::get().is_free_of_statics(dest_, moving_object, true))
+      {
         moving_object->set_pos(dest_.p1());
-        if (m_controller->hold(Control::UP)) {
+        if (m_controller->hold(Control::UP))
+        {
           m_grabbed_object->ungrab(*this, Direction::UP);
-        } else {
+        }
+        else if (m_controller->hold(Control::DOWN))
+        {
+          m_grabbed_object->ungrab(*this, Direction::DOWN);
+        }
+        else if (m_swimming || m_water_jump)
+        {
+          m_grabbed_object->ungrab(*this,
+            std::abs(m_swimming_angle) <= math::PI_2 ? Direction::RIGHT : Direction::LEFT);
+        }
+        else
+        {
           m_grabbed_object->ungrab(*this, m_dir);
         }
+        moving_object->del_remove_listener(m_grabbed_object_remove_listener.get());
         m_grabbed_object = nullptr;
         released_object = true;
       }
@@ -941,33 +1306,51 @@ Player::position_grabbed_object()
   auto moving_object = dynamic_cast<MovingObject*>(m_grabbed_object);
   assert(moving_object);
   const auto& object_bbox = moving_object->get_bbox();
-
-  // Position where we will hold the lower-inner corner
-  Vector pos(m_col.m_bbox.get_left() + m_col.m_bbox.get_width()/2,
+  if (!m_swimming && !m_water_jump)
+  {
+    // Position where we will hold the lower-inner corner
+    Vector pos(m_col.m_bbox.get_left() + m_col.m_bbox.get_width() / 2,
       m_col.m_bbox.get_top() + m_col.m_bbox.get_height()*0.66666f);
-
-  // Adjust to find the grabbed object's upper-left corner
-  if (m_dir == Direction::LEFT)
-    pos.x -= object_bbox.get_width();
-  pos.y -= object_bbox.get_height();
-
-  m_grabbed_object->grab(*this, pos, m_dir);
+    // Adjust to find the grabbed object's upper-left corner
+    if (m_dir == Direction::LEFT)
+      pos.x -= object_bbox.get_width();
+    pos.y -= object_bbox.get_height();
+    m_grabbed_object->grab(*this, pos, m_dir);
+  }
+  else
+  {
+    Vector pos(m_col.m_bbox.get_left() + (std::cos(m_swimming_angle) * 32.f),
+               m_col.m_bbox.get_top() + (std::sin(m_swimming_angle) * 32.f));
+    m_grabbed_object->grab(*this, pos, m_dir);
+  }
 }
 
 bool
 Player::try_grab()
 {
-  if (m_controller->hold(Control::ACTION) && !m_grabbed_object
-     && !m_duck && !released_object) {
+  if (m_controller->hold(Control::ACTION) && !m_grabbed_object && !m_duck && !released_object)
+  {
 
-    Vector pos;
-    if (m_dir == Direction::LEFT) {
-      pos = Vector(m_col.m_bbox.get_left() - 5, m_col.m_bbox.get_bottom() - 16);
-    } else {
-      pos = Vector(m_col.m_bbox.get_right() + 5, m_col.m_bbox.get_bottom() - 16);
+    Vector pos(0.0f, 0.0f);
+    if (!m_swimming && !m_water_jump)
+    {
+      if (m_dir == Direction::LEFT)
+      {
+        pos = Vector(m_col.m_bbox.get_left() - 5, m_col.m_bbox.get_bottom() - 16);
+      }
+      else
+      {
+        pos = Vector(m_col.m_bbox.get_right() + 5, m_col.m_bbox.get_bottom() - 16);
+      }
+    }
+    else
+    {
+      pos = Vector(m_col.m_bbox.get_left() + 16.f + (std::cos(m_swimming_angle) * 48.f),
+                   m_col.m_bbox.get_top() + 16.f + (std::sin(m_swimming_angle) * 48.f));
     }
 
-    for (auto& moving_object : Sector::get().get_objects_by_type<MovingObject>()) {
+    for (auto& moving_object : Sector::get().get_objects_by_type<MovingObject>())
+    {
       Portable* portable = dynamic_cast<Portable*>(&moving_object);
       if (portable && portable->is_portable())
       {
@@ -975,10 +1358,14 @@ Player::try_grab()
         if (moving_object.get_group() == COLGROUP_DISABLED) continue;
 
         // check if we are within reach
-        if (moving_object.get_bbox().contains(pos)) {
+        if (moving_object.get_bbox().contains(pos))
+        {
           if (m_climbing)
             stop_climbing(*m_climbing);
           m_grabbed_object = portable;
+
+          moving_object.add_remove_listener(m_grabbed_object_remove_listener.get());
+
           position_grabbed_object();
           return true;
         }
@@ -1088,13 +1475,20 @@ Player::set_bonus(BonusType type, bool animate)
   }
 
   if ((m_player_status.bonus == NO_BONUS) && (type != NO_BONUS)) {
-    if (!adjust_height(BIG_TUX_HEIGHT)) {
-      log_debug << "Can't adjust Tux height" << std::endl;
-      return false;
+    if (!m_swimming)
+    {
+      if (!adjust_height(BIG_TUX_HEIGHT))
+      {
+        log_debug << "Can't adjust Tux height" << std::endl;
+        return false;
+      }
     }
     if (animate) {
       m_growing = true;
-      m_sprite->set_action((m_dir == Direction::LEFT)?"grow-left":"grow-right", 1);
+      if (m_climbing)
+        m_sprite->set_action((m_dir == Direction::LEFT) ? "grow-ladder-left" : "grow-ladder-right", 1);
+      else
+        m_sprite->set_action((m_dir == Direction::LEFT) ? "grow-left" : "grow-right", 1);
     }
     if (m_climbing) stop_climbing(*m_climbing);
   }
@@ -1136,10 +1530,9 @@ Player::set_bonus(BonusType type, bool animate)
       particle_name = "earthtux-hardhat";
     }
     if (!particle_name.empty() && animate) {
-      Sector::get().add<SpriteParticle>("images/objects/particles/" + particle_name + ".sprite",
+      Sector::get().add<SpriteParticle>("images/particles/" + particle_name + ".sprite",
                                              action, ppos, ANCHOR_TOP, pspeed, paccel, LAYER_OBJECTS - 1);
     }
-    if (m_climbing) stop_climbing(*m_climbing);
 
     m_player_status.max_fire_bullets = 0;
     m_player_status.max_ice_bullets = 0;
@@ -1165,7 +1558,6 @@ void
 Player::set_visible(bool visible_)
 {
   m_visible = visible_;
-  set_group(visible_ ? COLGROUP_MOVING : COLGROUP_DISABLED);
 }
 
 bool
@@ -1223,18 +1615,25 @@ Player::draw(DrawingContext& context)
     sa_prefix = "earth";
   else
     sa_prefix = "small";
-
-  if (m_dir == Direction::LEFT)
-    sa_postfix = "-left";
+  if (!m_swimming && !m_water_jump)
+  {
+    sa_postfix = (m_dir == Direction::RIGHT) ? "-right" : "-left";
+  }
   else
-    sa_postfix = "-right";
+  {
+    sa_postfix = ((std::abs(m_swimming_angle) <= math::PI_2)
+      || (m_water_jump && std::abs(m_physic.get_velocity_x()) < 10.f))
+      ? "-right" : "-left";
+  }
 
   /* Set Tux sprite action */
   if (m_dying) {
     m_sprite->set_action("gameover");
   }
-  else if (m_growing) {
-    m_sprite->set_action_continued("grow"+sa_postfix);
+  else if (m_growing)
+  {
+    m_sprite->set_action_continued(m_swimming || m_water_jump ?
+      "swimgrow"+sa_postfix : "grow"+sa_postfix);
     // while growing, do not change action
     // do_duck() will take care of cancelling growing manually
     // update() will take care of cancelling when growing completed
@@ -1244,28 +1643,56 @@ Player::draw(DrawingContext& context)
   }
   else if (m_climbing) {
     m_sprite->set_action(sa_prefix+"-climbing"+sa_postfix);
+
+    // Avoid flickering briefly after growing on ladder
+    if ((m_physic.get_velocity_x()==0)&&(m_physic.get_velocity_y()==0))
+      m_sprite->stop_animation();
   }
   else if (m_backflipping) {
     m_sprite->set_action(sa_prefix+"-backflip"+sa_postfix);
   }
-  else if (m_duck && is_big()) {
+  else if (m_duck && is_big() && !m_swimming) {
     m_sprite->set_action(sa_prefix+"-duck"+sa_postfix);
   }
-  else if (m_skidding_timer.started() && !m_skidding_timer.check()) {
+  else if (m_skidding_timer.started() && !m_skidding_timer.check() && !m_swimming) {
     m_sprite->set_action(sa_prefix+"-skid"+sa_postfix);
   }
-  else if (m_kick_timer.started() && !m_kick_timer.check()) {
+  else if (m_kick_timer.started() && !m_kick_timer.check() && !m_swimming && !m_water_jump) {
     m_sprite->set_action(sa_prefix+"-kick"+sa_postfix);
   }
-  else if ((m_wants_buttjump || m_does_buttjump) && is_big()) {
+  else if ((m_wants_buttjump || m_does_buttjump) && is_big() && !m_water_jump) {
     m_sprite->set_action(sa_prefix+"-buttjump"+sa_postfix, 1);
   }
-  else if (!on_ground() || m_fall_mode != ON_GROUND) {
-    if (m_physic.get_velocity_x() != 0 || m_fall_mode != ON_GROUND) {
-        m_sprite->set_action(sa_prefix+"-jump"+sa_postfix);
+  else if ((m_controller->hold(Control::LEFT) || m_controller->hold(Control::RIGHT)) && m_can_walljump)
+  {
+    m_sprite->set_action(sa_prefix+"-walljump"+(m_on_left_wall ? "-left" : "-right"), 1);
+  }
+  else if (!on_ground() || m_fall_mode != ON_GROUND)
+  {
+    if (m_physic.get_velocity_x() != 0 || m_fall_mode != ON_GROUND)
+    {
+      if (m_swimming || m_water_jump)
+      {
+        if (m_water_jump && m_dir != m_old_dir)
+          log_debug << "Obracanko (:" << std::endl;
+        if (glm::length(m_physic.get_velocity()) < 50.f)
+          m_sprite->set_action(sa_prefix + "-floating" + sa_postfix);
+        else if (m_water_jump)
+          m_sprite->set_action(sa_prefix + "-swimjump" + sa_postfix);
+        else
+          m_sprite->set_action(sa_prefix + "-swimming" + sa_postfix);
+      }
+      else
+      {
+        if (m_physic.get_velocity_y() > 0)
+          m_sprite->set_action(sa_prefix + "-fall" + sa_postfix);
+        else if (m_physic.get_velocity_y() <= 0)
+          m_sprite->set_action(sa_prefix + "-jump" + sa_postfix);
+      }
     }
   }
-  else {
+  else
+  {
     if (fabsf(m_physic.get_velocity_x()) < 1.0f) {
       // Determine which idle stage we're at
       if (m_sprite->get_action().find("-stand-") == std::string::npos && m_sprite->get_action().find("-idle-") == std::string::npos) {
@@ -1300,13 +1727,23 @@ Player::draw(DrawingContext& context)
   }
 
   /* Set Tux powerup sprite action */
-  if (m_player_status.bonus == EARTH_BONUS) {
+  if (m_player_status.has_hat_sprite())
+  {
     m_powersprite->set_action(m_sprite->get_action());
-    m_lightsprite->set_action(m_sprite->get_action());
-  } else if (m_player_status.bonus == AIR_BONUS) {
-    m_powersprite->set_action(m_sprite->get_action());
-  } else if (m_player_status.bonus == FIRE_BONUS && g_config->christmas_mode) {
-    m_powersprite->set_action(m_sprite->get_action());
+    if (m_powersprite->get_frames() == m_sprite->get_frames())
+    {
+      m_powersprite->set_frame(m_sprite->get_current_frame());
+      m_powersprite->set_frame_progress(m_sprite->get_current_frame_progress());
+    }
+    if (m_player_status.bonus == EARTH_BONUS)
+    {
+      m_lightsprite->set_action(m_sprite->get_action());
+      if (m_lightsprite->get_frames() == m_sprite->get_frames())
+      {
+        m_lightsprite->set_frame(m_sprite->get_current_frame());
+        m_lightsprite->set_frame_progress(m_sprite->get_current_frame_progress());
+      }
+    }
   }
 
   /*
@@ -1337,7 +1774,7 @@ Player::draw(DrawingContext& context)
       float py = m_col.m_bbox.get_bottom()+8;
       Vector ppos = Vector(px, py);
       Sector::get().add<SpriteParticle>(
-        "images/objects/particles/sparkle.sprite", "dark",
+        "images/particles/sparkle.sprite", "dark",
         ppos, ANCHOR_MIDDLE, Vector(0, 0), Vector(0, 0), LAYER_OBJECTS+1+5);
     }
   }
@@ -1347,36 +1784,32 @@ Player::draw(DrawingContext& context)
     else
       m_sprite->draw(context.color(), get_pos(), LAYER_OBJECTS + 1);
 
-    if (m_player_status.bonus == AIR_BONUS)
+    if (m_player_status.has_hat_sprite())
       m_powersprite->draw(context.color(), get_pos(), LAYER_OBJECTS + 1);
-    else if (m_player_status.bonus == FIRE_BONUS && g_config->christmas_mode) {
-      m_powersprite->draw(context.color(), get_pos(), LAYER_OBJECTS + 1);
-    }
   }
 
 }
+
 
 void
 Player::collision_tile(uint32_t tile_attributes)
 {
   if (tile_attributes & Tile::HURTS)
-    kill(false);
-
-#ifdef SWIMMING
-  if ( swimming ){
-    if ( tile_attributes & Tile::WATER ){
-      no_water = false;
-    } else {
-      swimming = false;
-    }
-  } else {
-    if ( tile_attributes & Tile::WATER ){
-      swimming = true;
-      no_water = false;
-      SoundManager::current()->play( "sounds/splash.wav" );
+  {
+    if (tile_attributes & Tile::UNISOLID)
+      kill(false);
+    else
+    {
+      Rectf hurtbox = get_bbox().grown(-6.f);
+      if (!Sector::get().is_free_of_tiles(hurtbox, false, Tile::HURTS))
+        kill(false);
     }
   }
-#endif
+
+  if (tile_attributes & Tile::WALLJUMP)
+  {
+    m_in_walljump_tile = true;
+  }
 
   if (tile_attributes & Tile::ICE) {
     m_ice_this_frame = true;
@@ -1391,7 +1824,8 @@ Player::collision_solid(const CollisionHit& hit)
     if (m_physic.get_velocity_y() > 0)
       m_physic.set_velocity_y(0);
 
-    m_on_ground_flag = true;
+    if (!m_swimming)
+      m_on_ground_flag = true;
     m_floor_normal = hit.slope_normal;
 
     // Butt Jump landed
@@ -1427,6 +1861,9 @@ Player::collision_solid(const CollisionHit& hit)
       kill(false);
     }
   }
+
+  if ((hit.left && m_boost < 0.f) || (hit.right && m_boost > 0.f))
+    m_boost = 0.f;
 }
 
 HitResponse
@@ -1466,6 +1903,14 @@ Player::collision(GameObject& other, const CollisionHit& hit)
   }
 
   return CONTINUE;
+}
+
+void
+Player::on_flip(float height)
+{
+  Vector pos = get_pos();
+  pos.y = height - pos.y - get_bbox().get_height();
+  move(pos);
 }
 
 void
@@ -1519,7 +1964,7 @@ Player::kill(bool completely)
       return;
     }
 
-    if (m_player_status.coins >= 25 && !GameSession::current()->get_reset_point_sectorname().empty())
+    if (m_player_status.can_reach_checkpoint())
     {
       for (int i = 0; i < 5; i++)
       {
@@ -1528,11 +1973,11 @@ Player::kill(bool completely)
                                                       Vector(graphicsRandom.randf(5.0f), graphicsRandom.randf(-32.0f, 18.0f)),
                                                       graphicsRandom.randf(-100.0f, 100.0f));
       }
-      m_player_status.coins -= std::max(m_player_status.coins/10, 25);
+      m_player_status.take_checkpoint_coins();
     }
     else
     {
-      GameSession::current()->set_reset_point("", Vector());
+      GameSession::current()->set_reset_point("", Vector(0.0f, 0.0f));
     }
     m_physic.enable_gravity(true);
     m_physic.set_gravity_modifier(1.0f); // Undo jump_early_apex
@@ -1585,8 +2030,16 @@ Player::check_bounds()
     set_pos(Vector(Sector::get().get_width() - m_col.m_bbox.get_width(), m_col.m_bbox.get_top()));
   }
 
+  m_falling_below_water = false;
+
   /* fallen out of the level? */
-  if ((get_pos().y > Sector::get().get_height()) && (!m_ghost_mode)) {
+  if (m_swimming) {
+    // If swimming, don't kill; just prevent from falling below the ground
+    if ((get_pos().y > Sector::get().get_height() - 1) && (!m_ghost_mode)) {
+      set_pos(Vector(get_pos().x, Sector::get().get_height() - 1));
+      m_falling_below_water = true;
+    }
+  } else if ((get_pos().y > Sector::get().get_height()) && (!m_ghost_mode)) {
     kill(true);
     return;
   }
@@ -1669,10 +2122,7 @@ Player::set_ghost_mode(bool enable)
 
   if (m_climbing) stop_climbing(*m_climbing);
 
-  if (m_grabbed_object) {
-    m_grabbed_object->ungrab(*this, m_dir);
-    m_grabbed_object = nullptr;
-  }
+  ungrab_object();
 
   if (enable) {
     m_ghost_mode = true;
@@ -1696,15 +2146,17 @@ Player::set_edit_mode(bool enable)
 void
 Player::start_climbing(Climbable& climbable)
 {
-  if (m_climbing) return;
+  if (m_climbing || m_swimming)
+    return;
 
   m_climbing = &climbable;
+  m_sprite->set_angle(0.0f);
   m_physic.enable_gravity(false);
   m_physic.set_velocity(0, 0);
   m_physic.set_acceleration(0, 0);
   if (m_backflipping) {
     stop_backflipping();
-    do_standup();
+    do_standup(true);
   }
 }
 
@@ -1715,16 +2167,18 @@ Player::stop_climbing(Climbable& /*climbable*/)
 
   m_climbing = nullptr;
 
-  if (m_grabbed_object) {
-    m_grabbed_object->ungrab(*this, m_dir);
-    m_grabbed_object = nullptr;
-  }
+  ungrab_object();
 
   m_physic.enable_gravity(true);
   m_physic.set_velocity(0, 0);
   m_physic.set_acceleration(0, 0);
 
-  if ((m_controller->hold(Control::JUMP)) || (m_controller->hold(Control::UP))) {
+  if (m_controller->hold(Control::JUMP)) {
+    m_on_ground_flag = true;
+    m_jump_early_apex = false;
+    do_jump(m_player_status.bonus == BonusType::AIR_BONUS ? -540.0f : -480.0f);
+  }
+  else if (m_controller->hold(Control::UP)) {
     m_on_ground_flag = true;
     // TODO: This won't help. Why?
     do_jump(-300);
@@ -1749,7 +2203,7 @@ Player::handle_input_climbing()
     m_dir = Direction::RIGHT;
     vx += MAX_CLIMB_XM;
   }
-  if (m_controller->hold(Control::UP)) {
+  if (m_controller->hold(Control::UP) && m_col.m_bbox.get_top() > m_climbing->get_bbox().get_top()) {
     vy -= MAX_CLIMB_YM;
   }
   if (m_controller->hold(Control::DOWN)) {
@@ -1860,6 +2314,32 @@ Player::handle_jump_helper()
   {
     jump_helper_draw = false;
   }
+}
+
+void
+Player::sideways_push(float delta)
+{
+  m_boost = delta;
+}
+
+void
+Player::ungrab_object(GameObject* gameobject)
+{
+  if (!m_grabbed_object)
+    return;
+
+  // If gameobject is not null, then the function was called from the
+  // ObjectRemoveListener.
+  if (!gameobject)
+    m_grabbed_object->ungrab(*this, m_dir);
+
+  GameObject* go = dynamic_cast<GameObject*>(m_grabbed_object);
+
+  if (go && m_grabbed_object_remove_listener)
+    go->del_remove_listener(m_grabbed_object_remove_listener.get());
+
+  m_grabbed_object = nullptr;
+>>>>>>> v0.6.3
 }
 
 /* EOF */

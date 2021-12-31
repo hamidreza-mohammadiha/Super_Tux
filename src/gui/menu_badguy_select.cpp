@@ -19,6 +19,7 @@
 #include "gui/dialog.hpp"
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
+#include "gui/menu_list.hpp"
 
 std::vector<std::string> BadguySelectMenu::all_badguys;
 
@@ -54,7 +55,6 @@ BadguySelectMenu::BadguySelectMenu(std::vector<std::string>* badguys_) :
     all_badguys.push_back("mole");
     all_badguys.push_back("mole_rock");
     all_badguys.push_back("mrbomb");
-    all_badguys.push_back("mrcandle");
     all_badguys.push_back("mriceblock");
     all_badguys.push_back("mrtree");
     all_badguys.push_back("owl");
@@ -75,6 +75,7 @@ BadguySelectMenu::BadguySelectMenu(std::vector<std::string>* badguys_) :
     all_badguys.push_back("stumpy");
     all_badguys.push_back("toad");
     all_badguys.push_back("totem");
+    all_badguys.push_back("walking_candle");
     all_badguys.push_back("walkingleaf");
     all_badguys.push_back("willowisp");
     all_badguys.push_back("yeti");
@@ -92,7 +93,7 @@ BadguySelectMenu::refresh_menu()
 
   add_label(_("List of enemies"));
   add_hl();
-  add_string_select(-2, _("Enemy"), &selected, all_badguys);
+  add_entry(-2, _("Select enemy"));
   add_entry(-3, _("Add"));
   add_hl();
 
@@ -138,6 +139,8 @@ BadguySelectMenu::menu_action(MenuItem& item)
     });
     dialog->add_cancel_button(_("No"));
     MenuManager::instance().set_dialog(std::move(dialog));
+  } else if (item.get_id() == -2) {
+    MenuManager::instance().push_menu(std::make_unique<ListMenu>(all_badguys, &selected));
   } else if (item.get_id() == -3) {
     add_badguy();
   }

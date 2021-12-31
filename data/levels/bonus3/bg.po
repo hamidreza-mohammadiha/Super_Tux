@@ -1,15 +1,17 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the SuperTux package.
 # 
 # Translators:
 # Любомир Василев, 2015-2016
+# Любомир Василев, 2018-2019
+# Любомир Василев, 2021
 msgid ""
 msgstr ""
 "Project-Id-Version: SuperTux\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-04 15:35+0200\n"
-"PO-Revision-Date: 2016-05-12 14:09+0000\n"
+"Report-Msgid-Bugs-To: https://github.com/SuperTux/supertux/issues\n"
+"POT-Creation-Date: 2021-12-12 20:05+0100\n"
+"PO-Revision-Date: 2021-12-13 07:19+0000\n"
 "Last-Translator: Любомир Василев\n"
 "Language-Team: Bulgarian (http://www.transifex.com/arctic-games/supertux/language/bg/)\n"
 "MIME-Version: 1.0\n"
@@ -19,8 +21,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: data/levels/bonus3/-89-2_degrees.stl:3
-msgid "-89,2 degrees"
-msgstr "-89,2 градуса"
+msgid "The Level Formely Known As \"-89,2 Degrees\""
+msgstr "Нивото, познато преди като „-89,2 градуса“"
 
 #: data/levels/bonus3/Global_Warming.stl:3
 msgid "Global Warming"
@@ -39,14 +41,14 @@ msgid "Another cold day"
 msgstr "Още един студен ден"
 
 #: data/levels/bonus3/antarctic_rain.stl:3
-msgid "Antarctic rain"
-msgstr "Антарктически влак"
+msgid "Forest Rain (aka \"Antarctic Rain\")"
+msgstr "Горски дъжд (още познато като „Антарктически дъжд“)"
 
 #: data/levels/bonus3/but_no_one_can_stop_it.stl:3
 msgid "...but no one can stop it..."
 msgstr "…но никой не може да го спре…"
 
-#: data/levels/bonus3/but_no_one_can_stop_it.stl:393
+#: data/levels/bonus3/but_no_one_can_stop_it.stl:428
 msgid ""
 "-Sorry, this flying platform is lazy.\n"
 "-Come back another time."
@@ -68,7 +70,7 @@ msgstr "Пещерен бяг"
 msgid "Cold Cavern"
 msgstr "Студена пещера"
 
-#: data/levels/bonus3/cavern_v2.stl:50
+#: data/levels/bonus3/cavern_v2.stl:47
 msgid ""
 "#Good job! You kept the red lantern! You didn't need to though, but just "
 "because you did, have 100 coins!"
@@ -127,6 +129,10 @@ msgstr "Слизане"
 msgid "Entering the castle"
 msgstr "Влизане в замъка"
 
+#: data/levels/bonus3/entering_castle.stl:60
+msgid "#Sorry, nothing to see here! Use the rope to get out!"
+msgstr "#Съжаляваме, но тук няма нищо за гледане) Използвай въжето, за да се измъкнеш!"
+
 #: data/levels/bonus3/flowers.stl:3
 msgid "Flower Bonus"
 msgstr "Цветно допълнение"
@@ -167,13 +173,13 @@ msgstr "Дупки, един ден на леда"
 msgid "The Toilette zone"
 msgstr "Тоалетната област"
 
-#: data/levels/bonus3/niv-3.stl:29
+#: data/levels/bonus3/niv-3.stl:58
 msgid ""
 "- Flush: \n"
 "#Press the up key to flush! "
 msgstr "- Измиване: \n#Натисни НАГОРЕ, за да пуснеш водата! "
 
-#: data/levels/bonus3/niv-3.stl:216
+#: data/levels/bonus3/niv-3.stl:380
 msgid ""
 "- A Way out?\n"
 "#Let's Jump! "
@@ -219,14 +225,6 @@ msgstr "Под леда"
 msgid "Bonus Island III"
 msgstr "Допълнителен остров 3"
 
-#: data/levels/bonus3/worldmap.stwm:12
-msgid "You found a secret place!"
-msgstr "Ти откри тайно място!"
-
-#: data/levels/bonus3/worldmap.stwm:20
-msgid "Congratulations... you found the secret pathway!"
-msgstr "Поздравления… ти откри тайния проход!"
-
-#: data/levels/bonus3/worldmap.stwm:78 data/levels/bonus3/worldmap.stwm:86
+#: data/levels/bonus3/worldmap.stwm:273
 msgid "Go Home"
 msgstr "Към къщи"

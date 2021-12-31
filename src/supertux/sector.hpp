@@ -21,9 +21,12 @@
 #include <stdint.h>
 
 #include "math/anchor_point.hpp"
+#include "math/easing.hpp"
+#include "math/fwd.hpp"
 #include "squirrel/squirrel_environment.hpp"
 #include "supertux/d_scope.hpp"
 #include "supertux/game_object_manager.hpp"
+#include "supertux/tile.hpp"
 #include "video/color.hpp"
 
 namespace collision {
@@ -32,6 +35,7 @@ class Constraints;
 
 class Camera;
 class CollisionSystem;
+class CollisionGroundMovementManager;
 class DisplayEffect;
 class DrawingContext;
 class Level;
@@ -41,7 +45,6 @@ class ReaderMapping;
 class Rectf;
 class Size;
 class TileMap;
-class Vector;
 class Writer;
 
 /** Represents one of (potentially) multiple, separate parts of a Level.
@@ -62,7 +65,7 @@ public:
 
 public:
   Sector(Level& parent);
-  ~Sector();
+  ~Sector() override;
 
   /** Needs to be called after parsing to finish the construction of
       the Sector before using it. */
@@ -96,7 +99,7 @@ public:
 
   /** Checks if the specified rectangle is free of (solid) tiles.
       Note that this does not include static objects, e.g. bonus blocks. */
-  bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false) const;
+  bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false, uint32_t tiletype = Tile::SOLID) const;
 
   /** Checks if the specified rectangle is free of both
       1.) solid tiles and
@@ -110,7 +113,7 @@ public:
       This includes badguys and players. */
   bool is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_object = nullptr) const;
 
-  bool free_line_of_sight(const Vector& line_start, const Vector& line_end, const MovingObject* ignore_object = nullptr) const;
+  bool free_line_of_sight(const Vector& line_start, const Vector& line_end, bool ignore_objects = false, const MovingObject* ignore_object = nullptr) const;
   bool can_see_player(const Vector& eye) const;
 
   Player* get_nearest_player (const Vector& pos) const;

@@ -17,6 +17,8 @@
 #ifndef HEADER_SUPERTUX_SUPERTUX_GAMECONFIG_HPP
 #define HEADER_SUPERTUX_SUPERTUX_GAMECONFIG_HPP
 
+#include "config.h"
+
 #include "control/joystick_config.hpp"
 #include "control/keyboard_config.hpp"
 #include "math/size.hpp"
@@ -52,6 +54,11 @@ public:
   /** the aspect ratio */
   Size aspect_size;
 
+#ifdef __EMSCRIPTEN__
+  /** @deprecated Whether to automatically resize the game when the browser is resized */
+  bool fit_window;
+#endif
+
   float magnification;
 
   bool use_fullscreen;
@@ -59,6 +66,7 @@ public:
   bool try_vsync;
   bool show_fps;
   bool show_player_pos;
+  bool show_controller;
   bool sound_enabled;
   bool music_enabled;
   int sound_volume;
@@ -82,6 +90,10 @@ public:
   KeyboardConfig keyboard_config;
   JoystickConfig joystick_config;
 
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  bool mobile_controls;
+#endif
+
   struct Addon
   {
     std::string id;
@@ -94,6 +106,21 @@ public:
   bool transitions_enabled;
   bool confirmation_dialog;
   bool pause_on_focusloss;
+  bool custom_mouse_cursor;
+
+#ifdef ENABLE_DISCORD
+  bool enable_discord;
+#endif
+  bool hide_editor_levelnames;
+
+  int editor_selected_snap_grid_size;
+  bool editor_render_grid;
+  bool editor_snap_to_grid;
+  bool editor_render_background;
+  bool editor_render_lighting;
+  bool editor_autotile_mode;
+  bool editor_autotile_help;
+  int editor_autosave_frequency;
 
   std::string repository_url;
 

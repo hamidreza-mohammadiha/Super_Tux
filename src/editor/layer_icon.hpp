@@ -18,17 +18,18 @@
 #define HEADER_SUPERTUX_EDITOR_LAYER_ICON_HPP
 
 #include "editor/object_icon.hpp"
+#include "math/fwd.hpp"
 
 class GameObject;
-class Vector;
 
 class LayerIcon : public ObjectIcon
 {
 public:
   LayerIcon(GameObject* layer);
-  virtual ~LayerIcon() {}
+  ~LayerIcon() override {}
 
   virtual void draw(DrawingContext& context, const Vector& pos) override;
+  virtual void draw(DrawingContext& context, const Vector& pos, int pixels_shown) override;
 
   int get_zpos() const;
   bool is_valid() const;

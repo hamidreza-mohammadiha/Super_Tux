@@ -17,6 +17,8 @@
 #include "editor/object_option.hpp"
 
 #include <string>
+#include <utility>
+
 #include <vector>
 #include <sstream>
 
@@ -55,7 +57,7 @@ BoolObjectOption::BoolObjectOption(const std::string& text, bool* pointer, const
                                    unsigned int flags) :
   ObjectOption(text, key, flags),
   m_pointer(pointer),
-  m_default_value(default_value)
+  m_default_value(std::move(default_value))
 {
 }
 
@@ -88,7 +90,7 @@ IntObjectOption::IntObjectOption(const std::string& text, int* pointer, const st
                                  unsigned int flags) :
   ObjectOption(text, key, flags),
   m_pointer(pointer),
-  m_default_value(default_value)
+  m_default_value(std::move(default_value))
 {
 }
 
@@ -114,6 +116,29 @@ void
 IntObjectOption::add_to_menu(Menu& menu) const
 {
   menu.add_intfield(get_text(), m_pointer);
+}
+
+LabelObjectOption::LabelObjectOption(const std::string& text,
+                                 unsigned int flags) :
+  ObjectOption(text, "", flags)
+{
+}
+
+void
+LabelObjectOption::save(Writer& writer) const
+{
+}
+
+std::string
+LabelObjectOption::to_string() const
+{
+  return "";
+}
+
+void
+LabelObjectOption::add_to_menu(Menu& menu) const
+{
+  menu.add_label(m_text);
 }
 
 RectfObjectOption::RectfObjectOption(const std::string& text, Rectf* pointer, const std::string& key,
@@ -154,7 +179,7 @@ FloatObjectOption::FloatObjectOption(const std::string& text, float* pointer, co
                                      unsigned int flags) :
   ObjectOption(text, key, flags),
   m_pointer(pointer),
-  m_default_value(default_value)
+  m_default_value(std::move(default_value))
 {
 }
 
@@ -222,7 +247,7 @@ StringSelectObjectOption::StringSelectObjectOption(const std::string& text, int*
   ObjectOption(text, key, flags),
   m_pointer(pointer),
   m_select(select),
-  m_default_value(default_value)
+  m_default_value(std::move(default_value))
 {
 }
 
@@ -268,7 +293,7 @@ EnumObjectOption::EnumObjectOption(const std::string& text, int* pointer,
   m_pointer(pointer),
   m_labels(labels),
   m_symbols(symbols),
-  m_default_value(default_value)
+  m_default_value(std::move(default_value))
 {
 }
 
@@ -497,10 +522,11 @@ PathObjectOption::add_to_menu(Menu& menu) const
 {
 }
 
-PathRefObjectOption::PathRefObjectOption(const std::string& text, const std::string& path_ref, const std::string& key,
-                                   unsigned int flags) :
+PathRefObjectOption::PathRefObjectOption(const std::string& text, PathObject& target, const std::string& path_ref,
+                                         const std::string& key, unsigned int flags) :
   ObjectOption(text, key, flags),
-  m_path_ref(path_ref)
+  m_path_ref(path_ref),
+  m_target(target)
 {
 }
 
@@ -521,6 +547,7 @@ PathRefObjectOption::to_string() const
 void
 PathRefObjectOption::add_to_menu(Menu& menu) const
 {
+  menu.add_path_settings(m_text, m_target, m_path_ref);
 }
 
 SExpObjectOption::SExpObjectOption(const std::string& text, const std::string& key, sexp::Value& value,
@@ -564,6 +591,58 @@ void
 RemoveObjectOption::add_to_menu(Menu& menu) const
 {
   menu.add_entry(ObjectMenu::MNID_REMOVE, get_text());
+}
+
+TestFromHereOption::TestFromHereOption() :
+  ObjectOption(_("Test from here"), "", 0)
+{
+}
+
+std::string
+TestFromHereOption::to_string() const
+{
+  return {};
+}
+
+void
+TestFromHereOption::add_to_menu(Menu& menu) const
+{
+  menu.add_entry(ObjectMenu::MNID_TEST_FROM_HERE, get_text());
+}
+
+ParticleEditorOption::ParticleEditorOption() :
+  ObjectOption(_("Open Particle Editor"), "", 0)
+{
+}
+
+std::string
+ParticleEditorOption::to_string() const
+{
+  return {};
+}
+
+void
+ParticleEditorOption::add_to_menu(Menu& menu) const
+{
+  menu.add_entry(ObjectMenu::MNID_OPEN_PARTICLE_EDITOR, get_text());
+}
+
+ButtonOption::ButtonOption(const std::string& text, std::function<void()> callback) :
+  ObjectOption(text, "", 0),
+  m_callback(std::move(callback))
+{
+}
+
+std::string
+ButtonOption::to_string() const
+{
+  return {};
+}
+
+void
+ButtonOption::add_to_menu(Menu& menu) const
+{
+  menu.add_entry(get_text(), m_callback);
 }
 
 /* EOF */

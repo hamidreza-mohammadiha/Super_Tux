@@ -18,15 +18,21 @@
 #define HEADER_SUPERTUX_OBJECT_DECAL_HPP
 
 #include "object/moving_sprite.hpp"
+#include "scripting/decal.hpp"
+#include "squirrel/exposed_object.hpp"
+#include "supertux/timer.hpp"
 
 class ReaderMapping;
 
 /** A decorative image, perhaps part of the terrain */
-class Decal final : public MovingSprite
+class Decal final : public MovingSprite,
+                    public ExposedObject<Decal, scripting::Decal>
 {
+  friend class FlipLevelTransformer;
+
 public:
   Decal(const ReaderMapping& reader);
-  virtual ~Decal();
+  ~Decal() override;
 
   virtual HitResponse collision(GameObject& , const CollisionHit& ) override { return FORCE_MOVE; }
 
@@ -35,9 +41,26 @@ public:
 
   virtual ObjectSettings get_settings() override;
 
+  virtual void draw(DrawingContext& context) override;
+  virtual void update(float dt_sec) override;
+
+  virtual void on_flip(float height) override;
+
+  void fade_in(float fade_time);
+  void fade_out(float fade_time);
+  void fade_sprite(const std::string& new_sprite, float fade_time);
+
+  void set_visible(bool v) { m_visible = v; }
+  bool is_visible() const { return m_visible; }
+
 private:
-  std::string default_action;
-  bool solid;
+  std::string m_default_action;
+  bool m_solid;
+  Flip m_flip;
+  SpritePtr m_fade_sprite;
+  Timer m_fade_timer;
+  Timer m_sprite_timer;
+  bool m_visible;
 
 private:
   Decal(const Decal&) = delete;

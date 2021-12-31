@@ -24,7 +24,7 @@
 ObjectIcon::ObjectIcon(const std::string& object_class, const std::string& icon) :
   m_object_class(object_class),
   m_surface(Surface::from_file(icon)),
-  m_offset()
+  m_offset(0.0f, 0.0f)
 {
   calculate_offset();
 }
@@ -32,7 +32,7 @@ ObjectIcon::ObjectIcon(const std::string& object_class, const std::string& icon)
 ObjectIcon::ObjectIcon(const ReaderMapping& reader) :
   m_object_class(),
   m_surface(),
-  m_offset()
+  m_offset(0.0f, 0.0f)
 {
   std::string icon = "images/engine/icons/supertux.png";
   reader.get("class", m_object_class);
@@ -65,7 +65,26 @@ void
 ObjectIcon::draw(DrawingContext& context, const Vector& pos)
 {
   context.color().draw_surface_scaled(m_surface,
-                                      Rectf(pos + m_offset, pos + Vector(32,32) - m_offset), LAYER_GUI - 9);
+                                      Rectf(
+                                        pos + m_offset,
+                                        pos + Vector(32, 32) - m_offset
+                                      ),
+                                      LAYER_GUI - 9);
+}
+
+void
+ObjectIcon::draw(DrawingContext& context, const Vector& pos, int pixels_shown)
+{
+  auto cropped_surface = m_surface->region(Rect(32 - pixels_shown,
+                                                0,
+                                                32,
+                                                32));
+  context.color().draw_surface_scaled(cropped_surface,
+                                      Rectf(
+                                        pos + Vector(static_cast<float>(32 - pixels_shown), 0) + m_offset,
+                                        pos + Vector(32, 32) - m_offset
+                                      ),
+                                      LAYER_GUI - 9);
 }
 
 /* EOF */

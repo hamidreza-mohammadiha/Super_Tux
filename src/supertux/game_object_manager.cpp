@@ -69,6 +69,30 @@ GameObjectManager::process_resolve_requests()
   m_name_resolve_requests.clear();
 }
 
+void
+GameObjectManager::try_process_resolve_requests()
+{
+  assert(m_gameobjects_new.empty());
+  std::vector<GameObjectManager::NameResolveRequest> new_list;
+
+  for (const auto& request : m_name_resolve_requests)
+  {
+    auto* object = get_object_by_name<GameObject>(request.name);
+    if (!object)
+    {
+      // Unlike process_resolve_requests(), we just keep that one in mind
+      new_list.push_back(request);
+    }
+    else
+    {
+      request.callback(object->get_uid());
+    }
+  }
+
+  m_name_resolve_requests.clear();
+  m_name_resolve_requests.assign(new_list.begin(), new_list.end());
+}
+
 const std::vector<std::unique_ptr<GameObject> >&
 GameObjectManager::get_objects() const
 {
@@ -174,18 +198,30 @@ GameObjectManager::flush_game_objects()
       }
     }
   }
+  update_solids();
+}
 
-  { // update solid_tilemaps list
-    m_solid_tilemaps.clear();
-    for (const auto& obj : m_gameobjects)
-    {
-      const auto& tm = dynamic_cast<TileMap*>(obj.get());
-      if (!tm) continue;
-      if (tm->is_solid()) m_solid_tilemaps.push_back(tm);
-    }
+void
+GameObjectManager::update_solids() 
+{
+  m_solid_tilemaps.clear();
+  for (auto tilemap : get_objects_by_type_index(typeid(TileMap)))
+  {
+    TileMap* tm = static_cast<TileMap*>(tilemap);
+    if (tm->is_solid()) m_solid_tilemaps.push_back(tm);
   }
 }
 
+void 
+GameObjectManager::update_solid(TileMap* tm) {
+  auto it = std::find(m_solid_tilemaps.begin(), m_solid_tilemaps.end(), tm);
+  bool found = it != m_solid_tilemaps.end();
+  if (tm->is_solid() && !found) {
+    m_solid_tilemaps.push_back(tm);
+  } else if(!tm->is_solid() && found) {
+    m_solid_tilemaps.erase(it);
+  }
+}
 void
 GameObjectManager::this_before_object_add(GameObject& object)
 {

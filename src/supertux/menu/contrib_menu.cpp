@@ -19,6 +19,7 @@
 #include <physfs.h>
 #include <sstream>
 
+#include "gui/item_action.hpp"
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
 #include "physfs/util.hpp"
@@ -114,15 +115,9 @@ ContribMenu::ContribMenu() :
 
           std::ostringstream title;
           title << "[" << world->get_title() << "]";
-          if (level_count == 0)
-          {
-            title << " " << _("*NEW*");
-          }
-          else
-          {
-            title << " (" << solved_count << "/" << level_count << ")";
-          }
-          add_entry(i++, title.str());
+          std::ostringstream desc;
+          desc << world->get_description();
+          add_entry(i++, title.str()).set_help(desc.str());
           m_contrib_worlds.push_back(std::move(world));
         }
         else if (world->is_worldmap())
@@ -145,15 +140,9 @@ ContribMenu::ContribMenu() :
 
           std::ostringstream title;
           title << world->get_title();
-          if (level_count == 0)
-          {
-            title << " " << _("*NEW*");
-          }
-          else
-          {
-            title << " (" << solved_count << "/" << level_count << ")";
-          }
-          add_entry(i++, title.str());
+          std::ostringstream desc;
+          desc << world->get_description();
+          add_entry(i++, title.str()).set_help(desc.str());
           m_contrib_worlds.push_back(std::move(world));
         }
         else

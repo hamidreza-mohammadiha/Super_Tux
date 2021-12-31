@@ -23,14 +23,12 @@
 #include "math/util.hpp"
 #include "object/sprite_particle.hpp"
 #include "sprite/sprite.hpp"
-#include "sprite/sprite_manager.hpp"
 #include "supertux/sector.hpp"
 
 Iceflame::Iceflame(const ReaderMapping& reader) :
-  Flame(reader)
+  Flame(reader, "images/creatures/flame/iceflame.sprite")
 {
   m_lightsprite->set_color(Color(0.00f, 0.13f, 0.18f));
-  m_sprite = SpriteManager::current()->create("images/creatures/flame/iceflame.sprite");
 }
 
 void
@@ -45,7 +43,7 @@ Iceflame::ignite()
 {
   SoundManager::current()->play("sounds/sizzle.ogg", get_pos());
   m_sprite->set_action("fade", 1);
-  Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
+  Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                          "default",
                                          m_col.m_bbox.get_middle(), ANCHOR_MIDDLE,
                                          Vector(0, -150), Vector(0,0),

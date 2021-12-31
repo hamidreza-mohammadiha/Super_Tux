@@ -31,12 +31,15 @@ public:
   virtual void ignite() override;
 
   virtual void active_update(float dt_sec) override;
+  virtual void deactivate() override;
 
   virtual bool is_freezable() const override;
   virtual void freeze() override;
 
   virtual void stop_looping_sounds() override;
   virtual void play_looping_sounds() override;
+
+  virtual HitResponse collision_badguy(BadGuy& badguy, const CollisionHit& hit) override;
 
   virtual std::string get_class() const override { return "haywire"; }
   virtual std::string get_display_name() const override { return _("Haywire"); }
@@ -56,6 +59,8 @@ private:
 
   std::unique_ptr<SoundSource> ticking;
   std::unique_ptr<SoundSource> grunting;
+  
+  Timer stomped_timer;
 
 private:
   Haywire(const Haywire&) = delete;

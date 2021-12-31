@@ -123,21 +123,27 @@ Camera::Camera(const std::string& name) :
   m_mode(Mode::NORMAL),
   m_defaultmode(Mode::NORMAL),
   m_screen_size(SCREEN_WIDTH, SCREEN_HEIGHT),
-  m_translation(),
+  m_translation(0.0f, 0.0f),
   m_lookahead_mode(LookaheadMode::NONE),
   m_changetime(),
-  m_lookahead_pos(),
-  m_peek_pos(),
-  m_cached_translation(),
+  m_lookahead_pos(0.0f, 0.0f),
+  m_peek_pos(0.0f, 0.0f),
+  m_cached_translation(0.0f, 0.0f),
   m_shaketimer(),
   m_shakespeed(),
   m_shakedepth_x(),
   m_shakedepth_y(),
-  m_scroll_from(),
-  m_scroll_goal(),
+  m_scroll_from(0.0f, 0.0f),
+  m_scroll_goal(0.0f, 0.0f),
   m_scroll_to_pos(),
   m_scrollspeed(),
-  m_config(std::make_unique<CameraConfig>())
+  m_config(std::make_unique<CameraConfig>()),
+  m_scale(1.f),
+  m_scale_origin(1.f),
+  m_scale_target(1.f),
+  m_scale_time_total(0.f),
+  m_scale_time_remaining(0.f),
+  m_scale_easing()
 {
   reload_config();
 }
@@ -148,21 +154,27 @@ Camera::Camera(const ReaderMapping& reader) :
   m_mode(Mode::NORMAL),
   m_defaultmode(Mode::NORMAL),
   m_screen_size(SCREEN_WIDTH, SCREEN_HEIGHT),
-  m_translation(),
+  m_translation(0.0f, 0.0f),
   m_lookahead_mode(LookaheadMode::NONE),
   m_changetime(),
-  m_lookahead_pos(),
-  m_peek_pos(),
-  m_cached_translation(),
+  m_lookahead_pos(0.0f, 0.0f),
+  m_peek_pos(0.0f, 0.0f),
+  m_cached_translation(0.0f, 0.0f),
   m_shaketimer(),
   m_shakespeed(),
   m_shakedepth_x(),
   m_shakedepth_y(),
-  m_scroll_from(),
-  m_scroll_goal(),
+  m_scroll_from(0.0f, 0.0f),
+  m_scroll_goal(0.0f, 0.0f),
   m_scroll_to_pos(),
   m_scrollspeed(),
-  m_config(std::make_unique<CameraConfig>())
+  m_config(std::make_unique<CameraConfig>()),
+  m_scale(1.f),
+  m_scale_origin(1.f),
+  m_scale_target(1.f),
+  m_scale_time_total(0.f),
+  m_scale_time_remaining(0.f),
+  m_scale_easing()
 {
   std::string modename;
 
@@ -209,10 +221,11 @@ Camera::get_settings()
                   {"normal", "manual", "autoscroll"},
                   {}, "mode");
 
-  result.add_path_ref(_("Path"), get_path_ref(), "path-ref");
+  result.add_path_ref(_("Path"), *this, get_path_ref(), "path-ref");
 
   if (get_walker() && get_path()->is_valid()) {
     result.add_walk_mode(_("Path Mode"), &get_path()->m_mode, {}, {});
+    result.add_bool(_("Adapt Speed"), &get_path()->m_adapt_speed, {}, {});
   }
 
   return result;
@@ -224,6 +237,11 @@ Camera::after_editor_set()
   if (get_walker() && get_path()->is_valid()) {
     if (m_defaultmode != Mode::AUTOSCROLL) {
       get_path()->m_nodes.clear();
+      auto path_obj = get_path_gameobject();
+      if(path_obj != nullptr)
+      {
+        path_obj->editor_delete();
+      }
     }
   } else {
     if (m_defaultmode == Mode::AUTOSCROLL) {
@@ -232,10 +250,11 @@ Camera::after_editor_set()
   }
 }
 
-const Vector&
+const Vector
 Camera::get_translation() const
 {
-  return m_translation;
+  Vector screen_size = Sizef(m_screen_size).as_vector();
+  return m_translation + ((screen_size * (m_scale - 1.f)) / 2.f);
 }
 
 void
@@ -263,6 +282,14 @@ Camera::shake(float duration, float x, float y)
 void
 Camera::scroll_to(const Vector& goal, float scrolltime)
 {
+  if(scrolltime == 0.0f)
+  {
+    m_translation.x = goal.x;
+    m_translation.y = goal.y;
+    m_mode = Mode::MANUAL;
+    return;
+  }
+
   m_scroll_from = m_translation;
   m_scroll_goal = goal;
   keep_in_bounds(m_scroll_goal);
@@ -297,6 +324,7 @@ Camera::update(float dt_sec)
     default:
       break;
   }
+  update_scale(dt_sec);
   shake();
 }
 
@@ -345,7 +373,7 @@ Camera::update_scroll_normal(float dt_sec)
   const auto& config_ = *(m_config);
   Player& player = d_sector->get_player();
   // TODO: co-op mode needs a good camera
-  Vector player_pos(player.get_bbox().get_middle().x,
+  Vector player_pos(player.get_bbox().get_left(),
                                     player.get_bbox().get_bottom());
   static Vector last_player_pos = player_pos;
   Vector player_delta = player_pos - last_player_pos;
@@ -365,9 +393,9 @@ Camera::update_scroll_normal(float dt_sec)
     m_cached_translation.y = player_pos.y - static_cast<float>(m_screen_size.height) * config_.target_y;
   }
   if (ymode == 2) {
-    // target_y is the high we target our scrolling at. This is not always the
-    // high of the player, but if he is jumping upwards we should use the
-    // position where he last touched the ground. (this probably needs
+    // target_y is the height we target our scrolling at. This is not always the
+    // height of the player: while jumping upwards, we should use the
+    // position where they last touched the ground. (this probably needs
     // exceptions for trampolines and similar things in the future)
     float target_y;
     if (player.m_fall_mode == Player::JUMPING)
@@ -516,7 +544,7 @@ Camera::update_scroll_normal(float dt_sec)
 
       m_changetime = -1;
     } else if (m_lookahead_mode != walkDirection) {
-      /* player changed direction while camera was scrolling...
+      /* Tux changed direction while camera was scrolling...
        * he has to do this for a certain time to add robustness against
        * sudden changes */
       if (m_changetime < 0) {
@@ -584,6 +612,13 @@ Camera::update_scroll_normal(float dt_sec)
       if (m_lookahead_pos.x < LEFTEND) {
         m_lookahead_pos.x = LEFTEND;
       }
+    }
+
+    if (m_lookahead_pos.x > RIGHTEND) {
+      m_lookahead_pos.x = RIGHTEND;
+    }
+    if (m_lookahead_pos.x < LEFTEND) {
+      m_lookahead_pos.x = LEFTEND;
     }
 
     // adjust for level ends
@@ -666,6 +701,50 @@ Camera::update_scroll_to(float dt_sec)
   }
 
   m_translation = m_scroll_from + (m_scroll_goal - m_scroll_from) * m_scroll_to_pos;
+}
+
+void
+Camera::update_scale(float dt_sec)
+{
+  if (m_scale_time_remaining > 0.f)
+  {
+    m_scale_time_remaining -= dt_sec;
+
+    if (m_scale_time_remaining <= 0.f)
+    {
+      m_scale = m_scale_target;
+      m_scale_time_remaining = 0.f;
+    }
+    else
+    {
+      float progress = (m_scale_time_total - m_scale_time_remaining)
+                                                          / m_scale_time_total;
+      float true_progress = static_cast<float>(m_scale_easing(
+                                               static_cast<double>(progress)));
+      m_scale = m_scale_origin +
+                             (m_scale_target - m_scale_origin) * true_progress;
+    }
+
+    // Re-center camera when zooming
+    m_lookahead_pos /= 1.01f;
+  }
+
+  Vector screen_size = Sizef(m_screen_size).as_vector();
+  m_translation += screen_size * (1.f - m_scale) / 2.f;
+}
+
+void
+Camera::ease_scale(float scale, float time, easing ease)
+{
+  if (time <= 0.f) {
+    m_scale = scale;
+  } else {
+    m_scale_origin = m_scale;
+    m_scale_target = scale;
+    m_scale_time_total = time;
+    m_scale_time_remaining = time;
+    m_scale_easing = ease;
+  }
 }
 
 Vector

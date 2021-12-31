@@ -27,11 +27,13 @@ class PneumaticPlatformChild final : public MovingSprite
 
 public:
   PneumaticPlatformChild(const ReaderMapping& reader, bool left, PneumaticPlatform& parent);
-  virtual ~PneumaticPlatformChild();
+  ~PneumaticPlatformChild() override;
 
   virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
   virtual void update(float dt_sec) override;
   virtual bool is_saveable() const override { return false; }
+
+  virtual void editor_delete() override;
 
 protected:
   PneumaticPlatform& m_parent;
@@ -51,13 +53,14 @@ class PneumaticPlatform final : public GameObject
 
 public:
   PneumaticPlatform(const ReaderMapping& mapping);
-  virtual ~PneumaticPlatform();
+  ~PneumaticPlatform() override;
 
   virtual void draw(DrawingContext& context) override;
   virtual void update(float dt_sec) override;
+  virtual void on_flip(float height) override;
 
   virtual std::string get_class() const override { return "pneumatic-platform"; }
-  virtual std::string get_display_name() const override { return _("Pneumatic platform"); }
+  virtual std::string get_display_name() const override { return _("Pneumatic Platform"); }
 
   virtual ObjectSettings get_settings() override;
   virtual void after_editor_set() override;

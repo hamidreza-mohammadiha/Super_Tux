@@ -1,156 +1,110 @@
 (supertux-sprite
  (action
   (name "small-stop")
-  (hitbox 5 20 0 0)
+  (hitbox 4 20 0 0)
   (images "smalltux.png")
  )
  (action
   (name "small-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux.png"
-          "smalltux1.png"
-          "smalltux2.png"
-          "smalltux3.png"
-          "smalltux4.png"
-          "smalltux5.png"
-          "smalltux6.png"
-          "smalltux7.png"
-          "smalltux8.png"
-          "smalltux6.png"
-          "smalltux5.png"
-          "smalltux4.png"
-          "smalltux3.png"
-          "smalltux2.png"
-          "smalltux1.png"
-          "smalltux.png"
-
-)
+  (hitbox 4 20 0 0)
+  (fps 15)
+  (images "smalltuxwalk1.png"
+"smalltuxwalk2.png"
+"smalltuxwalk3.png"
+"smalltuxwalk4.png"
+"smalltuxwalk5.png"
+"smalltuxwalk6.png"
+"smalltuxwalk7.png"
+"smalltuxwalk8.png")
  )
  (action
   (name "large-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux.png"
-          "smalltux1.png"
-          "smalltux2.png"
-          "smalltux3.png"
-          "smalltux4.png"
-          "smalltux5.png"
-          "smalltux6.png"
-          "smalltux7.png"
-          "smalltux8.png"
-          "smalltux6.png"
-          "smalltux5.png"
-          "smalltux4.png"
-          "smalltux3.png"
-          "smalltux2.png"
-          "smalltux1.png"
-          "smalltux.png"
-)
+  (hitbox 4 20 0 0)
+  (fps 15)
+  (images "tuxwalk1.png"
+"tuxwalk2.png"
+"tuxwalk3.png"
+"tuxwalk4.png"
+"tuxwalk5.png"
+"tuxwalk6.png"
+"tuxwalk7.png"
+"tuxwalk8.png")
  )
  (action
   (name "large-stop")
-  (hitbox 5 20 0 0)
-  (images "smalltux.png")
+  (hitbox 4 20 0 0)
+  (images "tux.png")
  )
  (action
   (name "fire-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux_fire.png"
-          "smalltux1_fire.png"
-          "smalltux2_fire.png"
-          "smalltux3_fire.png"
-          "smalltux4_fire.png"
-          "smalltux5_fire.png"
-          "smalltux6_fire.png"
-          "smalltux7_fire.png"
-          "smalltux8_fire.png"
-          "smalltux6_fire.png"
-          "smalltux5_fire.png"
-          "smalltux4_fire.png"
-          "smalltux3_fire.png"
-          "smalltux2_fire.png"
-          "smalltux1_fire.png"
-          "smalltux_fire.png")
+  (hitbox 4 20 0 0)
+  (fps 15)
+  (images "firetuxwalk1.png"
+"firetuxwalk2.png"
+"firetuxwalk3.png"
+"firetuxwalk4.png"
+"firetuxwalk5.png"
+"firetuxwalk6.png"
+"firetuxwalk7.png"
+"firetuxwalk8.png")
  )
  (action
   (name "fire-stop")
-  (hitbox 5 20 0 0)
-  (images "smalltux_fire.png")
+  (hitbox 4 20 0 0)
+  (images "firetux.png")
  )
   (action
   (name "ice-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux_ice.png"
-          "smalltux1_ice.png"
-          "smalltux2_ice.png"
-          "smalltux3_ice.png"
-          "smalltux4_ice.png"
-          "smalltux5_ice.png"
-          "smalltux6_ice.png"
-          "smalltux7_ice.png"
-          "smalltux8_ice.png"
-          "smalltux6_ice.png"
-          "smalltux5_ice.png"
-          "smalltux4_ice.png"
-          "smalltux3_ice.png"
-          "smalltux2_ice.png"
-          "smalltux1_ice.png"
-          "smalltux_ice.png")
+  (hitbox 4 20 0 0)
+  (fps 15)
+  (images "icetuxwalk1.png"
+"icetuxwalk2.png"
+"icetuxwalk3.png"
+"icetuxwalk4.png"
+"icetuxwalk5.png"
+"icetuxwalk6.png"
+"icetuxwalk7.png"
+"icetuxwalk8.png")
  )
  (action
   (name "ice-stop")
-  (hitbox 5 20 0 0)
-  (images "smalltux_ice.png")
+  (hitbox 4 20 0 0)
+  (images "icetux.png")
  )
   (action
   (name "air-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux_air.png"
-          "smalltux1_air.png"
-          "smalltux2_air.png"
-          "smalltux3_air.png"
-          "smalltux4_air.png"
-          "smalltux5_air.png"
-          "smalltux6_air.png"
-          "smalltux7_air.png"
-          "smalltux8_air.png"
-          "smalltux6_air.png"
-          "smalltux5_air.png"
-          "smalltux4_air.png"
-          "smalltux3_air.png"
-          "smalltux2_air.png"
-          "smalltux1_air.png"
-          "smalltux_air.png")
+  (hitbox 4 21 0 0)
+  (fps 15)
+  (images "airtuxwalk1.png"
+"airtuxwalk2.png"
+"airtuxwalk3.png"
+"airtuxwalk4.png"
+"airtuxwalk5.png"
+"airtuxwalk6.png"
+"airtuxwalk7.png"
+"airtuxwalk8.png")
  )
  (action
   (name "air-stop")
-  (hitbox 5 20 0 0)
-  (images "smalltux_air.png")
+  (hitbox 4 20 0 0)
+  (images "airtux.png")
  )
   (action
   (name "earth-walking")
-  (hitbox 5 20 0 0)
-  (images "smalltux_earth.png"
-          "smalltux1_earth.png"
-          "smalltux2_earth.png"
-          "smalltux3_earth.png"
-          "smalltux4_earth.png"
-          "smalltux5_earth.png"
-          "smalltux6_earth.png"
-          "smalltux7_earth.png"
-          "smalltux8_earth.png"
-          "smalltux6_earth.png"
-          "smalltux5_earth.png"
-          "smalltux4_earth.png"
-          "smalltux3_earth.png"
-          "smalltux2_earth.png"
-          "smalltux1_earth.png"
-          "smalltux_earth.png")
+  (hitbox 4 20 0 0)
+  (fps 15)
+  (images "earthtuxwalk1.png"
+"earthtuxwalk2.png"
+"earthtuxwalk3.png"
+"earthtuxwalk4.png"
+"earthtuxwalk5.png"
+"earthtuxwalk6.png"
+"earthtuxwalk7.png"
+"earthtuxwalk8.png")
  )
  (action
   (name "earth-stop")
-  (hitbox 5 20 0 0)
-  (images "smalltux_earth.png")
+  (hitbox 4 20 0 0)
+  (images "earthtux.png")
  )
 )
-

@@ -63,6 +63,8 @@ public:
 
   bool is_worldmap() const { return m_is_worldmap; }
 
+  std::string get_license() const { return m_license; }
+
 private:
   void save(Writer& writer);
   void load_old_format(const ReaderMapping& reader);
@@ -74,10 +76,14 @@ public:
   std::string m_contact;
   std::string m_license;
   std::string m_filename;
+  std::string m_note;
   std::vector<std::unique_ptr<Sector> > m_sectors;
   Statistics m_stats;
   float m_target_time;
   std::string m_tileset;
+  bool m_suppress_pause_menu;
+  bool m_is_in_cutscene;
+  bool m_skip_cutscene;
 
 private:
   Level(const Level&) = delete;

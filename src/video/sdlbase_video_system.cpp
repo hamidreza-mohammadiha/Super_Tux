@@ -20,6 +20,11 @@
 #include "supertux/globals.hpp"
 #include "util/log.hpp"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 SDLBaseVideoSystem::SDLBaseVideoSystem() :
   m_sdl_window(nullptr, &SDL_DestroyWindow),
   m_desktop_size()
@@ -109,6 +114,20 @@ SDLBaseVideoSystem::create_sdl_window(Uint32 flags)
     msg << "Couldn't set video mode " << size.width << "x" << size.height << ": " << SDL_GetError();
     throw std::runtime_error(msg.str());
   }
+
+#ifdef __EMSCRIPTEN__
+  // Forcibly set autofit to true
+  // TODO: Remove the autofit parameter entirely - it should always be true
+  g_config->fit_window = true;
+
+  if (g_config->fit_window)
+  {
+    EM_ASM({
+      if (window.supertux_setAutofit)
+        window.supertux_setAutofit(true);
+    }, 0); // EM_ASM is a variadic macro and Clang requires at least 1 value for the variadic argument
+  }
+#endif
 }
 
 void

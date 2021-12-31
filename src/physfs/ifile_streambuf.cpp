@@ -34,7 +34,7 @@ IFileStreambuf::IFileStreambuf(const std::string& filename) :
   if (file == nullptr) {
     std::stringstream msg;
     msg << "Couldn't open file '" << filename << "': "
-        << PHYSFS_getLastErrorCode();
+        << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
     throw std::runtime_error(msg.str());
   }
 }
@@ -57,7 +57,7 @@ IFileStreambuf::underflow()
   }
   setg(buf, buf, buf + bytesread);
 
-  return buf[0];
+  return static_cast<unsigned char>(buf[0]);
 }
 
 IFileStreambuf::pos_type

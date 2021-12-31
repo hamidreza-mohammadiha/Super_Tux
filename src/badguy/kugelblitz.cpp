@@ -37,7 +37,7 @@ const int RAND_SPEED = 150;
 
 Kugelblitz::Kugelblitz(const ReaderMapping& reader) :
   BadGuy(reader, "images/creatures/kugelblitz/kugelblitz.sprite"),
-  pos_groundhit(),
+  pos_groundhit(0.0f, 0.0f),
   groundhit_pos_set(false),
   dying(),
   movement_timer(),
@@ -142,7 +142,7 @@ Kugelblitz::active_update(float dt_sec)
     }
 
     if (is_in_water()) {
-      Sector::get().add<Electrifier>(Electrifier::TileChangeMap({ {75, 1421}, {76, 1422} }), 1.5);
+      Sector::get().add<Electrifier>(Electrifier::TileChangeMap({ {75, 1421}, {76, 1422} }), 1.5f);
       explode();
     }
   }

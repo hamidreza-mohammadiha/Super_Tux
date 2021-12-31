@@ -42,8 +42,10 @@ BicyclePlatformChild::update(float dt_sec)
   float angle = m_parent.m_angle + m_angle_offset;
   angle = math::positive_fmodf(angle, math::TAU);
 
-  Vector dest = m_parent.m_center + Vector(cosf(angle), sinf(angle)) * m_parent.m_radius - (m_col.m_bbox.get_size().as_vector() * 0.5);
-  m_col.m_movement = dest - get_pos();
+  Vector dest = m_parent.m_center + Vector(cosf(angle), sinf(angle)) * m_parent.m_radius - (m_col.m_bbox.get_size().as_vector() * 0.5f);
+  Vector movement = dest - get_pos();
+  m_col.set_movement(movement);
+  m_col.propagate_movement(movement);
 }
 
 HitResponse
@@ -73,9 +75,15 @@ BicyclePlatformChild::collision(GameObject& other, const CollisionHit& )
   return FORCE_MOVE;
 }
 
+void BicyclePlatformChild::editor_delete()
+{
+  // removing a child removes the whole platform
+  m_parent.editor_delete();
+}
+
 BicyclePlatform::BicyclePlatform(const ReaderMapping& reader) :
   GameObject(reader),
-  m_center(),
+  m_center(0.0f, 0.0f),
   m_radius(128),
   m_angle(0),
   m_angular_speed(0.0f),
@@ -150,17 +158,27 @@ BicyclePlatform::update(float dt_sec)
   }
   else
   {
-    m_center += Vector(m_angular_speed, 0) * dt_sec * 32;
+    m_center += Vector(m_angular_speed, 0) * dt_sec * 32.0f;
   }
+}
+
+void
+BicyclePlatform::on_flip(float height)
+{
+  m_center.y = height - m_center.y;
 }
 
 void
 BicyclePlatform::editor_delete()
 {
+  // remove children
   for (auto& child : m_children)
   {
     child->remove_me();
   }
+
+  // remove self
+  remove_me();
 }
 
 void
@@ -178,7 +196,7 @@ BicyclePlatform::get_settings()
   result.add_float(_("Y"), &m_center.y, "y", 0.0f, OPTION_HIDDEN);
 
   result.add_int(_("Platforms"), &m_platforms, "platforms", 2);
-  result.add_float(_("Radius"), &m_radius, "radius", 128);
+  result.add_float(_("Radius"), &m_radius, "radius", 128.0f);
   result.add_float(_("Momentum change rate"), &m_momentum_change_rate, "momentum-change-rate", 0.1f);
 
   result.reorder({"platforms", "x", "y"});

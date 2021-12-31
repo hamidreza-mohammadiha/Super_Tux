@@ -33,6 +33,7 @@ public:
   WillOWisp(const ReaderMapping& reader);
 
   virtual void finish_construction() override;
+  virtual void after_editor_set() override;
 
   virtual void activate() override;
   virtual void deactivate() override;
@@ -52,13 +53,25 @@ public:
   virtual void play_looping_sounds() override;
 
   virtual std::string get_class() const override { return "willowisp"; }
-  virtual std::string get_display_name() const override { return _("Will 'o' wisp"); }
+  virtual std::string get_display_name() const override { return _("Will o' Wisp"); }
 
   virtual ObjectSettings get_settings() override;
   virtual void move_to(const Vector& pos) override;
 
+  virtual void expose(HSQUIRRELVM vm, SQInteger table_idx) override
+  {
+    ExposedObject<WillOWisp, scripting::WillOWisp>::expose(vm, table_idx);
+  }
+
+  virtual void unexpose(HSQUIRRELVM vm, SQInteger table_idx) override
+  {
+    ExposedObject<WillOWisp, scripting::WillOWisp>::unexpose(vm, table_idx);
+  }
+
   /** make WillOWisp vanish */
   void vanish();
+
+  Color get_color() const { return m_color; }
 
 private:
   virtual bool collides(GameObject& other, const CollisionHit& hit) const override;
@@ -81,6 +94,10 @@ private:
   float m_flyspeed;
   float m_track_range;
   float m_vanish_range;
+
+  Color m_color;
+
+  int m_starting_node;
 
 private:
   WillOWisp(const WillOWisp&) = delete;

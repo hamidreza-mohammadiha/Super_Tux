@@ -33,13 +33,15 @@ class TitleScreen final : public Screen
 {
 public:
   TitleScreen(Savegame& savegame);
-  virtual ~TitleScreen();
+  ~TitleScreen() override;
 
   virtual void setup() override;
   virtual void leave() override;
 
   virtual void draw(Compositor& compositor) override;
   virtual void update(float dt_sec, const Controller& controller) override;
+
+  virtual IntegrationStatus get_status() const override;
 
 private:
   void make_tux_jump();

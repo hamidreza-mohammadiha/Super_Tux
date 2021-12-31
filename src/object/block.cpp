@@ -73,7 +73,7 @@ Block::Block(const ReaderMapping& mapping, const std::string& sprite_file) :
   }
   m_sprite = SpriteManager::current()->create(sf);
   m_sprite_name = sf;
-  m_default_sprite_name = m_sprite_name;
+  m_default_sprite_name = sprite_file;
 
   m_col.m_bbox.set_size(32, 32.1f);
   set_group(COLGROUP_STATIC);
@@ -85,9 +85,25 @@ HitResponse
 Block::collision(GameObject& other, const CollisionHit& )
 {
   auto player = dynamic_cast<Player*> (&other);
-  if (player) {
-    if (player->get_bbox().get_top() > m_col.m_bbox.get_bottom() - SHIFT_DELTA) {
+  if (player)
+  {
+    if(player->is_swimboosting())
+    {
       hit(*player);
+    }
+    else if (!player->is_swimboosting() && !player->is_water_jumping() && !player->is_swimming())
+    {
+      bool x_coordinates_intersect =
+        player->get_bbox().get_right() >= m_col.m_bbox.get_left() &&
+        player->get_bbox().get_left() <= m_col.m_bbox.get_right();
+      if (player->get_bbox().get_top() > m_col.m_bbox.get_bottom() - SHIFT_DELTA &&
+          x_coordinates_intersect)
+      {
+        if (player->get_bbox().get_top() > m_col.m_bbox.get_bottom() - SHIFT_DELTA)
+        {
+          hit(*player);
+        }
+      }
     }
   }
 
@@ -95,16 +111,16 @@ Block::collision(GameObject& other, const CollisionHit& )
   //   1) we are bouncing
   //   2) the object is not portable (either never or not currently)
   //   3) the object is being hit from below (baguys don't get killed for activating boxes)
+  auto badguy = dynamic_cast<BadGuy*> (&other);
   auto portable = dynamic_cast<Portable*> (&other);
   auto moving_object = dynamic_cast<MovingObject*> (&other);
   auto bomb = dynamic_cast<Bomb*> (&other);
   bool is_portable = ((portable != nullptr) && portable->is_portable());
   bool is_bomb = (bomb != nullptr); // bombs need to explode, although they are considered portable
   bool hit_mo_from_below = ((moving_object == nullptr) || (moving_object->get_bbox().get_bottom() < (m_col.m_bbox.get_top() + SHIFT_DELTA)));
-  if (m_bouncing && (!is_portable || is_bomb) && hit_mo_from_below) {
+  if (m_bouncing && (!is_portable || badguy || is_bomb) && hit_mo_from_below) {
 
     // Badguys get killed
-    auto badguy = dynamic_cast<BadGuy*> (&other);
     if (badguy) {
       badguy->kill_fall();
     }
@@ -126,6 +142,7 @@ Block::collision(GameObject& other, const CollisionHit& )
   return FORCE_MOVE;
 }
 
+
 void
 Block::update(float dt_sec)
 {
@@ -135,17 +152,17 @@ Block::update(float dt_sec)
   float offset = m_original_y - get_pos().y;
   if (offset > BOUNCY_BRICK_MAX_OFFSET) {
     m_bounce_dir = BOUNCY_BRICK_SPEED;
-    m_col.m_movement = Vector(0, m_bounce_dir * dt_sec);
+    m_col.set_movement(Vector(0, m_bounce_dir * dt_sec));
     if (m_breaking){
       break_me();
     }
   } else if (offset < BOUNCY_BRICK_SPEED * dt_sec && m_bounce_dir > 0) {
-    m_col.m_movement = Vector(0, offset);
+    m_col.set_movement(Vector(0, offset));
     m_bounce_dir = 0;
     m_bouncing = false;
     m_sprite->set_angle(0);
   } else {
-    m_col.m_movement = Vector(0, m_bounce_dir * dt_sec);
+    m_col.set_movement(Vector(0, m_bounce_dir * dt_sec));
   }
 }
 
@@ -169,6 +186,12 @@ Block::start_bounce(GameObject* hitter)
   if (hitter_mo) {
     float center_of_hitter = hitter_mo->get_bbox().get_middle().x;
     float offset = (m_col.m_bbox.get_middle().x - center_of_hitter)*2 / m_col.m_bbox.get_width();
+
+    // Without this, hitting a multi-coin bonus block from the side (e. g. with
+    // an ice block or a snail) would turn the block 90 degrees.
+    if (offset > 2 || offset < -2)
+      offset = 0;
+
     m_sprite->set_angle(BUMP_ROTATION_ANGLE*offset);
   }
 }
@@ -212,6 +235,13 @@ Block::get_settings()
 void Block::after_editor_set()
 {
   m_sprite = SpriteManager::current()->create(m_sprite_name);
+}
+
+void
+Block::on_flip(float height)
+{
+  MovingObject::on_flip(height);
+  if (m_original_y != -1) m_original_y = height - m_original_y - get_bbox().get_height();
 }
 
 /* EOF */

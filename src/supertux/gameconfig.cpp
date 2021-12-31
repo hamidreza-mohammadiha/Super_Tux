@@ -16,11 +16,19 @@
 
 #include "supertux/gameconfig.hpp"
 
+#include "config.h"
+
+#include "editor/overlay_widget.hpp"
 #include "util/reader_collection.hpp"
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 #include "util/log.hpp"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
 
 Config::Config() :
   profile(1),
@@ -29,15 +37,19 @@ Config::Config() :
   window_size(1280, 800),
   window_resizable(true),
   aspect_size(0, 0), // auto detect
+#ifdef __EMSCRIPTEN__
+  fit_window(true),
+#endif
   magnification(0.0f),
   use_fullscreen(true),
   video(VideoSystem::VIDEO_AUTO),
   try_vsync(true),
   show_fps(false),
   show_player_pos(false),
+  show_controller(false),
   sound_enabled(true),
   music_enabled(true),
-  sound_volume(50),
+  sound_volume(100),
   music_volume(50),
   random_seed(0), // set by time(), by default (unless in config)
   enable_script_debugger(false),
@@ -47,12 +59,28 @@ Config::Config() :
   locale(),
   keyboard_config(),
   joystick_config(),
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+  mobile_controls(true),
+#endif
   addons(),
   developer_mode(false),
   christmas_mode(false),
   transitions_enabled(true),
   confirmation_dialog(false),
   pause_on_focusloss(true),
+  custom_mouse_cursor(true),
+#ifdef ENABLE_DISCORD
+  enable_discord(false),
+#endif
+  hide_editor_levelnames(false),
+  editor_selected_snap_grid_size(3),
+  editor_render_grid(true),
+  editor_snap_to_grid(true),
+  editor_render_background(true),
+  editor_render_lighting(false),
+  editor_autotile_mode(false),
+  editor_autotile_help(true),
+  editor_autosave_frequency(5),
   repository_url()
 {
 }
@@ -60,6 +88,12 @@ Config::Config() :
 void
 Config::load()
 {
+#ifdef __EMSCRIPTEN__
+  EM_ASM({
+    supertux_loadFiles();
+  }, 0); // EM_ASM is a variadic macro and Clang requires at least 1 value for the variadic argument
+#endif
+
   auto doc = ReaderDocument::from_file("config");
   auto root = doc.get_root();
   if (root.get_name() != "supertux-config")
@@ -71,15 +105,41 @@ Config::load()
   config_mapping.get("profile", profile);
   config_mapping.get("show_fps", show_fps);
   config_mapping.get("show_player_pos", show_player_pos);
+  config_mapping.get("show_controller", show_controller);
   config_mapping.get("developer", developer_mode);
   config_mapping.get("confirmation_dialog", confirmation_dialog);
   config_mapping.get("pause_on_focusloss", pause_on_focusloss);
+  config_mapping.get("custom_mouse_cursor", custom_mouse_cursor);
+
+  boost::optional<ReaderMapping> config_integrations_mapping;
+  if (config_mapping.get("integrations", config_integrations_mapping))
+  {
+    config_integrations_mapping->get("hide_editor_levelnames", hide_editor_levelnames);
+#ifdef ENABLE_DISCORD
+    config_integrations_mapping->get("enable_discord", enable_discord);
+#endif
+  }
+
+  // Compatibility; will be overwritten by the "editor" category
+  config_mapping.get("editor_autosave_frequency", editor_autosave_frequency);
+
+  editor_autotile_help = !developer_mode;
+
+  boost::optional<ReaderMapping> editor_mapping;
+  if (config_mapping.get("editor", editor_mapping))
+  {
+    editor_mapping->get("autosave_frequency", editor_autosave_frequency);
+    editor_mapping->get("autotile_help", editor_autotile_help);
+    editor_mapping->get("autotile_mode", editor_autotile_mode);
+    editor_mapping->get("render_background", editor_render_background);
+    editor_mapping->get("render_grid", editor_render_grid);
+    editor_mapping->get("render_lighting", editor_render_lighting);
+    editor_mapping->get("selected_snap_grid_size", editor_selected_snap_grid_size);
+    editor_mapping->get("snap_to_grid", editor_snap_to_grid);
+  } else { log_warning << "!!!!" << std::endl; }
 
   if (is_christmas()) {
-    if (!config_mapping.get("christmas", christmas_mode))
-    {
-      christmas_mode = true;
-    }
+    config_mapping.get("christmas", christmas_mode, true);
   }
   config_mapping.get("transitions_enabled", transitions_enabled);
   config_mapping.get("locale", locale);
@@ -114,6 +174,14 @@ Config::load()
     config_video_mapping->get("aspect_height", aspect_size.height);
 
     config_video_mapping->get("magnification", magnification);
+
+#ifdef __EMSCRIPTEN__
+    // Forcibly set autofit to true
+    // TODO: Remove the autofit parameter entirely - it should always be true
+
+    //config_video_mapping->get("fit_window", fit_window);
+    fit_window = true;
+#endif
   }
 
   boost::optional<ReaderMapping> config_audio_mapping;
@@ -139,6 +207,10 @@ Config::load()
     {
       joystick_config.read(*joystick_mapping);
     }
+
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+    config_video_mapping->get("mobile_controls", mobile_controls);
+#endif
   }
 
   boost::optional<ReaderCollection> config_addons_mapping;
@@ -176,9 +248,21 @@ Config::save()
   writer.write("profile", profile);
   writer.write("show_fps", show_fps);
   writer.write("show_player_pos", show_player_pos);
+  writer.write("show_controller", show_controller);
   writer.write("developer", developer_mode);
   writer.write("confirmation_dialog", confirmation_dialog);
   writer.write("pause_on_focusloss", pause_on_focusloss);
+  writer.write("custom_mouse_cursor", custom_mouse_cursor);
+
+  writer.start_list("integrations");
+  {
+    writer.write("hide_editor_levelnames", hide_editor_levelnames);
+#ifdef ENABLE_DISCORD
+    writer.write("enable_discord", enable_discord);
+#endif
+  }
+  writer.end_list("integrations");
+
   if (is_christmas()) {
     writer.write("christmas", christmas_mode);
   }
@@ -208,6 +292,12 @@ Config::save()
   writer.write("aspect_width",  aspect_size.width);
   writer.write("aspect_height", aspect_size.height);
 
+#ifdef __EMSCRIPTEN__
+  // Forcibly set autofit to true
+  // TODO: Remove the autofit parameter entirely - it should always be true
+  writer.write("fit_window", true /* fit_window */);
+#endif
+
   writer.write("magnification", magnification);
 
   writer.end_list("video");
@@ -228,6 +318,10 @@ Config::save()
     writer.start_list("joystick");
     joystick_config.write(writer);
     writer.end_list("joystick");
+
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
+    writer.write("mobile_controls", mobile_controls);
+#endif
   }
   writer.end_list("control");
 
@@ -240,6 +334,19 @@ Config::save()
     writer.end_list("addon");
   }
   writer.end_list("addons");
+
+  writer.start_list("editor");
+  {
+    writer.write("autosave_frequency", editor_autosave_frequency);
+    writer.write("autotile_help", editor_autotile_help);
+    writer.write("autotile_mode", editor_autotile_mode);
+    writer.write("render_background", editor_render_background);
+    writer.write("render_grid", editor_render_grid);
+    writer.write("render_lighting", editor_render_lighting);
+    writer.write("selected_snap_grid_size", editor_selected_snap_grid_size);
+    writer.write("snap_to_grid", editor_snap_to_grid);
+  }
+  writer.end_list("editor");
 
   writer.end_list("supertux-config");
 }

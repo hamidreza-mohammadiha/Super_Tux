@@ -41,15 +41,18 @@
 #include "object/text_array_object.hpp"
 #include "object/text_object.hpp"
 #include "object/tilemap.hpp"
+#include "object/vertical_stripes.hpp"
 #include "physfs/ifile_stream.hpp"
 #include "scripting/sector.hpp"
 #include "squirrel/squirrel_environment.hpp"
+#include "supertux/colorscheme.hpp"
 #include "supertux/constants.hpp"
 #include "supertux/debug.hpp"
 #include "supertux/game_object_factory.hpp"
 #include "supertux/game_session.hpp"
 #include "supertux/level.hpp"
 #include "supertux/player_status_hud.hpp"
+#include "supertux/resources.hpp"
 #include "supertux/savegame.hpp"
 #include "supertux/tile.hpp"
 #include "util/file_system.hpp"
@@ -80,7 +83,7 @@ Sector::Sector(Level& parent) :
     GameSession::current() ? &GameSession::current()->get_savegame() : nullptr;
   PlayerStatus& player_status = savegame ? savegame->get_player_status() : dummy_player_status;
 
-  if (savegame && !savegame->is_title_screen()) {
+  if (savegame && !m_level.m_suppress_pause_menu && !savegame->is_title_screen()) {
     add<PlayerStatusHUD>(player_status);
   }
   add<Player>(player_status, "Tux");
@@ -109,6 +112,11 @@ void
 Sector::finish_construction(bool editable)
 {
   flush_game_objects();
+
+  // FIXME: Is it a good idea to process some resolve requests this early?
+  // I added this to fix https://github.com/SuperTux/supertux/issues/1378
+  // but I don't know if it's going to introduce other bugs..   ~ Semphris
+  try_process_resolve_requests();
 
   if (!editable) {
     convert_tiles2gameobject();
@@ -139,6 +147,10 @@ Sector::finish_construction(bool editable)
 
   if (!get_object_by_type<MusicObject>()) {
     add<MusicObject>();
+  }
+
+  if (!get_object_by_type<VerticalStripes>()) {
+    add<VerticalStripes>();
   }
 
   flush_game_objects();
@@ -207,7 +219,8 @@ Sector::activate(const Vector& player_pos)
 
   // two-player hack: move other players to main player's position
   // Maybe specify 2 spawnpoints in the level?
-  for (auto& player : get_objects_by_type<Player>()) {
+  for (auto player_ptr : get_objects_by_type_index(typeid(Player))) {
+    Player& player = *static_cast<Player*>(player_ptr);
     // spawn smalltux below spawnpoint
     if (!player.is_big()) {
       player.move(player_pos + Vector(0,32));
@@ -340,11 +353,15 @@ Sector::before_object_add(GameObject& object)
       return false;
     }
   }
-
-  auto movingobject = dynamic_cast<MovingObject*>(&object);
-  if (movingobject)
+  
+  if (auto* movingobject = dynamic_cast<MovingObject*>(&object))
   {
     m_collision_system->add(movingobject->get_collision_object());
+  }
+
+  if (auto* tilemap = dynamic_cast<TileMap*>(&object))
+  {
+    tilemap->set_ground_movement_manager(m_collision_system->get_ground_movement_manager());
   }
 
   if (s_current == this) {
@@ -381,6 +398,7 @@ Sector::draw(DrawingContext& context)
 
   context.push_transform();
   context.set_translation(camera.get_translation());
+  context.scale(camera.get_current_scale());
 
   GameObjectManager::draw(context);
 
@@ -389,12 +407,22 @@ Sector::draw(DrawingContext& context)
   }
 
   context.pop_transform();
+
+  if (m_level.m_is_in_cutscene && !m_level.m_skip_cutscene)
+  {
+    context.color().draw_text(Resources::normal_font,
+                              _("Press escape to skip"),
+                              Vector(32.f, 32.f),
+                              ALIGN_LEFT,
+                              LAYER_OBJECTS + 1000,
+                              ColorScheme::Text::heading_color);
+  }
 }
 
 bool
-Sector::is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid) const
+Sector::is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid, uint32_t tiletype) const
 {
-  return m_collision_system->is_free_of_tiles(rect, ignoreUnisolid);
+  return m_collision_system->is_free_of_tiles(rect, ignoreUnisolid, tiletype);
 }
 
 bool
@@ -413,22 +441,23 @@ Sector::is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_o
 }
 
 bool
-Sector::free_line_of_sight(const Vector& line_start, const Vector& line_end, const MovingObject* ignore_object) const
+Sector::free_line_of_sight(const Vector& line_start, const Vector& line_end, bool ignore_objects, const MovingObject* ignore_object) const
 {
-  return m_collision_system->free_line_of_sight(line_start, line_end,
+  return m_collision_system->free_line_of_sight(line_start, line_end, ignore_objects,
                                                 ignore_object ? ignore_object->get_collision_object() : nullptr);
 }
 
 bool
 Sector::can_see_player(const Vector& eye) const
 {
-  for (const auto& player : get_objects_by_type<Player>()) {
+  for (auto player_ptr : get_objects_by_type_index(typeid(Player))) {
+    Player& player = *static_cast<Player*>(player_ptr);
     // test for free line of sight to any of all four corners and the middle of the player's bounding box
-    if (free_line_of_sight(eye, player.get_bbox().p1(), &player)) return true;
-    if (free_line_of_sight(eye, Vector(player.get_bbox().get_right(), player.get_bbox().get_top()), &player)) return true;
-    if (free_line_of_sight(eye, player.get_bbox().p2(), &player)) return true;
-    if (free_line_of_sight(eye, Vector(player.get_bbox().get_left(), player.get_bbox().get_bottom()), &player)) return true;
-    if (free_line_of_sight(eye, player.get_bbox().get_middle(), &player)) return true;
+    if (free_line_of_sight(eye, player.get_bbox().p1(), false, &player)) return true;
+    if (free_line_of_sight(eye, Vector(player.get_bbox().get_right(), player.get_bbox().get_top()), false, &player)) return true;
+    if (free_line_of_sight(eye, player.get_bbox().p2(), false, &player)) return true;
+    if (free_line_of_sight(eye, Vector(player.get_bbox().get_left(), player.get_bbox().get_bottom()), false, &player)) return true;
+    if (free_line_of_sight(eye, player.get_bbox().get_middle(), false, &player)) return true;
   }
   return false;
 }
@@ -469,6 +498,8 @@ Sector::get_editor_size() const
 void
 Sector::resize_sector(const Size& old_size, const Size& new_size, const Size& resize_offset)
 {
+  BIND_SECTOR(*this);
+
   bool is_offset = resize_offset.width || resize_offset.height;
   Vector obj_shift = Vector(static_cast<float>(resize_offset.width) * 32.0f,
                             static_cast<float>(resize_offset.height) * 32.0f);
@@ -520,8 +551,9 @@ Sector::get_nearest_player (const Vector& pos) const
   Player *nearest_player = nullptr;
   float nearest_dist = std::numeric_limits<float>::max();
 
-  for (auto& player : get_objects_by_type<Player>())
+  for (auto player_ptr : get_objects_by_type_index(typeid(Player)))
   {
+    Player& player = *static_cast<Player*>(player_ptr);
     if (player.is_dying() || player.is_dead())
       continue;
 
@@ -585,10 +617,10 @@ Sector::save(Writer &writer)
   }
 
   // saving objects;
-  std::vector<GameObject*> objects;
-  for (auto& obj : get_objects()) {
-    objects.push_back(obj.get());
-  }
+  std::vector<GameObject*> objects(get_objects().size());
+  std::transform(get_objects().begin(), get_objects().end(), objects.begin(), [] (auto& obj) {
+    return obj.get();
+  });
 
   std::stable_sort(objects.begin(), objects.end(),
                    [](const GameObject* lhs, GameObject* rhs) {
@@ -612,6 +644,10 @@ Sector::convert_tiles2gameobject()
   // add lights for special tiles
   for (auto& tm : get_objects_by_type<TileMap>())
   {
+    // Since object setup is not yet complete, I have to manually add the offset
+    // See https://github.com/SuperTux/supertux/issues/1378 for details
+    Vector tm_offset = tm.get_path() ? tm.get_path()->get_base() : Vector(0, 0);
+
     for (int x=0; x < tm.get_width(); ++x)
     {
       for (int y=0; y < tm.get_height(); ++y)
@@ -625,7 +661,7 @@ Sector::convert_tiles2gameobject()
           if (tile.get_object_name() == "decal" ||
               tm.is_solid())
           {
-            Vector pos = tm.get_tile_position(x, y);
+            Vector pos = tm.get_tile_position(x, y) + tm_offset;
             try {
               auto object = GameObjectFactory::instance().create(tile.get_object_name(), pos, Direction::AUTO, tile.get_object_data());
               add_object(std::move(object));
@@ -639,7 +675,7 @@ Sector::convert_tiles2gameobject()
         {
           // add lights for fire tiles
           uint32_t attributes = tile.get_attributes();
-          Vector pos = tm.get_tile_position(x, y);
+          Vector pos = tm.get_tile_position(x, y) + tm_offset;
           Vector center = pos + Vector(16, 16);
 
           if (attributes & Tile::FIRE) {
@@ -680,7 +716,7 @@ Sector::get_camera() const
 Player&
 Sector::get_player() const
 {
-  return get_singleton_by_type<Player>();
+  return *static_cast<Player*>(get_objects_by_type_index(typeid(Player)).at(0));
 }
 
 DisplayEffect&

@@ -37,7 +37,7 @@ class MovingObject : public GameObject,
 public:
   MovingObject();
   MovingObject(const ReaderMapping& reader);
-  virtual ~MovingObject();
+  ~MovingObject() override;
 
   virtual void collision_solid(const CollisionHit& /*hit*/) override
   {
@@ -76,7 +76,7 @@ public:
 
   const Vector& get_movement() const
   {
-    return m_col.m_movement;
+    return m_col.get_movement();
   }
 
   CollisionGroup get_group() const
@@ -96,6 +96,10 @@ public:
   virtual ObjectSettings get_settings() override;
 
   virtual void editor_select() override;
+
+  virtual void on_flip(float height) override;
+
+  virtual int get_layer() const = 0;
 
 protected:
   void set_group(CollisionGroup group)

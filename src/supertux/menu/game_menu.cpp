@@ -24,15 +24,21 @@
 #include "supertux/globals.hpp"
 #include "supertux/level.hpp"
 #include "supertux/menu/menu_storage.hpp"
+#include "supertux/sector.hpp"
+#include "object/player.hpp"
 #include "util/gettext.hpp"
-
-static const std::string CONFIRMATION_PROMPT = _("Are you sure?");
 
 GameMenu::GameMenu() :
   reset_callback ( [] {
     MenuManager::instance().clear_menu_stack();
     GameSession::current()->toggle_pause();
     GameSession::current()->reset_button = true;
+  }),
+  reset_checkpoint_callback( [] {
+    MenuManager::instance().clear_menu_stack();
+    GameSession::current()->toggle_pause();
+
+    GameSession::current()->reset_checkpoint_button = true;
   }),
   abort_callback ( [] {
     MenuManager::instance().clear_menu_stack();
@@ -45,6 +51,11 @@ GameMenu::GameMenu() :
   add_hl();
   add_entry(MNID_CONTINUE, _("Continue"));
   add_entry(MNID_RESETLEVEL, _("Restart Level"));
+
+  if (Sector::current()->get_player().get_status().can_reach_checkpoint()) {
+    add_entry(MNID_RESETLEVELCHECKPOINT, _("Restart from Checkpoint"));
+  }
+
   add_submenu(_("Options"), MenuStorage::INGAME_OPTIONS_MENU);
   add_hl();
   add_entry(MNID_ABORTLEVEL, _("Abort Level"));
@@ -63,7 +74,7 @@ GameMenu::menu_action(MenuItem& item)
     case MNID_RESETLEVEL:
       if (g_config->confirmation_dialog)
       {
-        Dialog::show_confirmation(CONFIRMATION_PROMPT, reset_callback);
+        Dialog::show_confirmation(_("Are you sure?"), reset_callback);
       }
       else
       {
@@ -71,10 +82,22 @@ GameMenu::menu_action(MenuItem& item)
       }
       break;
 
+    case MNID_RESETLEVELCHECKPOINT:
+      if (g_config->confirmation_dialog)
+      {
+        Dialog::show_confirmation(_("Are you sure?"),
+                                  reset_checkpoint_callback);
+      }
+      else
+      {
+        reset_checkpoint_callback();
+      }
+      break;
+
     case MNID_ABORTLEVEL:
       if (g_config->confirmation_dialog)
       {
-        Dialog::show_confirmation(CONFIRMATION_PROMPT, abort_callback);
+        Dialog::show_confirmation(_("Are you sure?"), abort_callback);
       }
       else
       {

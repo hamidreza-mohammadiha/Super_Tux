@@ -16,6 +16,8 @@
 
 #include "supertux/colorscheme.hpp"
 
+#include "editor/overlay_widget.hpp"
+#include "interface/control.hpp"
 #include "object/floating_text.hpp"
 #include "object/level_time.hpp"
 #include "object/text_object.hpp"
@@ -30,9 +32,11 @@ Color LevelIntro::s_header_color(1.f,1.f,0.6f);
 Color LevelIntro::s_author_color(1.f,1.f,1.f);
 Color LevelIntro::s_stat_hdr_color(0.2f,0.5f,1.f);
 Color LevelIntro::s_stat_color(1.f,1.f,1.f);
+Color LevelIntro::s_stat_perfect_color(0.4f,1.f,0.4f);
 
 Color Statistics::header_color(1.f,1.f,1.f);
 Color Statistics::text_color(1.f,1.f,0.6f);
+Color Statistics::perfect_color(0.4f,1.f,0.4f);
 
 Color ColorScheme::Menu::default_color(1.f,1.f,1.f);
 Color ColorScheme::Menu::active_color(0.4f,0.66f,1.f);
@@ -60,5 +64,9 @@ Color ColorScheme::Text::small_color(1.f,1.f,1.f);
 Color ColorScheme::Text::heading_color(1.f,1.f,0.6f);
 Color ColorScheme::Text::reference_color(0.2f,0.6f,1.f);
 Color ColorScheme::Text::normal_color(1.f,1.f,1.f);
+
+Color EditorOverlayWidget::text_autotile_available_color(1.f,1.f,0.6f);
+Color EditorOverlayWidget::text_autotile_active_color(1.f,1.f,1.f);
+Color EditorOverlayWidget::text_autotile_error_color(1.f,0.2f,0.1f);
 
 /* EOF */

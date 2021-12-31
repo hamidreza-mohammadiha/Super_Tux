@@ -119,7 +119,7 @@ Firefly::collision(GameObject& other, const CollisionHit& )
       float vy = -cosf(angle)*velocity;
       Vector pspeed = Vector(vx, vy);
       Vector paccel = Vector(0.0f, 1000.0f);
-      Sector::get().add<SpriteParticle>("images/objects/particles/reset.sprite", "default", ppos, ANCHOR_MIDDLE, pspeed, paccel, LAYER_OBJECTS-1);
+      Sector::get().add<SpriteParticle>("images/particles/reset.sprite", "default", ppos, ANCHOR_MIDDLE, pspeed, paccel, LAYER_OBJECTS-1);
     }
 
     if ( m_sprite_name.find("vbell", 0) != std::string::npos ) {
@@ -138,6 +138,14 @@ Firefly::collision(GameObject& other, const CollisionHit& )
   }
 
   return ABORT_MOVE;
+}
+
+ObjectSettings
+Firefly::get_settings()
+{
+  ObjectSettings result = MovingSprite::get_settings();
+  result.add_test_from_here();
+  return result;
 }
 
 /* EOF */

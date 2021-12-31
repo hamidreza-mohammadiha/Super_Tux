@@ -18,6 +18,7 @@
 #define HEADER_SUPERTUX_OBJECT_TILEMAP_HPP
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "math/rect.hpp"
 #include "math/rectf.hpp"
@@ -26,12 +27,15 @@
 #include "object/path_walker.hpp"
 #include "squirrel/exposed_object.hpp"
 #include "scripting/tilemap.hpp"
+#include "supertux/autotile.hpp"
 #include "supertux/game_object.hpp"
 #include "video/color.hpp"
 #include "video/flip.hpp"
 #include "video/drawing_target.hpp"
 
 class DrawingContext;
+class CollisionObject;
+class CollisionGroundMovementManager;
 class Tile;
 class TileSet;
 
@@ -44,7 +48,7 @@ class TileMap final :
 public:
   TileMap(const TileSet *tileset);
   TileMap(const TileSet *tileset, const ReaderMapping& reader);
-  virtual ~TileMap();
+  ~TileMap() override;
 
   virtual void finish_construction() override;
 
@@ -59,6 +63,8 @@ public:
   virtual void draw(DrawingContext& context) override;
 
   virtual void editor_update() override;
+
+  virtual void on_flip(float height) override;
 
   /** Move tilemap until at given node, then stop */
   void goto_node(int node_no);
@@ -84,6 +90,11 @@ public:
 
   void set_offset(const Vector &offset_) { m_offset = offset_; }
   Vector get_offset() const { return m_offset; }
+
+  void set_ground_movement_manager(const std::shared_ptr<CollisionGroundMovementManager>& movement_manager)
+  {
+    m_ground_movement_manager = movement_manager;
+  }
 
   void move_by(const Vector& pos);
 
@@ -119,6 +130,11 @@ public:
       overlap the given rectangle in the sector. */
   Rect get_tiles_overlapping(const Rectf &rect) const;
 
+  /** Called by the collision mechanism to indicate that this tilemap has been hit on
+      the top, i.e. has hit a moving object on the bottom of its collision rectangle. */
+  void hits_object_bottom(CollisionObject& object);
+  void notify_object_removal(CollisionObject* other);
+
   int get_layer() const { return m_z_pos; }
   void set_layer(int layer_) { m_z_pos = layer_; }
 
@@ -128,6 +144,7 @@ public:
       doing collision detection. */
   void set_solid(bool solid = true);
 
+  bool is_outside_bounds(const Vector& pos) const;
   const Tile& get_tile(int x, int y) const;
   const Tile& get_tile_at(const Vector& pos) const;
   uint32_t get_tile_id(int x, int y) const;
@@ -140,13 +157,28 @@ public:
   /** changes all tiles with the given ID */
   void change_all(uint32_t oldtile, uint32_t newtile);
 
-  void draw_rects_update_enabled(bool enabled)
-  {
-      draw_rects_update = enabled;
-      if (enabled) {
-          calculateDrawRects(true);
-      }
-  }
+  /** Puts the correct autotile block at the given position */
+  void autotile(int x, int y, uint32_t tile);
+  
+  enum class AutotileCornerOperation {
+    ADD_TOP_LEFT,
+    ADD_TOP_RIGHT,
+    ADD_BOTTOM_LEFT,
+    ADD_BOTTOM_RIGHT,
+    REMOVE_TOP_LEFT,
+    REMOVE_TOP_RIGHT,
+    REMOVE_BOTTOM_LEFT,
+    REMOVE_BOTTOM_RIGHT,
+  };
+  
+  /** Puts the correct autotile blocks at the tiles around the given corner */
+  void autotile_corner(int x, int y, uint32_t tile, AutotileCornerOperation op);
+  
+  /** Erases in autotile mode */
+  void autotile_erase(const Vector& pos, const Vector& corner_pos);
+
+  /** Returns the Autotileset associated with the given tile */
+  AutotileSet* get_autotileset(uint32_t tile) const;
 
   void set_flip(Flip flip) { m_flip = flip; }
   Flip get_flip() const { return m_flip; }
@@ -175,8 +207,11 @@ public:
 private:
   void update_effective_solid();
   void float_channel(float target, float &current, float remaining_time, float dt_sec);
-  void calculateDrawRects(bool useCache = false);
-  void calculateDrawRects(uint32_t oldtile, uint32_t newtile);
+
+  bool is_corner(uint32_t tile);
+
+  void apply_offset_x(int fill_id, int xoffset);
+  void apply_offset_y(int fill_id, int yoffset);
 
 public:
   bool m_editor_active;
@@ -185,11 +220,7 @@ private:
   const TileSet* m_tileset;
 
   typedef std::vector<uint32_t> Tiles;
-  typedef std::vector<unsigned char> TilesDrawRects;
-
   Tiles m_tiles;
-  TilesDrawRects tiles_draw_rects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
-  bool draw_rects_update;
 
   /* read solid: In *general*, is this a solid layer? effective solid:
      is the layer *currently* solid? A generally solid layer may be
@@ -205,6 +236,11 @@ private:
   Vector m_offset;
   Vector m_movement; /**< The movement that happened last frame */
 
+  /** Objects that were touching the top of a solid tile at the last frame */
+  std::unordered_set<CollisionObject*> m_objects_hit_bottom;
+
+  std::shared_ptr<CollisionGroundMovementManager> m_ground_movement_manager;
+
   Flip m_flip;
   float m_alpha; /**< requested tilemap opacity */
   float m_current_alpha; /**< current tilemap opacity */
@@ -217,9 +253,6 @@ private:
   Color m_current_tint; /**< current tilemap tint */
   float m_remaining_tint_fade_time; /**< seconds until requested tilemap tint is reached */
 
-  /** Is the tilemap currently moving (following the path) */
-  bool m_running;
-
   /** Set to LIGHTMAP to draw to lightmap */
   DrawingTarget m_draw_target;
 
@@ -228,6 +261,8 @@ private:
   int m_new_offset_x;
   int m_new_offset_y;
   bool m_add_path;
+
+  int m_starting_node;
 
 private:
   TileMap(const TileMap&) = delete;

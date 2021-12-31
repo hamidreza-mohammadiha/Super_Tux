@@ -16,6 +16,7 @@
 
 #include "object/skull_tile.hpp"
 
+#include "editor/editor.hpp"
 #include "math/random.hpp"
 #include "object/player.hpp"
 #include "sprite/sprite.hpp"
@@ -23,13 +24,20 @@
 
 static const float CRACKTIME = 0.3f;
 static const float FALLTIME = 0.8f;
+static const float RESPAWNTIME = 5.f;
+static const float FADETIME = 0.5f;
+static const float DELAY_IF_TUX = 0.001f;
 
 SkullTile::SkullTile(const ReaderMapping& mapping) :
   MovingSprite(mapping, "images/objects/skull_tile/skull_tile.sprite", LAYER_TILES, COLGROUP_STATIC),
   physic(),
   timer(),
   hit(false),
-  falling(false)
+  falling(false),
+  m_revive_timer(),
+  m_respawn(),
+  m_alpha(1.f),
+  m_original_pos(m_col.get_pos())
 {
 }
 
@@ -47,11 +55,14 @@ void
 SkullTile::draw(DrawingContext& context)
 {
   Vector pos = get_pos();
-  // shaking
-  if (timer.get_timegone() > CRACKTIME) {
-    pos.x += static_cast<float>(graphicsRandom.rand(-3, 3));
+  if(!Editor::is_active())
+  {
+    // shaking
+    if (timer.get_timegone() > CRACKTIME) {
+      pos.x += static_cast<float>(graphicsRandom.rand(-3, 3));
+    }
   }
-
+  m_sprite->set_alpha(m_alpha);
   m_sprite->draw(context.color(), pos, m_layer);
 }
 
@@ -59,23 +70,43 @@ void
 SkullTile::update(float dt_sec)
 {
   if (falling) {
-    m_col.m_movement = physic.get_movement(dt_sec);
-    if (!Sector::get().inside(m_col.m_bbox)) {
-      remove_me();
-      return;
+    if (m_revive_timer.check())
+    {
+      if (Sector::current() && Sector::get().is_free_of_movingstatics(m_col.m_bbox.grown(-1.f)))
+      {
+        m_alpha = 0.f;
+        m_revive_timer.stop();
+        falling = false;
+        m_respawn.reset(new FadeHelper(&m_alpha, FADETIME, 1.f));
+        physic.enable_gravity(false);
+        m_col.set_pos(m_original_pos);
+        physic.set_velocity(Vector(0.0f, 0.0f));
+        m_col.set_movement(Vector(0.0f, 0.0f));
+      }
+      else
+      {
+        m_revive_timer.start(DELAY_IF_TUX);
+      }
     }
+    m_col.set_movement(physic.get_movement(dt_sec));
   } else if (hit) {
+	  m_sprite->set_action("mad", -1);
     if (timer.check()) {
       falling = true;
       physic.enable_gravity(true);
       timer.stop();
+      m_revive_timer.start(RESPAWNTIME);
     } else if (!timer.started()) {
       timer.start(FALLTIME);
     }
   } else {
+	m_sprite->set_action("normal", -1);
     timer.stop();
   }
   hit = false;
+
+  if (m_respawn && !m_respawn->completed())
+    m_respawn->update(dt_sec);
 }
 
 /* EOF */

@@ -19,6 +19,8 @@
 
 #include "supertux/moving_object.hpp"
 
+#include "video/layer.hpp"
+
 class ReaderMapping;
 
 /** A tile that starts falling down if tux stands to long on it */
@@ -31,12 +33,14 @@ public:
   virtual void draw(DrawingContext& context) override;
 
   virtual std::string get_class() const override { return "invisible_wall"; }
-  virtual std::string get_display_name() const override { return _("Invisible wall"); }
+  virtual std::string get_display_name() const override { return _("Invisible Wall"); }
 
   virtual bool has_variable_size() const override { return true; }
 
   virtual ObjectSettings get_settings() override;
   virtual void after_editor_set() override;
+
+  virtual int get_layer() const override { return LAYER_OBJECTS; }
 
 private:
   virtual void update(float dt_sec) override;

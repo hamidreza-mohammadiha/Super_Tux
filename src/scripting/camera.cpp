@@ -17,6 +17,8 @@
 #include "object/camera.hpp"
 
 #include "scripting/camera.hpp"
+#include "supertux/sector.hpp"
+#include "util/dynamic_scoped_ref.hpp"
 #include "util/log.hpp"
 
 namespace scripting {
@@ -25,6 +27,7 @@ void
 Camera::reload_config()
 {
   SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
   object.reload_config();
 }
 
@@ -32,18 +35,23 @@ void
 Camera::shake(float speed, float x, float y)
 {
   SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
   object.shake(speed, x, y);
 }
 
 void
-Camera::set_pos(float , float )
+Camera::set_pos(float x, float y)
 {
+  SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
+  object.scroll_to(Vector(x, y), 0.0f);
 }
 
 void
 Camera::set_mode(const std::string& mode)
 {
   SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
 
   if (mode == "normal") {
     object.set_mode(::Camera::Mode::NORMAL);
@@ -58,7 +66,44 @@ void
 Camera::scroll_to(float x, float y, float scrolltime)
 {
   SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
   object.scroll_to(Vector(x, y), scrolltime);
+}
+
+float
+Camera::get_current_scale()
+{
+  SCRIPT_GUARD_DEFAULT;
+  BIND_SECTOR(::Sector::get());
+  return object.get_current_scale();
+}
+
+float
+Camera::get_target_scale()
+{
+  SCRIPT_GUARD_DEFAULT;
+  BIND_SECTOR(::Sector::get());
+  return object.get_target_scale();
+}
+
+void
+Camera::set_scale(float scale)
+{
+  ease_scale(scale, 0, "");
+}
+
+void
+Camera::scale(float scale, float time)
+{
+  ease_scale(scale, time, "");
+}
+
+void
+Camera::ease_scale(float scale, float time, const std::string& ease)
+{
+  SCRIPT_GUARD_VOID;
+  BIND_SECTOR(::Sector::get());
+  object.ease_scale(scale, time, getEasingByName(EasingMode_from_string(ease)));
 }
 
 } // namespace scripting

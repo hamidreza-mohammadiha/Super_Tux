@@ -17,18 +17,18 @@
 #include "badguy/flame.hpp"
 
 #include "audio/sound_manager.hpp"
-#include "audio/sound_source.hpp"
 #include "editor/editor.hpp"
 #include "math/util.hpp"
 #include "object/sprite_particle.hpp"
 #include "sprite/sprite.hpp"
+#include "sprite/sprite_manager.hpp"
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
 static const std::string FLAME_SOUND = "sounds/flame.wav";
 
-Flame::Flame(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/flame/flame.sprite", LAYER_FLOATINGOBJECTS,
+Flame::Flame(const ReaderMapping& reader, const std::string& sprite) :
+  BadGuy(reader, sprite, LAYER_FLOATINGOBJECTS,
          "images/objects/lightmap_light/lightmap_light-small.sprite"),
   angle(0),
   radius(),
@@ -43,6 +43,9 @@ Flame::Flame(const ReaderMapping& reader) :
   }
   m_countMe = false;
   SoundManager::current()->preload(FLAME_SOUND);
+
+  reader.get("sprite", m_sprite_name, m_sprite_name.c_str());
+  m_sprite = SpriteManager::current()->create(m_sprite_name);
 
   set_colgroup_active(COLGROUP_TOUCHABLE);
 
@@ -70,7 +73,7 @@ Flame::active_update(float dt_sec)
   if (!Editor::is_active()) {
     Vector newpos(m_start_position.x + cosf(angle) * radius,
                   m_start_position.y + sinf(angle) * radius);
-    m_col.m_movement = newpos - get_pos();
+    m_col.set_movement(newpos - get_pos());
     sound_source->set_position(get_pos());
   }
 
@@ -85,7 +88,7 @@ Flame::activate()
   sound_source = SoundManager::current()->create_sound_source(FLAME_SOUND);
   sound_source->set_position(get_pos());
   sound_source->set_looping(true);
-  sound_source->set_gain(2.0);
+  sound_source->set_gain(1.0f);
   sound_source->set_reference_distance(32);
   sound_source->play();
 }
@@ -107,7 +110,7 @@ Flame::freeze()
 {
   SoundManager::current()->play("sounds/sizzle.ogg", get_pos());
   m_sprite->set_action("fade", 1);
-  Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
+  Sector::get().add<SpriteParticle>("images/particles/smoke.sprite",
                                          "default",
                                          m_col.m_bbox.get_middle(), ANCHOR_MIDDLE,
                                          Vector(0, -150), Vector(0,0), LAYER_BACKGROUNDTILES+2);

@@ -45,16 +45,20 @@ extern "C" {
 #include "editor/tile_selection.hpp"
 #include "editor/tip.hpp"
 #include "editor/tool_icon.hpp"
+#include "gui/dialog.hpp"
 #include "gui/menu_manager.hpp"
 #include "math/random.hpp"
 #include "object/player.hpp"
 #include "object/spawnpoint.hpp"
 #include "physfs/physfs_file_system.hpp"
 #include "physfs/physfs_sdl.hpp"
+#include "port/emscripten.hpp"
+#include "sdk/integration.hpp"
 #include "sprite/sprite_data.hpp"
 #include "sprite/sprite_manager.hpp"
 #include "supertux/command_line_arguments.hpp"
 #include "supertux/console.hpp"
+#include "supertux/error_handler.hpp"
 #include "supertux/game_manager.hpp"
 #include "supertux/game_session.hpp"
 #include "supertux/gameconfig.hpp"
@@ -84,45 +88,55 @@ extern "C" {
 
 static Timelog s_timelog;
 
-class ConfigSubsystem final
+ConfigSubsystem::ConfigSubsystem() :
+  m_config()
 {
-public:
-  ConfigSubsystem()
+  g_config = &m_config;
+  try {
+    m_config.load();
+  }
+  catch(const std::exception& e)
   {
-    g_config.reset(new Config);
-    try {
-      g_config->load();
-    }
-    catch(const std::exception& e)
-    {
-      log_info << "Couldn't load config file: " << e.what() << ", using default settings" << std::endl;
-    }
-
-    // init random number stuff
-    gameRandom.seed(g_config->random_seed);
-    graphicsRandom.seed(0);
-    //const char *how = config->random_seed? ", user fixed.": ", from time().";
-    //log_info << "Using random seed " << config->random_seed << how << std::endl;
+    log_info << "Couldn't load config file: " << e.what() << ", using default settings" << std::endl;
   }
 
-  ~ConfigSubsystem()
-  {
-    if (g_config)
-    {
-      try
-      {
-        g_config->save();
-      }
-      catch(std::exception& e)
-      {
-        log_warning << "Error saving config: " << e.what() << std::endl;
-      }
-    }
-    g_config.reset();
-  }
-};
+  // init random number stuff
+  gameRandom.seed(m_config.random_seed);
+  graphicsRandom.seed(0);
+  //const char *how = config->random_seed? ", user fixed.": ", from time().";
+  //log_info << "Using random seed " << config->random_seed << how << std::endl;
+}
 
-Main::Main()
+ConfigSubsystem::~ConfigSubsystem()
+{
+  try
+  {
+    m_config.save();
+  }
+  catch(std::exception& e)
+  {
+    log_warning << "Error saving config: " << e.what() << std::endl;
+  }
+}
+
+Main::Main() :
+  m_physfs_subsystem(),
+  m_config_subsystem(),
+  m_sdl_subsystem(),
+  m_console_buffer(),
+  m_input_manager(),
+  m_video_system(),
+  m_ttf_surface_manager(),
+  m_sound_manager(),
+  m_squirrel_virtual_machine(),
+  m_tile_manager(),
+  m_sprite_manager(),
+  m_resources(),
+  m_addon_manager(),
+  m_console(),
+  m_game_manager(),
+  m_screen_manager(),
+  m_savegame()
 {
 }
 
@@ -152,219 +166,230 @@ Main::init_tinygettext()
   }
 }
 
-class PhysfsSubsystem final
+PhysfsSubsystem::PhysfsSubsystem(const char* argv0,
+                boost::optional<std::string> forced_datadir,
+                boost::optional<std::string> forced_userdir) :
+  m_forced_datadir(std::move(forced_datadir)),
+  m_forced_userdir(std::move(forced_userdir))
 {
-private:
-  boost::optional<std::string> m_forced_datadir;
-  boost::optional<std::string> m_forced_userdir;
-
-public:
-  PhysfsSubsystem(const char* argv0,
-                  boost::optional<std::string> forced_datadir,
-                  boost::optional<std::string> forced_userdir) :
-    m_forced_datadir(std::move(forced_datadir)),
-    m_forced_userdir(std::move(forced_userdir))
+  if (!PHYSFS_init(argv0))
   {
-    if (!PHYSFS_init(argv0))
+    std::stringstream msg;
+    msg << "Couldn't initialize physfs: " << PHYSFS_getLastErrorCode();
+    throw std::runtime_error(msg.str());
+  }
+  else
+  {
+    // allow symbolic links
+    PHYSFS_permitSymbolicLinks(1);
+
+    find_userdir();
+    find_datadir();
+  }
+}
+
+void PhysfsSubsystem::find_datadir() const
+{
+#ifndef __EMSCRIPTEN__
+  std::string datadir;
+  if (m_forced_datadir)
+  {
+    datadir = *m_forced_datadir;
+  }
+  else if (const char* env_datadir = getenv("SUPERTUX2_DATA_DIR"))
+  {
+    datadir = env_datadir;
+  }
+  else if (const char* env_datadir = getenv("ANDROID_ASSET_PACK_PATH"))
+  {
+    datadir = env_datadir;
+  }
+  else if (const char* env_datadir = getenv("ANDROID_MY_OWN_APP_FILE"))
+  {
+    datadir = env_datadir;
+  }
+  else
+  {
+    // check if we run from source dir
+    char* basepath_c = SDL_GetBasePath();
+    std::string basepath = basepath_c ? basepath_c : "./";
+    SDL_free(basepath_c);
+
+    if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
     {
-      std::stringstream msg;
-      msg << "Couldn't initialize physfs: " << PHYSFS_getLastErrorCode();
-      throw std::runtime_error(msg.str());
+      datadir = BUILD_DATA_DIR;
+      // Add config dir for supplemental files
+      PHYSFS_mount(boost::filesystem::canonical(BUILD_CONFIG_DATA_DIR).string().c_str(), nullptr, 1);
     }
     else
     {
-      // allow symbolic links
-      PHYSFS_permitSymbolicLinks(1);
-
-      find_userdir();
-      find_datadir();
+      // if the game is not run from the source directory, try to find
+      // the global install location
+      datadir = basepath.substr(0, basepath.rfind(INSTALL_SUBDIR_BIN));
+      datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
     }
   }
 
-  void find_datadir() const
+  if (!PHYSFS_mount(boost::filesystem::canonical(datadir).string().c_str(), nullptr, 1))
   {
-    std::string datadir;
-#ifdef __ANDROID__
-    datadir = getenv("ANDROID_OBB_DIR");
-    datadir += "/main.5118.org.lethargik.supertux2.obb";
-    if (!boost::filesystem::exists(datadir))
-    {
-      datadir = getenv("ANDROID_MY_OWN_APP_FILE");
-    }
-#else // __ANDROID__
-    if (m_forced_datadir)
-    {
-      datadir = *m_forced_datadir;
-    }
-    else if (const char* env_datadir = getenv("SUPERTUX2_DATA_DIR"))
-    {
-      datadir = env_datadir;
-    }
-    else
-    {
-      // check if we run from source dir
-#if SDL_VERSION_ATLEAST(2,0,0)
-      char* basepath_c = SDL_GetBasePath();
-      std::string basepath = basepath_c ? basepath_c : "./";
-      SDL_free(basepath_c);
-#else // SDL_VERSION_ATLEAST(2,0,0)
-      std::string basepath = "./";
-#endif // SDL_VERSION_ATLEAST(2,0,0)
-
-      if (FileSystem::exists(FileSystem::join(BUILD_DATA_DIR, "credits.stxt")))
-      {
-        datadir = BUILD_DATA_DIR;
-        // Add config dir for supplemental files
-        PHYSFS_mount(boost::filesystem::canonical(BUILD_CONFIG_DATA_DIR).string().c_str(), nullptr, 1);
-      }
-      else
-      {
-        // if the game is not run from the source directory, try to find
-        // the global install location
-        datadir = basepath.substr(0, basepath.rfind(INSTALL_SUBDIR_BIN));
-        datadir = FileSystem::join(datadir, INSTALL_SUBDIR_SHARE);
-      }
-    }
-#endif // __ANDROID__
-
-    if (!PHYSFS_mount(boost::filesystem::canonical(datadir).string().c_str(), nullptr, 1))
-    {
-      log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
-    }
+    log_warning << "Couldn't add '" << datadir << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
   }
-
-  void find_userdir() const
-  {
-    std::string userdir;
-#ifdef __ANDROID__
-	userdir = getenv("HOME");
-	userdir += "/.supertux2";
 #else
-    if (m_forced_userdir)
-    {
-      userdir = *m_forced_userdir;
-    }
-    else if (const char* env_userdir = getenv("SUPERTUX2_USER_DIR"))
-    {
-      userdir = env_userdir;
-    }
-    else
-    {
-		userdir = PHYSFS_getPrefDir("SuperTux","supertux2");
-    }
-	//Kept for backwards-compatability only, hence the silence
+  if (!PHYSFS_mount(BUILD_CONFIG_DATA_DIR, nullptr, 1))
+  {
+    log_warning << "Couldn't add '" << BUILD_CONFIG_DATA_DIR << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
+  }
+#endif
+}
+
+void PhysfsSubsystem::find_userdir() const
+{
+  std::string userdir;
+  if (m_forced_userdir)
+  {
+    userdir = *m_forced_userdir;
+  }
+  else if (const char* env_userdir = getenv("SUPERTUX2_USER_DIR"))
+  {
+    userdir = env_userdir;
+  }
+  else
+  {
+  userdir = PHYSFS_getPrefDir("SuperTux","supertux2");
+#ifdef __ANDROID__
+    userdir = getenv("HOME");
+    userdir += "/.supertux2";
+#else
+  }
+//Kept for backwards-compatability only, hence the silence
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-	std::string physfs_userdir = PHYSFS_getUserDir();
+#endif
+std::string physfs_userdir = PHYSFS_getUserDir();
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
+#ifndef __HAIKU__
 #ifdef _WIN32
-	std::string olduserdir = FileSystem::join(physfs_userdir, PACKAGE_NAME);
+std::string olduserdir = FileSystem::join(physfs_userdir, PACKAGE_NAME);
 #else
-	std::string olduserdir = FileSystem::join(physfs_userdir, "." PACKAGE_NAME);
+std::string olduserdir = FileSystem::join(physfs_userdir, "." PACKAGE_NAME);
 #endif
-	if (FileSystem::is_directory(olduserdir)) {
-	  boost::filesystem::path olduserpath(olduserdir);
-	  boost::filesystem::path userpath(userdir);
+if (FileSystem::is_directory(olduserdir)) {
+  boost::filesystem::path olduserpath(olduserdir);
+  boost::filesystem::path userpath(userdir);
 
-	  boost::filesystem::directory_iterator end_itr;
+  boost::filesystem::directory_iterator end_itr;
 
-	  bool success = true;
+  bool success = true;
 
-	  // cycle through the directory
-	  for (boost::filesystem::directory_iterator itr(olduserpath); itr != end_itr; ++itr) {
-		try
-		{
-		  boost::filesystem::rename(itr->path().string().c_str(), userpath / itr->path().filename());
-		}
-		catch (const boost::filesystem::filesystem_error& err)
-		{
-		  success = false;
-		  log_warning << "Failed to move contents of config directory: " << err.what() << std::endl;
-		}
-	  }
-	  if (success) {
-	    try
-		{
-		  boost::filesystem::remove_all(olduserpath);
-		}
-		catch (const boost::filesystem::filesystem_error& err)
-		{
-		  success = false;
-		  log_warning << "Failed to remove old config directory: " << err.what();
-		}
-	  }
-	  if (success) {
-	    log_info << "Moved old config dir " << olduserdir << " to " << userdir << std::endl;
-	  }
-	}
+  // cycle through the directory
+  for (boost::filesystem::directory_iterator itr(olduserpath); itr != end_itr; ++itr) {
+  try
+  {
+    boost::filesystem::rename(itr->path().string().c_str(), userpath / itr->path().filename());
+  }
+  catch (const boost::filesystem::filesystem_error& err)
+  {
+    success = false;
+    log_warning << "Failed to move contents of config directory: " << err.what() << std::endl;
+  }
+  }
+  if (success) {
+    try
+    {
+      boost::filesystem::remove_all(olduserpath);
+    }
+    catch (const boost::filesystem::filesystem_error& err)
+    {
+      success = false;
+      log_warning << "Failed to remove old config directory: " << err.what();
+    }
+  }
+  if (success) {
+    log_info << "Moved old config dir " << olduserdir << " to " << userdir << std::endl;
+  }
+}
 #endif
-    if (!FileSystem::is_directory(userdir))
-    {
-	  FileSystem::mkdir(userdir);
-	  log_info << "Created SuperTux userdir: " << userdir << std::endl;
-    }
 
-    if (!PHYSFS_setWriteDir(userdir.c_str()))
-    {
-      std::ostringstream msg;
-      msg << "Failed to use userdir directory '"
-          <<  userdir << "': errorcode: " << PHYSFS_getLastErrorCode();
-      throw std::runtime_error(msg.str());
-    }
+#ifdef EMSCRIPTEN
+  userdir = "/home/web_user/.local/share/supertux2/";
+#endif
 
-    PHYSFS_mount(userdir.c_str(), nullptr, 0);
-  }
-
-  static void print_search_path()
+  if (!FileSystem::is_directory(userdir))
   {
-    const char* writedir = PHYSFS_getWriteDir();
-    log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << std::endl;
-    log_info << "PhysfsSearchPath:" << std::endl;
-    char** searchpath = PHYSFS_getSearchPath();
-    for (char** i = searchpath; *i != nullptr; ++i)
-    {
-      log_info << "  " << *i << std::endl;
-    }
-    PHYSFS_freeList(searchpath);
+  FileSystem::mkdir(userdir);
+  log_info << "Created SuperTux userdir: " << userdir << std::endl;
   }
 
-  ~PhysfsSubsystem()
+#ifdef EMSCRIPTEN
+  EM_ASM({
+    FS.mount(IDBFS, {}, "/home/web_user/.local/share/supertux2/");
+    FS.syncfs(true, (err) => { console.log(err); });
+  }, 0); // EM_ASM is a variadic macro and Clang requires at least 1 value for the variadic argument
+#endif
+
+  if (!PHYSFS_setWriteDir(userdir.c_str()))
   {
-    PHYSFS_deinit();
+    std::ostringstream msg;
+    msg << "Failed to use userdir directory '"
+        <<  userdir << "': errorcode: " << PHYSFS_getLastErrorCode();
+    throw std::runtime_error(msg.str());
   }
-};
 
-class SDLSubsystem final
+  PHYSFS_mount(userdir.c_str(), nullptr, 0);
+}
+
+void PhysfsSubsystem::print_search_path()
 {
-public:
-  SDLSubsystem()
+  const char* writedir = PHYSFS_getWriteDir();
+  log_info << "PhysfsWriteDir: " << (writedir ? writedir : "(null)") << std::endl;
+  log_info << "PhysfsSearchPath:" << std::endl;
+  char** searchpath = PHYSFS_getSearchPath();
+  for (char** i = searchpath; *i != nullptr; ++i)
   {
-    if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
-    {
-      std::stringstream msg;
-      msg << "Couldn't initialize SDL: " << SDL_GetError();
-      throw std::runtime_error(msg.str());
-    }
+    log_info << "  " << *i << std::endl;
+  }
+  PHYSFS_freeList(searchpath);
+}
 
-    if (TTF_Init() < 0)
-    {
-      std::stringstream msg;
-      msg << "Couldn't initialize SDL TTF: " << SDL_GetError();
-      throw std::runtime_error(msg.str());
-    }
+PhysfsSubsystem::~PhysfsSubsystem()
+{
+  PHYSFS_deinit();
+}
 
-    // just to be sure
-    atexit(TTF_Quit);
-    atexit(SDL_Quit);
+SDLSubsystem::SDLSubsystem()
+{
+  Uint32 flags = SDL_INIT_TIMER | SDL_INIT_VIDEO;
+#ifndef UBUNTU_TOUCH
+  flags |= SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER;
+#endif
+  if (SDL_Init(flags) < 0)
+  {
+    std::stringstream msg;
+    msg << "Couldn't initialize SDL: " << SDL_GetError();
+    throw std::runtime_error(msg.str());
   }
 
-  ~SDLSubsystem()
+  if (TTF_Init() < 0)
   {
-    TTF_Quit();
-    SDL_Quit();
+    std::stringstream msg;
+    msg << "Couldn't initialize SDL TTF: " << SDL_GetError();
+    throw std::runtime_error(msg.str());
   }
-};
+
+  // just to be sure
+  atexit(TTF_Quit);
+  atexit(SDL_Quit);
+}
+
+SDLSubsystem::~SDLSubsystem()
+{
+  TTF_Quit();
+  SDL_Quit();
+}
 
 void
 Main::init_video()
@@ -376,7 +401,7 @@ Main::init_video()
   SDLSurfacePtr icon = SDLSurface::from_file(icon_fname);
   VideoSystem::current()->set_icon(*icon);
 
-  SDL_ShowCursor(0);
+  SDL_ShowCursor(g_config->custom_mouse_cursor ? 0 : 1);
 
   log_info << (g_config->use_fullscreen?"fullscreen ":"window ")
            << " Window: "     << g_config->window_size
@@ -410,8 +435,8 @@ Main::resave(const std::string& input_filename, const std::string& output_filena
 void
 Main::launch_game(const CommandLineArguments& args)
 {
-  SDLSubsystem sdl_subsystem;
-  ConsoleBuffer console_buffer;
+  m_sdl_subsystem.reset(new SDLSubsystem());
+  m_console_buffer.reset(new ConsoleBuffer());
 #ifdef __ANDROID__
   if (getenv("ANDROID_TV")) {
     SDL_ANDROID_SetScreenKeyboardShown(0);
@@ -419,10 +444,11 @@ Main::launch_game(const CommandLineArguments& args)
 #endif
 
   s_timelog.log("controller");
-  InputManager input_manager(g_config->keyboard_config, g_config->joystick_config);
+  m_input_manager.reset(new InputManager(g_config->keyboard_config, g_config->joystick_config));
 
   s_timelog.log("commandline");
 
+#ifndef EMSCRIPTEN
   auto video = g_config->video;
   if (args.resave && *args.resave) {
     if (args.video) {
@@ -432,37 +458,45 @@ Main::launch_game(const CommandLineArguments& args)
     }
   }
   s_timelog.log("video");
-  std::unique_ptr<VideoSystem> video_system = VideoSystem::create(video);
+
+  m_video_system = VideoSystem::create(video);
+#else
+  // Force SDL for WASM builds, as OpenGL is reportedly slow on some devices
+  m_video_system = VideoSystem::create(VideoSystem::VIDEO_SDL);
+#endif
   init_video();
 
-  TTFSurfaceManager ttf_surface_manager;
+  m_ttf_surface_manager.reset(new TTFSurfaceManager());
 
   s_timelog.log("audio");
-  SoundManager sound_manager;
-  sound_manager.enable_sound(g_config->sound_enabled);
-  sound_manager.enable_music(g_config->music_enabled);
-  sound_manager.set_sound_volume(g_config->sound_volume);
-  sound_manager.set_music_volume(g_config->music_volume);
+  m_sound_manager.reset(new SoundManager());
+  m_sound_manager->enable_sound(g_config->sound_enabled);
+  m_sound_manager->enable_music(g_config->music_enabled);
+  m_sound_manager->set_sound_volume(g_config->sound_volume);
+  m_sound_manager->set_music_volume(g_config->music_volume);
 
   s_timelog.log("scripting");
-  SquirrelVirtualMachine scripting(g_config->enable_script_debugger);
+  m_squirrel_virtual_machine.reset(new SquirrelVirtualMachine(g_config->enable_script_debugger));
 
   s_timelog.log("resources");
-  TileManager tile_manager;
-  SpriteManager sprite_manager;
-  Resources resources;
+  m_tile_manager.reset(new TileManager());
+  m_sprite_manager.reset(new SpriteManager());
+  m_resources.reset(new Resources());
+
+  s_timelog.log("integrations");
+  Integration::setup();
 
   s_timelog.log("addons");
-  AddonManager addon_manager("addons", g_config->addons);
+  m_addon_manager.reset(new AddonManager("addons", g_config->addons));
 
-  Console console(console_buffer);
+  m_console.reset(new Console(*m_console_buffer));
 
   s_timelog.log(nullptr);
 
-  const auto default_savegame = std::make_unique<Savegame>(std::string());
+  m_savegame = std::make_unique<Savegame>(std::string());
 
-  GameManager game_manager;
-  ScreenManager screen_manager(*video_system, input_manager);
+  m_game_manager.reset(new GameManager());
+  m_screen_manager.reset(new ScreenManager(*m_video_system, *m_input_manager));
 
   if (!args.filenames.empty())
   {
@@ -491,22 +525,22 @@ Main::launch_game(const CommandLineArguments& args)
           editor->set_level(start_level);
           editor->setup();
           editor->update(0, Controller());
-          screen_manager.push_screen(std::move(editor));
+          m_screen_manager->push_screen(std::move(editor));
           MenuManager::instance().clear_menu_stack();
-          sound_manager.stop_music(0.5);
+          m_sound_manager->stop_music(0.5);
         } else {
           log_warning << "Level " << start_level << " doesn't exist." << std::endl;
         }
       }
       else if (StringUtil::has_suffix(start_level, ".stwm"))
       {
-        screen_manager.push_screen(std::make_unique<worldmap::WorldMapScreen>(
-                                     std::make_unique<worldmap::WorldMap>(filename, *default_savegame)));
+        m_screen_manager->push_screen(std::make_unique<worldmap::WorldMapScreen>(
+                                     std::make_unique<worldmap::WorldMap>(filename, *m_savegame)));
       }
       else
       { // launch game
         std::unique_ptr<GameSession> session (
-          new GameSession(filename, *default_savegame));
+          new GameSession(filename, *m_savegame));
 
         g_config->random_seed = session->get_demo_random_seed(g_config->start_demo);
         gameRandom.seed(g_config->random_seed);
@@ -521,7 +555,8 @@ Main::launch_game(const CommandLineArguments& args)
             "" : spawnpoints.begin()->get_name();
           std::string spawnpointname = args.spawnpoint.get_value_or(default_spawnpoint);
 
-          session->respawn(sectorname, spawnpointname);
+          session->set_start_point(sectorname, spawnpointname);
+          session->restart_level();
         }
 
         if (g_config->tux_spawn_pos)
@@ -534,7 +569,7 @@ Main::launch_game(const CommandLineArguments& args)
 
         if (!g_config->record_demo.empty())
           session->record_demo(g_config->record_demo);
-        screen_manager.push_screen(std::move(session));
+        m_screen_manager->push_screen(std::move(session));
       }
     }
   }
@@ -542,20 +577,34 @@ Main::launch_game(const CommandLineArguments& args)
   {
     if (args.editor)
     {
-      screen_manager.push_screen(std::make_unique<Editor>());
+      m_screen_manager->push_screen(std::make_unique<Editor>());
     }
     else
     {
-      screen_manager.push_screen(std::make_unique<TitleScreen>(*default_savegame));
+      m_screen_manager->push_screen(std::make_unique<TitleScreen>(*m_savegame));
     }
   }
 
-  screen_manager.run();
+#ifdef UBUNTU_TOUCH
+  Dialog::show_message(_("The UBports version is under heavy development!\n"
+                         "If you encounter issues, PLEASE contact the maintainter\n"
+                         "at https://github.com/supertux/supertux/issues or on the\n"
+                         "Open Store's Telegram at https://open-store.io/telegram"));
+#endif
+
+  m_screen_manager->run();
 }
 
 int
 Main::run(int argc, char** argv)
 {
+  // First and foremost, set error handlers (to print stack trace on SIGSEGV, etc.)
+  ErrorHandler::set_handlers();
+
+#ifdef __EMSCRIPTEN__
+  init_emscripten();
+#endif
+
 #ifdef WIN32
 	//SDL is used instead of PHYSFS because both create the same path in app data
 	//However, PHYSFS is not yet initizlized, and this should be run before anything is initialized
@@ -571,21 +620,30 @@ Main::run(int argc, char** argv)
 	std::string errpath = prefpath + u8"/console.err";
 	std::wstring w_errpath = converter.from_bytes(errpath);
 	_wfreopen(w_errpath.c_str(), L"a", stderr);
-#endif
 
-#ifndef __ANDROID__
-  // Create and install global locale
-  std::locale::global(boost::locale::generator().generate(""));
-  // Make boost.filesystem use it
-  boost::filesystem::path::imbue(std::locale());
-#endif // __ANDROID__
+  // Create and install global locale - this can fail on some situations:
+  // - with bad values for env vars (LANG, LC_ALL, ...)
+  // - targets where libstdc++ uses its generic locales code (https://gcc.gnu.org/legacy-ml/libstdc++/2003-02/msg00345.html)
+  // NOTE: when moving to C++ >= 17, keep the try-catch block, but use std::locale:global(std::locale(""));
+  //
+  // This should not be necessary on *nix, so only try it on Windows.
+  try
+  {
+    std::locale::global(boost::locale::generator().generate(""));
+    // Make boost.filesystem use it
+    boost::filesystem::path::imbue(std::locale());
+  }
+  catch(const std::runtime_error& err)
+  {
+    std::cout << "Warning: " << err.what() << std::endl;
+  }
+#endif
 
   int result = 0;
 
   try
   {
     CommandLineArguments args;
-
     try
     {
       args.parse_args(argc, argv);
@@ -597,16 +655,15 @@ Main::run(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
-    PhysfsSubsystem physfs_subsystem(argv[0], args.datadir, args.userdir);
-    physfs_subsystem.print_search_path();
+    m_physfs_subsystem.reset(new PhysfsSubsystem(argv[0], args.datadir, args.userdir));
+    m_physfs_subsystem->print_search_path();
 
     s_timelog.log("config");
-    ConfigSubsystem config_subsystem;
+    m_config_subsystem.reset(new ConfigSubsystem());
     args.merge_into(*g_config);
 
     s_timelog.log("tinygettext");
     init_tinygettext();
-
     switch (args.get_action())
     {
       case CommandLineArguments::PRINT_VERSION:
@@ -619,6 +676,10 @@ Main::run(int argc, char** argv)
 
       case CommandLineArguments::PRINT_DATADIR:
         args.print_datadir();
+        return 0;
+
+      case CommandLineArguments::PRINT_ACKNOWLEDGEMENTS:
+        args.print_acknowledgements();
         return 0;
 
       default:

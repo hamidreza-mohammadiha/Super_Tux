@@ -18,6 +18,7 @@
 
 #include "editor/editor.hpp"
 #include "object/camera.hpp"
+#include "supertux/gameconfig.hpp"
 #include "supertux/level.hpp"
 #include "supertux/sector.hpp"
 #include "util/reader.hpp"
@@ -33,7 +34,13 @@ Gradient::Gradient() :
   m_gradient_bottom(),
   m_gradient_direction(),
   m_blend(),
-  m_target(DrawingTarget::COLORMAP)
+  m_target(DrawingTarget::COLORMAP),
+  m_start_gradient_top(),
+  m_start_gradient_bottom(),
+  m_fade_gradient_top(),
+  m_fade_gradient_bottom(),
+  m_fade_total_time(),
+  m_fade_time()
 {
 }
 
@@ -45,7 +52,13 @@ Gradient::Gradient(const ReaderMapping& reader) :
   m_gradient_bottom(),
   m_gradient_direction(),
   m_blend(),
-  m_target(DrawingTarget::COLORMAP)
+  m_target(DrawingTarget::COLORMAP),
+  m_start_gradient_top(),
+  m_start_gradient_bottom(),
+  m_fade_gradient_top(),
+  m_fade_gradient_bottom(),
+  m_fade_total_time(),
+  m_fade_time()
 {
   m_layer = reader_get_layer (reader, LAYER_BACKGROUND0);
   std::vector<float> bkgd_top_color, bkgd_bottom_color;
@@ -150,8 +163,35 @@ Gradient::~Gradient()
 }
 
 void
-Gradient::update(float)
+Gradient::update(float delta)
 {
+  if (m_fade_time <= 0) return;
+  
+  m_fade_time -= delta;
+  if (m_fade_time <= 0)
+  {
+    m_fade_time = 0;
+    
+    m_gradient_top = m_fade_gradient_top;
+    m_gradient_bottom = m_fade_gradient_bottom;
+    
+    return;
+  }
+  
+  float progress = m_fade_time / m_fade_total_time;
+  
+  m_gradient_top = Color(
+    m_fade_gradient_top.red + (m_start_gradient_top.red - m_fade_gradient_top.red) * progress,
+    m_fade_gradient_top.green + (m_start_gradient_top.green - m_fade_gradient_top.green) * progress,
+    m_fade_gradient_top.blue + (m_start_gradient_top.blue - m_fade_gradient_top.blue) * progress,
+    m_fade_gradient_top.alpha + (m_start_gradient_top.alpha - m_fade_gradient_top.alpha) * progress
+  );
+  m_gradient_bottom = Color(
+    m_fade_gradient_bottom.red + (m_start_gradient_bottom.red - m_fade_gradient_bottom.red) * progress,
+    m_fade_gradient_bottom.green + (m_start_gradient_bottom.green - m_fade_gradient_bottom.green) * progress,
+    m_fade_gradient_bottom.blue + (m_start_gradient_bottom.blue - m_fade_gradient_bottom.blue) * progress,
+    m_fade_gradient_bottom.alpha + (m_start_gradient_bottom.alpha - m_fade_gradient_bottom.alpha) * progress
+  );
 }
 
 void
@@ -178,6 +218,17 @@ Gradient::set_gradient(Color top, Color bottom)
 }
 
 void
+Gradient::fade_gradient(Color top, Color bottom, float time)
+{
+  m_start_gradient_top = m_gradient_top;
+  m_start_gradient_bottom = m_gradient_bottom;
+  m_fade_gradient_top = top;
+  m_fade_gradient_bottom = bottom;
+  m_fade_total_time = time;
+  m_fade_time = time;
+}
+
+void
 Gradient::set_direction(const GradientDirection& direction)
 {
   m_gradient_direction = direction;
@@ -186,7 +237,7 @@ Gradient::set_direction(const GradientDirection& direction)
 void
 Gradient::draw(DrawingContext& context)
 {
-  if (Editor::is_active() && !EditorOverlayWidget::render_background)
+  if (Editor::is_active() && !g_config->editor_render_background)
     return;
 
   Rectf gradient_region;

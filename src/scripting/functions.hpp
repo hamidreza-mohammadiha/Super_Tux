@@ -51,6 +51,11 @@ void set_next_worldmap(const std::string& dirname, const std::string& spawnpoint
 /** Load and display a level (on next screenswitch) */
 void load_level(const std::string& filename);
 
+/** Manages skippable cutscenes (cancels calls to wait()) */
+void start_cutscene();
+void end_cutscene();
+bool check_cutscene();
+
 /** Suspend the script execution for the specified number of seconds */
 void wait(HSQUIRRELVM vm, float seconds) __suspend;
 
@@ -94,6 +99,18 @@ void debug_worldmap_ghost(bool enable);
 
 /** Changes music to musicfile */
 void play_music(const std::string& musicfile);
+
+/** Stops the music */
+void stop_music(float fadetime);
+
+/** Fade in music */
+void fade_in_music(const std::string& musicfile, float fadetime);
+
+/** Resume music */
+void resume_music(float fadetime);
+
+/** Pause music **/
+void pause_music(float fadetime);
 
 /** Plays a soundfile */
 void play_sound(const std::string& soundfile);

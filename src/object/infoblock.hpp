@@ -27,13 +27,13 @@ class InfoBlock final : public Block
 {
 public:
   InfoBlock(const ReaderMapping& mapping);
-  virtual ~InfoBlock();
+  ~InfoBlock() override;
 
   virtual void update(float dt_sec) override;
   virtual void draw(DrawingContext& context) override;
 
   virtual std::string get_class() const override { return "infoblock"; }
-  virtual std::string get_display_name() const override { return _("Info block"); }
+  virtual std::string get_display_name() const override { return _("Info Block"); }
 
   virtual ObjectSettings get_settings() override;
 

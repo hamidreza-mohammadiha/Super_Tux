@@ -166,6 +166,8 @@ LevelParser::load(const ReaderDocument& doc)
     level.get("contact", m_level.m_contact);
     level.get("license", m_level.m_license);
     level.get("target-time", m_level.m_target_time);
+    level.get("suppress-pause-menu", m_level.m_suppress_pause_menu);
+    level.get("note", m_level.m_note);
 
     auto iter = level.get_iter();
     while (iter.next()) {
@@ -204,7 +206,7 @@ LevelParser::create(const std::string& filepath, const std::string& levelname)
   m_level.m_filename = filepath;
   m_level.m_name = levelname;
   m_level.m_license = "CC-BY-SA 4.0 International";
-  m_level.m_tileset = m_worldmap ? "images/worldmap.strf" : "images/tiles.strf";
+  m_level.m_tileset = m_worldmap ? "images/ice_world.strf" : "images/tiles.strf";
 
   auto sector = SectorParser::from_nothing(m_level);
   sector->set_name("main");

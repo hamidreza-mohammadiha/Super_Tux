@@ -27,6 +27,7 @@
 #include "object/background.hpp"
 #include "object/camera.hpp"
 #include "object/cloud_particle_system.hpp"
+#include "object/custom_particle_system.hpp"
 #include "object/gradient.hpp"
 #include "object/music_object.hpp"
 #include "object/rain_particle_system.hpp"
@@ -41,7 +42,7 @@
 #include "util/reader_collection.hpp"
 #include "util/reader_mapping.hpp"
 
-static const std::string DEFAULT_BG = "images/background/arctis2.png";
+static const std::string DEFAULT_BG = "images/background/antarctic/arctis2.png";
 
 std::unique_ptr<Sector>
 SectorParser::from_reader(Level& level, const ReaderMapping& reader, bool editable)
@@ -159,6 +160,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
 
   std::string backgroundimage;
   if (reader.get("background", backgroundimage) && (!backgroundimage.empty())) {
+    // These paths may need to be changed.
     if (backgroundimage == "arctis.png") backgroundimage = "arctis.jpg";
     if (backgroundimage == "arctis2.jpg") backgroundimage = "arctis.jpg";
     if (backgroundimage == "ocean.png") backgroundimage = "ocean.jpg";
@@ -206,6 +208,8 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
     m_sector.add<SnowParticleSystem>();
   else if (particlesystem == "rain")
     m_sector.add<RainParticleSystem>();
+  else if (particlesystem == "custom-particles")
+    m_sector.add<CustomParticleSystem>();
 
   Vector startpos(100, 170);
   reader.get("start_pos_x", startpos.x);
@@ -265,7 +269,7 @@ SectorParser::parse_old_format(const ReaderMapping& reader)
     auto iter = resetpoints->get_iter();
     while (iter.next()) {
       if (iter.get_key() == "point") {
-        Vector sp_pos;
+        Vector sp_pos(0.0f, 0.0f);
         if (reader.get("x", sp_pos.x) && reader.get("y", sp_pos.y))
         {
           m_sector.add<SpawnPointMarker>("main", sp_pos);
@@ -323,11 +327,23 @@ SectorParser::create_sector()
     frgrd.resize(100, 35);
     frgrd.set_layer(100);
     frgrd.set_solid(false);
+
+    // Add background gradient to sector:
+    auto& gradient = m_sector.add<Gradient>();
+    gradient.set_gradient(Color(0.3f, 0.4f, 0.75f), Color::WHITE);
+    gradient.set_layer(-301);
+  }
+  else
+  {
+    auto& water = m_sector.add<TileMap>(tileset);
+    water.resize(100, 35, 1);
+    water.set_layer(-100);
+    water.set_solid(false);
   }
 
   auto& intact = m_sector.add<TileMap>(tileset);
   if (worldmap) {
-    intact.resize(100, 100, 9);
+    intact.resize(100, 100, 0);
   } else {
     intact.resize(100, 35, 0);
   }

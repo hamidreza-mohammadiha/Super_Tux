@@ -39,13 +39,18 @@ public:
 
 public:
   Rectf() :
-    m_p1(),
+    m_p1(0.0f, 0.0f),
     m_size()
   { }
+
+  Rectf(const Rectf& rhs) = default;
+  Rectf& operator=(const Rectf& rhs) = default;
 
   Rectf(const Vector& np1, const Vector& np2) :
     m_p1(np1), m_size(np2.x - np1.x, np2.y - np1.y)
   {
+    assert(m_size.width >= 0 &&
+           m_size.height >= 0);
   }
 
   Rectf(float x1, float y1, float x2, float y2) :
@@ -118,7 +123,7 @@ public:
   float distance (const Vector& other, AnchorPoint ap = ANCHOR_MIDDLE) const
   {
     Vector v = get_anchor_pos (*this, ap);
-    return ((v - other).norm ());
+    return glm::distance(v, other);
   }
 
   float distance (const Rectf& other, AnchorPoint ap = ANCHOR_MIDDLE) const
@@ -126,7 +131,7 @@ public:
     Vector v1 = get_anchor_pos(*this, ap);
     Vector v2 = get_anchor_pos(other, ap);
 
-    return ((v1 - v2).norm ());
+    return glm::distance(v1, v2);
   }
 
   Rectf grown(float border) const

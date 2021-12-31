@@ -20,6 +20,8 @@
 #include <config.h>
 #include <physfs.h>
 
+#include "editor/overlay_widget.hpp"
+#include "physfs/ifile_stream.hpp"
 #include "supertux/gameconfig.hpp"
 #include "util/gettext.hpp"
 #include "version.h"
@@ -68,6 +70,24 @@ CommandLineArguments::print_datadir() const
 }
 
 void
+CommandLineArguments::print_acknowledgements() const
+{
+  IFileStream in("ACKNOWLEDGEMENTS.txt");
+  std::string line;
+  if (in.good())
+  {
+    while (std::getline(in, line))
+    {
+      std::cout << line << std::endl;
+    }
+  }
+  else
+  {
+    std::cout << "Could not open acknowledgements file" << std::endl;
+  }
+}
+
+void
 CommandLineArguments::print_help(const char* arg0) const
 {
   std::cerr
@@ -77,7 +97,8 @@ CommandLineArguments::print_help(const char* arg0) const
     << _("  -v, --version                Show SuperTux version and quit") << "\n"
     << _("  --verbose                    Print verbose messages") << "\n"
     << _("  --debug                      Print extra verbose messages") << "\n"
-    << _( "  --print-datadir              Print SuperTux's primary data directory.") << "\n"
+    << _("  --print-datadir              Print SuperTux's primary data directory.") << "\n"
+    << _("  --acknowledgements           Print the licenses of libraries used by SuperTux.") << "\n"
     << "\n"
     << _("Video Options:") << "\n"
     << _("  -f, --fullscreen             Run in fullscreen mode") << "\n"
@@ -147,6 +168,10 @@ CommandLineArguments::parse_args(int argc, char** argv)
     else if (arg == "--print-datadir")
     {
       m_action = PRINT_DATADIR;
+    }
+    else if (arg == "--acknowledgements")
+    {
+      m_action = PRINT_ACKNOWLEDGEMENTS;
     }
     else if (arg == "--debug")
     {
@@ -323,7 +348,7 @@ CommandLineArguments::parse_args(int argc, char** argv)
     }
     else if (arg == "--spawn-pos")
     {
-      Vector spawn_pos;
+      Vector spawn_pos(0.0f, 0.0f);
 
       if (++i >= argc)
         throw std::runtime_error("Need to specify a spawn-pos X,Y");
@@ -396,23 +421,23 @@ CommandLineArguments::merge_into(Config& config)
 {
 #define merge_option(x) if (x) { config.x = *(x); }
 
-  merge_option(fullscreen_size);
-  merge_option(fullscreen_refresh_rate);
-  merge_option(window_size);
-  merge_option(aspect_size);
-  merge_option(use_fullscreen);
-  merge_option(video);
-  merge_option(show_fps);
-  merge_option(show_player_pos);
-  merge_option(sound_enabled);
-  merge_option(music_enabled);
-  merge_option(enable_script_debugger);
-  merge_option(start_demo);
-  merge_option(record_demo);
-  merge_option(tux_spawn_pos);
-  merge_option(developer_mode);
-  merge_option(christmas_mode);
-  merge_option(repository_url);
+  merge_option(fullscreen_size)
+  merge_option(fullscreen_refresh_rate)
+  merge_option(window_size)
+  merge_option(aspect_size)
+  merge_option(use_fullscreen)
+  merge_option(video)
+  merge_option(show_fps)
+  merge_option(show_player_pos)
+  merge_option(sound_enabled)
+  merge_option(music_enabled)
+  merge_option(enable_script_debugger)
+  merge_option(start_demo)
+  merge_option(record_demo)
+  merge_option(tux_spawn_pos)
+  merge_option(developer_mode)
+  merge_option(christmas_mode)
+  merge_option(repository_url)
 
 #undef merge_option
 }

@@ -29,20 +29,27 @@
 #include "supertux/screen_fade.hpp"
 
 #include <physfs.h>
+#include <numeric>
+
+#include <boost/algorithm/string/predicate.hpp>
 
 Level* Level::s_current = nullptr;
 
 Level::Level(bool worldmap) :
   m_is_worldmap(worldmap),
   m_name("noname"),
-  m_author("Mr. X"),
+  m_author("SuperTux Player"),
   m_contact(),
   m_license(),
   m_filename(),
+  m_note(),
   m_sectors(),
   m_stats(),
   m_target_time(),
-  m_tileset("images/tiles.strf")
+  m_tileset("images/tiles.strf"),
+  m_suppress_pause_menu(),
+  m_is_in_cutscene(false),
+  m_skip_cutscene(false)
 {
   s_current = this;
 }
@@ -88,7 +95,9 @@ Level::save(const std::string& filepath, bool retry)
 
     Writer writer(filepath);
     save(writer);
-    log_warning << "Level saved as " << filepath << "." << std::endl;
+    log_warning << "Level saved as " << filepath << "." 
+                << (boost::algorithm::ends_with(filepath, "~") ? " [Autosave]" : "")
+                << std::endl;
   } catch(std::exception& e) {
     if (retry) {
       std::stringstream msg;
@@ -120,6 +129,9 @@ Level::save(Writer& writer)
   writer.write("version", 3);
   writer.write("name", m_name, true);
   writer.write("author", m_author, false);
+  if (!m_note.empty()) {
+    writer.write("note", m_note, false);
+  }
   if (!m_contact.empty()) {
     writer.write("contact", m_contact, false);
   }
@@ -128,6 +140,9 @@ Level::save(Writer& writer)
   }
   if (m_target_time != 0.0f){
     writer.write("target-time", m_target_time);
+  }
+  if(m_suppress_pause_menu) {
+    writer.write("suppress-pause-menu", m_suppress_pause_menu);
   }
 
   for (auto& sector : m_sectors) {
@@ -155,12 +170,12 @@ Level::add_sector(std::unique_ptr<Sector> sector)
 Sector*
 Level::get_sector(const std::string& name_) const
 {
-  for (auto const& sector : m_sectors) {
-    if (sector->get_name() == name_) {
-      return sector.get();
-    }
-  }
-  return nullptr;
+  auto _sector = std::find_if(m_sectors.begin(), m_sectors.end(), [name_] (const std::unique_ptr<Sector>& sector) {
+    return sector->get_name() == name_;
+  });
+  if(_sector == m_sectors.end())
+    return nullptr;
+  return _sector->get();
 }
 
 size_t
@@ -224,11 +239,10 @@ Level::get_total_badguys() const
 int
 Level::get_total_secrets() const
 {
-  int total_secrets = 0;
-  for (auto const& sector : m_sectors) {
-    total_secrets += sector->get_object_count<SecretAreaTrigger>();
-  }
-  return total_secrets;
+  auto get_secret_count = [](int accumulator, const std::unique_ptr<Sector>& sector) {
+    return accumulator + sector->get_object_count<SecretAreaTrigger>();
+  };
+  return std::accumulate(m_sectors.begin(), m_sectors.end(), 0, get_secret_count);
 }
 
 void

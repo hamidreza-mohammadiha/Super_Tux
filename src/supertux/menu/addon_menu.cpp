@@ -49,6 +49,9 @@ std::string addon_type_to_translated_string(Addon::Type type)
 
     case Addon::WORLD:
       return _("World");
+	  
+	case Addon::ADDON:
+      return _("Add-on");
 
     case Addon::LANGUAGEPACK:
       return "";
@@ -347,6 +350,5 @@ AddonMenu::toggle_addon(const Addon& addon)
     MenuManager::instance().set_dialog(std::move(dialog));
   }
 }
-
 
 /* EOF */

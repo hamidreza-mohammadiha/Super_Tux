@@ -60,6 +60,8 @@ public:
   /** Stop platform at next node */
   void stop_moving();
 
+  /** Updates the platform to the given action  */
+  void set_action(const std::string& action, int repeat);
   /** @} */
 
 private:
@@ -76,6 +78,8 @@ private:
   /** true if a Player touched the Platform during the round before
       the last round of collision detections */
   bool m_last_player_contact;
+
+  int m_starting_node;
 
 private:
   Platform(const Platform&) = delete;

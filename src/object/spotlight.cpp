@@ -20,7 +20,38 @@
 #include "sprite/sprite_manager.hpp"
 #include "util/reader_mapping.hpp"
 
+Spotlight::Direction
+Spotlight::Direction_from_string(const std::string& s)
+{
+  if (s == "clockwise") {
+    return Direction::CLOCKWISE;
+  } else if (s == "counter-clockwise") {
+    return Direction::COUNTERCLOCKWISE;
+  } else if (s == "stopped") {
+    return Direction::STOPPED;
+  }
+
+  throw std::runtime_error("Invalid spotlight direction from string '" + s + "'");
+}
+
+std::string
+Spotlight::Direction_to_string(Direction dir)
+{
+  switch(dir) {
+    case Direction::CLOCKWISE:
+      return "clockwise";
+    case Direction::COUNTERCLOCKWISE:
+      return "counter-clockwise";
+    case Direction::STOPPED:
+      return "stopped";
+  }
+
+  throw std::runtime_error("Invalid spotlight direction '" + std::to_string(static_cast<int>(dir)) + "'");
+}
+
 Spotlight::Spotlight(const ReaderMapping& mapping) :
+  MovingObject(mapping),
+  ExposedObject<Spotlight, scripting::Spotlight>(this),
   angle(),
   center(SpriteManager::current()->create("images/objects/spotlight/spotlight_center.sprite")),
   base(SpriteManager::current()->create("images/objects/spotlight/spotlight_base.sprite")),
@@ -29,7 +60,8 @@ Spotlight::Spotlight(const ReaderMapping& mapping) :
   lightcone(SpriteManager::current()->create("images/objects/spotlight/lightcone.sprite")),
   color(1.0f, 1.0f, 1.0f),
   speed(50.0f),
-  counter_clockwise()
+  m_direction(),
+  m_layer(0)
 {
   m_col.m_group = COLGROUP_DISABLED;
 
@@ -39,12 +71,21 @@ Spotlight::Spotlight(const ReaderMapping& mapping) :
 
   mapping.get("angle", angle, 0.0f);
   mapping.get("speed", speed, 50.0f);
-  mapping.get("counter-clockwise", counter_clockwise, false);
+
+  if (!mapping.get_custom("r-direction", m_direction, Direction_from_string))
+  {
+    // Retrocompatibility
+    bool counter_clockwise;
+    mapping.get("counter-clockwise", counter_clockwise, false);
+    m_direction = counter_clockwise ? Direction::COUNTERCLOCKWISE : Direction::CLOCKWISE;
+  }
 
   std::vector<float> vColor;
   if ( mapping.get( "color", vColor ) ){
     color = Color( vColor );
   }
+
+  mapping.get("layer", m_layer, 0);
 }
 
 Spotlight::~Spotlight()
@@ -59,9 +100,13 @@ Spotlight::get_settings()
   result.add_float(_("Angle"), &angle, "angle");
   result.add_color(_("Color"), &color, "color", Color::WHITE);
   result.add_float(_("Speed"), &speed, "speed", 50.0f);
-  result.add_bool(_("Counter-clockwise"), &counter_clockwise, "counter-clockwise", false);
+  result.add_enum(_("Direction"), reinterpret_cast<int*>(&m_direction),
+                  {_("Clockwise"), _("Counter-clockwise"), _("Stopped")},
+                  {"clockwise", "counter-clockwise", "stopped"},
+                  static_cast<int>(Direction::CLOCKWISE), "r-direction");
+  result.add_int(_("Layer"), &m_layer, "layer", 0);
 
-  result.reorder({"angle", "color", "x", "y"});
+  result.reorder({"angle", "color", "layer", "x", "y"});
 
   return result;
 }
@@ -69,13 +114,20 @@ Spotlight::get_settings()
 void
 Spotlight::update(float dt_sec)
 {
-  if (counter_clockwise)
+  GameObject::update(dt_sec);
+
+  switch (m_direction)
   {
-    angle -= dt_sec * speed;
-  }
-  else
-  {
+  case Direction::CLOCKWISE:
     angle += dt_sec * speed;
+    break;
+
+  case Direction::COUNTERCLOCKWISE:
+    angle -= dt_sec * speed;
+    break;
+  
+  case Direction::STOPPED:
+    break;
   }
 }
 
@@ -85,18 +137,18 @@ Spotlight::draw(DrawingContext& context)
   light->set_color(color);
   light->set_blend(Blend::ADD);
   light->set_angle(angle);
-  light->draw(context.light(), m_col.m_bbox.p1(), 0);
+  light->draw(context.light(), m_col.m_bbox.p1(), m_layer);
 
   //lightcone->set_angle(angle);
-  //lightcone->draw(context.color(), position, 0);
+  //lightcone->draw(context.color(), position, m_layer);
 
   lights->set_angle(angle);
-  lights->draw(context.color(), m_col.m_bbox.p1(), 0);
+  lights->draw(context.color(), m_col.m_bbox.p1(), m_layer);
 
   base->set_angle(angle);
-  base->draw(context.color(), m_col.m_bbox.p1(), 0);
+  base->draw(context.color(), m_col.m_bbox.p1(), m_layer);
 
-  center->draw(context.color(), m_col.m_bbox.p1(), 0);
+  center->draw(context.color(), m_col.m_bbox.p1(), m_layer);
 
   lightcone->set_angle(angle);
   lightcone->draw(context.color(), m_col.m_bbox.p1(), LAYER_FOREGROUND1 + 10);

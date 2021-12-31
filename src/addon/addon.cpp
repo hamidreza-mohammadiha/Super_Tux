@@ -45,6 +45,10 @@ Addon::Type addon_type_from_string(const std::string& type)
   {
     return Addon::LANGUAGEPACK;
   }
+  else if (type == "addon")
+  {
+    return Addon::ADDON;
+  }
   else
   {
     throw std::runtime_error("not a valid Addon::Type: " + type);
@@ -173,6 +177,5 @@ Addon::set_enabled(bool v)
 {
   m_enabled = v;
 }
-
 
 /* EOF */

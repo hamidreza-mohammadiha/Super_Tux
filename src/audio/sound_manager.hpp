@@ -47,7 +47,7 @@ private:
 
 public:
   SoundManager();
-  virtual ~SoundManager();
+  ~SoundManager() override;
 
   void enable_sound(bool sound_enabled);
 
@@ -57,8 +57,14 @@ public:
       This function never throws exceptions, but might return a DummySoundSource */
   std::unique_ptr<SoundSource> create_sound_source(const std::string& filename);
 
-  /** Convenience function to simply play a sound at a given position. */
-  void play(const std::string& name, const Vector& pos = Vector(-1, -1));
+  /** Convenience functions to simply play a sound at a given position. */
+  void play(const std::string& name, const Vector& pos = Vector(-1, -1),
+    const float gain = 0.5f);
+  void play(const std::string& name, const float gain)
+  {
+    play(name, Vector(-1, -1), gain);
+  }
+
 
   /** Adds the source to the list of managed sources (= the source gets deleted
       when it finished playing) */
@@ -72,6 +78,7 @@ public:
   void set_listener_orientation(const Vector& at, const Vector& up);
 
   void enable_music(bool music_enabled);
+  void play_music(const std::string& filename, float fadetime);
   void play_music(const std::string& filename, bool fade = false);
   void pause_music(float fadetime = 0);
   void resume_music(float fadetime = 0);

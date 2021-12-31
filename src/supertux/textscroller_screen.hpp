@@ -34,18 +34,18 @@ class TextScrollerScreen final : public Screen
 {
 public:
   TextScrollerScreen(const std::string& file);
-  virtual ~TextScrollerScreen();
+  ~TextScrollerScreen() override;
 
   virtual void setup() override;
   virtual void draw(Compositor& compositor) override;
   virtual void update(float dt_sec, const Controller& controller) override;
+  virtual IntegrationStatus get_status() const override;
 
 private:
   float m_defaultspeed;
   std::string m_music;
   SurfacePtr m_background;
   std::unique_ptr<TextScroller> m_text_scroller;
-  bool m_fading;
 
 private:
   TextScrollerScreen(const TextScrollerScreen&) = delete;

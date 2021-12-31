@@ -19,15 +19,18 @@
 #define HEADER_SUPERTUX_COLLISION_COLLISION_SYSTEM_HPP
 
 #include <vector>
+#include <memory>
 #include <stdint.h>
 
 #include "collision/collision.hpp"
+#include "supertux/tile.hpp"
+#include "math/fwd.hpp"
 
 class CollisionObject;
+class CollisionGroundMovementManager;
 class DrawingContext;
 class Rectf;
 class Sector;
-class Vector;
 
 class CollisionSystem final
 {
@@ -45,10 +48,15 @@ public:
       case (or not). */
   void update();
 
-  bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false) const;
+  const std::shared_ptr<CollisionGroundMovementManager>& get_ground_movement_manager()
+  {
+    return m_ground_movement_manager;
+  }
+
+  bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false, uint32_t tiletype = Tile::SOLID) const;
   bool is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object, const bool ignoreUnisolid) const;
   bool is_free_of_movingstatics(const Rectf& rect, const CollisionObject* ignore_object) const;
-  bool free_line_of_sight(const Vector& line_start, const Vector& line_end, const CollisionObject* ignore_object) const;
+  bool free_line_of_sight(const Vector& line_start, const Vector& line_end, bool ignore_objects, const CollisionObject* ignore_object) const;
 
   std::vector<CollisionObject*> get_nearby_objects(const Vector& center, float max_distance) const;
 
@@ -77,7 +85,10 @@ private:
 
 private:
   Sector& m_sector;
+
   std::vector<CollisionObject*>  m_objects;
+
+  std::shared_ptr<CollisionGroundMovementManager> m_ground_movement_manager;
 
 private:
   CollisionSystem(const CollisionSystem&) = delete;

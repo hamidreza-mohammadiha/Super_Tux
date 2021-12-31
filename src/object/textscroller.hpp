@@ -23,6 +23,7 @@
 
 #include "supertux/info_box_line.hpp"
 #include "supertux/game_object.hpp"
+#include "control/controller.hpp"
 
 class DrawingContext;
 class InfoBoxLine;
@@ -40,11 +41,15 @@ public:
   virtual void update(float dt_sec) override;
   virtual ObjectSettings get_settings() override;
   virtual std::string get_class() const override { return "textscroller"; }
-  virtual std::string get_display_name() const override { return _("TextScroller"); }
+  virtual std::string get_display_name() const override { return _("Text Scroller"); }
+  virtual const std::string get_icon_path() const override { return "images/engine/editor/textscroller.png"; }
 
-  void set_speed(float speed);
+  void set_default_speed(float default_speed);
   void scroll(float offset);
   bool is_finished() const { return m_finished; }
+  
+protected:
+  const Controller* controller;
 
 private:
   void parse_file(const std::string& filename);
@@ -53,10 +58,28 @@ private:
 
 private:
   std::string m_filename;
+  std::string m_finish_script;
   std::vector<std::unique_ptr<InfoBoxLine> > m_lines;
   float m_scroll;
-  float m_speed;
+  float m_default_speed;
+  float m_x_offset;
+  bool m_controllable;
   bool m_finished;
+  bool m_fading;
+
+  enum XAnchor {
+    SCROLLER_ANCHOR_LEFT,
+    SCROLLER_ANCHOR_CENTER,
+    SCROLLER_ANCHOR_RIGHT
+  };
+  enum TextAlign {
+    SCROLLER_ALIGN_LEFT,
+    SCROLLER_ALIGN_CENTER,
+    SCROLLER_ALIGN_RIGHT
+  };
+
+  XAnchor m_x_anchor;
+  TextAlign m_text_align;
 
 private:
   TextScroller(const TextScroller&) = delete;

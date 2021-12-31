@@ -35,17 +35,19 @@ private:
   static Color s_author_color;
   static Color s_stat_hdr_color;
   static Color s_stat_color;
+  static Color s_stat_perfect_color;
 
 public:
   LevelIntro(const Level& level, const Statistics* best_level_statistics, const PlayerStatus& player_status);
-  virtual ~LevelIntro();
+  ~LevelIntro() override;
 
   virtual void setup() override;
   virtual void draw(Compositor& compositor) override;
   virtual void update(float dt_sec, const Controller& controller) override;
+  virtual IntegrationStatus get_status() const override;
 
 private:
-  void draw_stats_line(DrawingContext& context, int& py, const std::string& name, const std::string& stat);
+  void draw_stats_line(DrawingContext& context, int& py, const std::string& name, const std::string& stat, bool isPerfect);
 
 private:
   const Level& m_level; /**< The level of which this is the intro screen */

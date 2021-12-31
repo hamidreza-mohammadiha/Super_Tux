@@ -88,7 +88,8 @@ KamikazeSnowball::collision_player(Player& player, const CollisionHit& hit)
 LeafShot::LeafShot(const ReaderMapping& reader) :
   KamikazeSnowball(reader)
 {
-  m_sprite = SpriteManager::current()->create("images/creatures/leafshot/leafshot.sprite");
+  m_sprite_name = "images/creatures/leafshot/leafshot.sprite";
+  m_sprite = SpriteManager::current()->create(m_sprite_name);
 }
 
 void
@@ -110,9 +111,16 @@ LeafShot::collision_squished(GameObject& object)
 {
   m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
   // Spawn death particles
-  spawn_explosion_sprites(3, "images/objects/particles/leafshot.sprite");
+  spawn_explosion_sprites(3, "images/particles/leafshot.sprite");
   kill_squished(object);
   return true;
+}
+
+void
+LeafShot::kill_collision()
+{
+  KamikazeSnowball::kill_collision();
+  spawn_explosion_sprites(3, "images/particles/leafshot.sprite");
 }
 
 /* EOF */

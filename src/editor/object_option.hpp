@@ -41,6 +41,7 @@ class Value;
 class Color;
 class Menu;
 class Path;
+class PathObject;
 class Rectf;
 class TileMap;
 class Writer;
@@ -59,7 +60,7 @@ public:
   const std::string& get_text() const { return m_text; }
   unsigned int get_flags() const { return m_flags; }
 
-private:
+protected:
   const std::string m_text;
   const std::string m_key;
   const unsigned int m_flags;
@@ -107,6 +108,21 @@ private:
 private:
   IntObjectOption(const IntObjectOption&) = delete;
   IntObjectOption& operator=(const IntObjectOption&) = delete;
+};
+
+class LabelObjectOption : public ObjectOption
+{
+public:
+  LabelObjectOption(const std::string& text,
+                  unsigned int flags);
+
+  virtual void save(Writer& write) const override;
+  virtual std::string to_string() const override;
+  virtual void add_to_menu(Menu& menu) const override;
+
+private:
+  LabelObjectOption(const LabelObjectOption&) = delete;
+  LabelObjectOption& operator=(const LabelObjectOption&) = delete;
 };
 
 class RectfObjectOption : public ObjectOption
@@ -335,8 +351,8 @@ private:
 class PathRefObjectOption : public ObjectOption
 {
 public:
-  PathRefObjectOption(const std::string& text, const std::string& path_ref, const std::string& key,
-                      unsigned int flags);
+  PathRefObjectOption(const std::string& text, PathObject& target, const std::string& path_ref,
+                      const std::string& key, unsigned int flags);
 
   virtual void save(Writer& write) const override;
   virtual std::string to_string() const override;
@@ -344,6 +360,7 @@ public:
 
 private:
   std::string m_path_ref;
+  PathObject& m_target;
 
 private:
   PathRefObjectOption(const PathRefObjectOption&) = delete;
@@ -379,6 +396,51 @@ public:
 private:
   RemoveObjectOption(const RemoveObjectOption&) = delete;
   RemoveObjectOption& operator=(const RemoveObjectOption&) = delete;
+};
+
+class TestFromHereOption : public ObjectOption
+{
+public:
+  TestFromHereOption();
+
+  virtual void save(Writer& write) const override {}
+  virtual std::string to_string() const override;
+  virtual void add_to_menu(Menu& menu) const override;
+
+private:
+  TestFromHereOption(const TestFromHereOption&) = delete;
+  TestFromHereOption& operator=(const TestFromHereOption&) = delete;
+};
+
+class ParticleEditorOption : public ObjectOption
+{
+public:
+  ParticleEditorOption();
+
+  virtual void save(Writer& write) const override {}
+  virtual std::string to_string() const override;
+  virtual void add_to_menu(Menu& menu) const override;
+
+private:
+  ParticleEditorOption(const ParticleEditorOption&) = delete;
+  ParticleEditorOption& operator=(const ParticleEditorOption&) = delete;
+};
+
+class ButtonOption : public ObjectOption
+{
+public:
+  ButtonOption(const std::string& text, std::function<void()> callback);
+
+  virtual void save(Writer& write) const override {}
+  virtual std::string to_string() const override;
+  virtual void add_to_menu(Menu& menu) const override;
+
+private:
+  std::function<void()> m_callback;
+
+private:
+  ButtonOption(const ButtonOption&) = delete;
+  ButtonOption& operator=(const ButtonOption&) = delete;
 };
 
 #endif

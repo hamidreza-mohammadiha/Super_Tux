@@ -31,22 +31,25 @@ class ItemAction;
 class ItemBack;
 class ItemBadguySelect;
 class ItemColor;
-class ItemColorChannel;
+class ItemColorChannelRGBA;
+class ItemColorChannelOKLab;
 class ItemColorDisplay;
 class ItemControlField;
 class ItemFile;
+class ItemFloatField;
 class ItemGoTo;
 class ItemHorizontalLine;
 class ItemInactive;
 class ItemIntField;
 class ItemLabel;
-class ItemFloatField;
+class ItemPaths;
 class ItemScript;
 class ItemScriptLine;
 class ItemStringSelect;
 class ItemTextField;
 class ItemToggle;
 class MenuItem;
+class PathObject;
 
 class Menu
 {
@@ -68,11 +71,11 @@ public:
   ItemHorizontalLine& add_hl();
   ItemLabel& add_label(const std::string& text);
   ItemAction& add_entry(int id, const std::string& text);
-  ItemAction& add_entry(const std::string& text, std::function<void()> callback);
+  ItemAction& add_entry(const std::string& text, const std::function<void()>& callback);
   ItemToggle& add_toggle(int id, const std::string& text, bool* toggled);
   ItemToggle& add_toggle(int id, const std::string& text,
-                         std::function<bool()> get_func,
-                         std::function<void(bool)> set_func);
+                         const std::function<bool()>& get_func,
+                         const std::function<void(bool)>& set_func);
   ItemInactive& add_inactive(const std::string& text);
   ItemBack& add_back(const std::string& text, int id = -1);
   ItemGoTo& add_submenu(const std::string& text, int submenu, int id = -1);
@@ -89,7 +92,10 @@ public:
 
   ItemColor& add_color(const std::string& text, Color* color, int id = -1);
   ItemColorDisplay& add_color_display(Color* color, int id = -1);
-  ItemColorChannel& add_color_channel(float* input, Color channel, int id = -1);
+  ItemColorChannelRGBA& add_color_channel_rgba(float* input, Color channel, int id = -1,
+    bool is_linear = false);
+  ItemColorChannelOKLab& add_color_channel_oklab(Color* color, int channel);
+  ItemPaths& add_path_settings(const std::string& text, PathObject& target, const std::string& path_ref);
 
   void process_input(const Controller& controller);
 

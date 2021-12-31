@@ -20,6 +20,7 @@
 #include "object/moving_sprite.hpp"
 #include "supertux/physic.hpp"
 #include "supertux/timer.hpp"
+#include "util/fade_helper.hpp"
 
 /** A tile that starts falling down if tux stands to long on it */
 class SkullTile final : public MovingSprite
@@ -27,7 +28,8 @@ class SkullTile final : public MovingSprite
 public:
   SkullTile(const ReaderMapping& mapping);
 
-  virtual std::string get_class() const override { return "skulltile"; }
+  virtual std::string get_class() const override { return "skull_tile"; }
+  virtual std::string get_display_name() const override { return _("Skull Tile"); }
 
   virtual HitResponse collision(GameObject& other, const CollisionHit& hit) override;
   virtual void update(float dt_sec) override;
@@ -38,6 +40,11 @@ private:
   Timer timer;
   bool hit;
   bool falling;
+
+  Timer m_revive_timer;
+  std::unique_ptr<FadeHelper> m_respawn;
+  float m_alpha;
+  Vector m_original_pos;
 };
 
 #endif

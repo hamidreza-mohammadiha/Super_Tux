@@ -19,7 +19,7 @@
 
 #include "object/particlesystem.hpp"
 
-class Vector;
+#include "math/fwd.hpp"
 
 /**
    This is an alternative class for particle systems. It is
@@ -41,7 +41,7 @@ class ParticleSystem_Interactive : public ParticleSystem
 public:
   ParticleSystem_Interactive();
   ParticleSystem_Interactive(const ReaderMapping& mapping);
-  virtual ~ParticleSystem_Interactive();
+  ~ParticleSystem_Interactive() override;
 
   virtual void draw(DrawingContext& context) override;
   virtual std::string get_display_name() const override {
@@ -49,7 +49,7 @@ public:
   }
 
 protected:
-  int collision(Particle* particle, const Vector& movement);
+  virtual int collision(Particle* particle, const Vector& movement);
 
 private:
   ParticleSystem_Interactive(const ParticleSystem_Interactive&) = delete;

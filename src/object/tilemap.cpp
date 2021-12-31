@@ -19,17 +19,22 @@
 #include <tuple>
 
 #include "editor/editor.hpp"
+#include "supertux/autotile.hpp"
 #include "supertux/debug.hpp"
 #include "supertux/globals.hpp"
 #include "supertux/sector.hpp"
 #include "supertux/tile.hpp"
 #include "supertux/tile_set.hpp"
+#include "supertux/flip_level_transformer.hpp"
+#include "collision/collision_object.hpp"
+#include "collision/collision_movement_manager.hpp"
 #include "util/reader.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 #include "video/drawing_context.hpp"
 #include "video/layer.hpp"
 #include "video/surface.hpp"
+#include "worldmap/worldmap.hpp"
 
 TileMap::TileMap(const TileSet *new_tileset) :
   ExposedObject<TileMap, scripting::TileMap>(this),
@@ -46,6 +51,8 @@ TileMap::TileMap(const TileSet *new_tileset) :
   m_z_pos(0),
   m_offset(Vector(0,0)),
   m_movement(0,0),
+  m_objects_hit_bottom(),
+  m_ground_movement_manager(nullptr),
   m_flip(NO_FLIP),
   m_alpha(1.0),
   m_current_alpha(1.0),
@@ -53,13 +60,13 @@ TileMap::TileMap(const TileSet *new_tileset) :
   m_tint(1, 1, 1),
   m_current_tint(1, 1, 1),
   m_remaining_tint_fade_time(0),
-  m_running(false),
   m_draw_target(DrawingTarget::COLORMAP),
   m_new_size_x(0),
   m_new_size_y(0),
   m_new_offset_x(0),
   m_new_offset_y(0),
-  m_add_path(false)
+  m_add_path(false),
+  m_starting_node(0)
 {
 }
 
@@ -79,6 +86,8 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   m_z_pos(0),
   m_offset(Vector(0,0)),
   m_movement(Vector(0,0)),
+  m_objects_hit_bottom(),
+  m_ground_movement_manager(nullptr),
   m_flip(NO_FLIP),
   m_alpha(1.0),
   m_current_alpha(1.0),
@@ -86,13 +95,13 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
   m_tint(1, 1, 1),
   m_current_tint(1, 1, 1),
   m_remaining_tint_fade_time(0),
-  m_running(false),
   m_draw_target(DrawingTarget::COLORMAP),
   m_new_size_x(0),
   m_new_size_y(0),
   m_new_offset_x(0),
   m_new_offset_y(0),
-  m_add_path(false)
+  m_add_path(false),
+  m_starting_node(0)
 {
   assert(m_tileset);
 
@@ -121,6 +130,8 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
       m_speed_y = 1;
     }
   }
+
+  reader.get("starting-node", m_starting_node, 0);
 
   init_path(reader, false);
 
@@ -182,9 +193,12 @@ TileMap::TileMap(const TileSet *tileset_, const ReaderMapping& reader) :
 void
 TileMap::finish_construction()
 {
-  if (get_path()) {
-    Vector v = get_path()->get_base();
-    set_offset(v);
+  if (get_path() && get_path()->get_nodes().size() > 0) {
+    if (m_starting_node >= static_cast<int>(get_path()->get_nodes().size()))
+      m_starting_node = static_cast<int>(get_path()->get_nodes().size()) - 1;
+
+    set_offset(get_path()->get_nodes()[m_starting_node].position);
+    get_walker()->jump_to_node(m_starting_node);
   }
 
   m_add_path = get_walker() && get_path() && get_path()->is_valid();
@@ -200,6 +214,40 @@ TileMap::float_channel(float target, float &current, float remaining_time, float
   float amt = (target - current) / (remaining_time / dt_sec);
   if (amt > 0) current = std::min(current + amt, target);
   if (amt < 0) current = std::max(current + amt, target);
+}
+
+void
+TileMap::apply_offset_x(int fill_id, int xoffset)
+{
+  if (!xoffset)
+    return;
+  for (int y = 0; y < m_height; y++) {
+    for (int x = 0; x < m_width; x++) {
+      int X = (xoffset < 0) ? x : (m_width - x - 1);
+      if (X - xoffset < 0 || X - xoffset >= m_width) {
+        m_tiles[y * m_width + X] = fill_id;
+      } else {
+        m_tiles[y * m_width + X] = m_tiles[y * m_width + X - xoffset];
+      }
+    }
+  }
+}
+
+void
+TileMap::apply_offset_y(int fill_id, int yoffset)
+{
+  if (!yoffset)
+    return;
+  for (int y = 0; y < m_height; y++) {
+    int Y = (yoffset < 0) ? y : (m_height - y - 1);
+    for (int x = 0; x < m_width; x++) {
+      if (Y - yoffset < 0 || Y - yoffset >= m_height) {
+        m_tiles[Y * m_width + x] = fill_id;
+      } else {
+        m_tiles[Y * m_width + x] = m_tiles[(Y - yoffset) * m_width + x];
+      }
+    }
+  }
 }
 
 ObjectSettings
@@ -230,14 +278,15 @@ TileMap::get_settings()
                   static_cast<int>(DrawingTarget::COLORMAP),
                   "draw-target");
 
-  result.add_path_ref(_("Path"), get_path_ref(), "path-ref");
+  result.add_path_ref(_("Path"), *this, get_path_ref(), "path-ref");
+  result.add_int(_("Starting Node"), &m_starting_node, "starting-node", 0, 0U);
   m_add_path = get_walker() && get_path() && get_path()->is_valid();
   result.add_bool(_("Following path"), &m_add_path);
 
   if (get_walker() && get_path() && get_path()->is_valid()) {
-    m_running = get_walker()->is_running();
     result.add_walk_mode(_("Path Mode"), &get_path()->m_mode, {}, {});
-    result.add_bool(_("Running"), &m_running, "running", false);
+    result.add_bool(_("Adapt Speed"), &get_path()->m_adapt_speed, {}, {});
+    result.add_bool(_("Running"), &get_walker()->m_running, "running", false);
   }
 
   result.add_tiles(_("Tiles"), this, "tiles");
@@ -266,7 +315,7 @@ TileMap::after_editor_set()
     }
   } else {
     if (m_add_path) {
-      init_path_pos(m_offset, m_running);
+      init_path_pos(m_offset);
     }
   }
 
@@ -311,10 +360,18 @@ TileMap::update(float dt_sec)
     if (get_path() && get_path()->is_valid()) {
       m_movement = v - get_offset();
       set_offset(v);
+      if (m_ground_movement_manager != nullptr) {
+        for (CollisionObject* other_object : m_objects_hit_bottom) {
+          m_ground_movement_manager->register_movement(*this, *other_object, m_movement);
+          other_object->propagate_movement(m_movement);
+        }
+      }
     } else {
       set_offset(Vector(0, 0));
     }
   }
+
+  m_objects_hit_bottom.clear();
 }
 
 void
@@ -324,10 +381,38 @@ TileMap::editor_update()
     if (get_path() && get_path()->is_valid()) {
       m_movement = get_walker()->get_pos() - get_offset();
       set_offset(get_walker()->get_pos());
+
+      if (!get_path()) return;
+      if (!get_path()->is_valid()) return;
+
+      if (m_starting_node >= static_cast<int>(get_path()->get_nodes().size()))
+        m_starting_node = static_cast<int>(get_path()->get_nodes().size()) - 1;
+
+      m_movement += get_path()->get_nodes()[m_starting_node].position - get_offset();
+      set_offset(get_path()->get_nodes()[m_starting_node].position);
     } else {
       set_offset(Vector(0, 0));
     }
   }
+}
+
+void
+TileMap::on_flip(float height)
+{
+  for (int x = 0; x < get_width(); ++x) {
+    for (int y = 0; y < get_height()/2; ++y) {
+      // swap tiles
+      int y2 = get_height()-1-y;
+      uint32_t t1 = get_tile_id(x, y);
+      uint32_t t2 = get_tile_id(x, y2);
+      change(x, y, t2);
+      change(x, y2, t1);
+    }
+  }
+  FlipLevelTransformer::transform_flip(m_flip);
+  Vector offset = get_offset();
+  offset.y = height - offset.y - get_bbox().get_height();
+  set_offset(offset);
 }
 
 void
@@ -358,7 +443,7 @@ TileMap::draw(DrawingContext& context)
   Rect t_draw_rect = get_tiles_overlapping(draw_rect);
   Vector start = get_tile_position(t_draw_rect.left, t_draw_rect.top);
 
-  Vector pos;
+  Vector pos(0.0f, 0.0f);
   int tx, ty;
 
   std::unordered_map<SurfacePtr,
@@ -454,6 +539,18 @@ void
 TileMap::resize(int new_width, int new_height, int fill_id,
                 int xoffset, int yoffset)
 {
+  bool offset_finished_x = false;
+  bool offset_finished_y = false;
+  if (xoffset < 0 && new_width - m_width < 0)
+  {
+    apply_offset_x(fill_id, xoffset);
+    offset_finished_x = true;
+  }
+  if (yoffset < 0 && new_height - m_height < 0)
+  {
+    apply_offset_y(fill_id, yoffset);
+    offset_finished_y = true;
+  }
   if (new_width < m_width) {
     // remap tiles for new width
     for (int y = 0; y < m_height && y < new_height; ++y) {
@@ -478,25 +575,12 @@ TileMap::resize(int new_width, int new_height, int fill_id,
       }
     }
   }
-
   m_height = new_height;
   m_width = new_width;
-
-  //Apply offset
-  if (xoffset || yoffset) {
-    for (int y = 0; y < m_height; y++) {
-      int Y = (yoffset < 0) ? y : (m_height - y - 1);
-      for (int x = 0; x < m_width; x++) {
-        int X = (xoffset < 0) ? x : (m_width - x - 1);
-        if (Y - yoffset < 0 || Y - yoffset >= m_height ||
-            X - xoffset < 0 || X - xoffset >= m_width) {
-          m_tiles[Y * new_width + X] = fill_id;
-        } else {
-          m_tiles[Y * new_width + X] = m_tiles[(Y - yoffset) * m_width + X - xoffset];
-        }
-      }
-    }
-  }
+  if (!offset_finished_x)
+    apply_offset_x(fill_id, xoffset);
+  if (!offset_finished_y)
+    apply_offset_y(fill_id, yoffset);
 }
 
 void TileMap::resize(const Size& newsize, const Size& resize_offset) {
@@ -517,6 +601,18 @@ TileMap::get_tiles_overlapping(const Rectf &rect) const
 }
 
 void
+TileMap::hits_object_bottom(CollisionObject& object)
+{
+  m_objects_hit_bottom.insert(&object);
+}
+
+void
+TileMap::notify_object_removal(CollisionObject* other)
+{
+  m_objects_hit_bottom.erase(other);
+}
+
+void
 TileMap::set_solid(bool solid)
 {
   m_real_solid = solid;
@@ -526,12 +622,26 @@ TileMap::set_solid(bool solid)
 uint32_t
 TileMap::get_tile_id(int x, int y) const
 {
+  if (x < 0) x = 0;
+  if (x >= m_width) x = m_width - 1;
+  if (y < 0) y = 0;
+  if (y >= m_height) y = m_height - 1;
+  
   if (x < 0 || x >= m_width || y < 0 || y >= m_height) {
     //log_warning << "tile outside tilemap requested" << std::endl;
     return 0;
   }
 
   return m_tiles[y*m_width + x];
+}
+
+bool
+TileMap::is_outside_bounds(const Vector& pos) const
+{
+  auto pos_ = (pos - m_offset) / 32.0f;
+  float width = static_cast<float>(m_width);
+  float height = static_cast<float>(m_height);
+  return pos_.x < 0 || pos_.x >= width || pos_.y < 0 || pos_.y >= height;
 }
 
 const Tile&
@@ -544,7 +654,7 @@ TileMap::get_tile(int x, int y) const
 uint32_t
 TileMap::get_tile_id_at(const Vector& pos) const
 {
-  Vector xy = (pos - m_offset) / 32;
+  Vector xy = (pos - m_offset) / 32.0f;
   return get_tile_id(int(xy.x), int(xy.y));
 }
 
@@ -565,7 +675,7 @@ TileMap::change(int x, int y, uint32_t newtile)
 void
 TileMap::change_at(const Vector& pos, uint32_t newtile)
 {
-  Vector xy = (pos - m_offset) / 32;
+  Vector xy = (pos - m_offset) / 32.0f;
   change(int(xy.x), int(xy.y), newtile);
 }
 
@@ -580,6 +690,197 @@ TileMap::change_all(uint32_t oldtile, uint32_t newtile)
       change(x,y,newtile);
     }
   }
+}
+
+void
+TileMap::autotile(int x, int y, uint32_t tile)
+{
+  if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+    return;
+
+  uint32_t current_tile = m_tiles[y*m_width + x];
+  AutotileSet* curr_set;
+  if (current_tile == 0)
+  {
+    // Special case 1 : If the tile is empty, check if we can use a non-solid
+    // tile from the currently selected tile's autotile set (if any).
+    curr_set = m_tileset->get_autotileset_from_tile(tile);
+  }
+  else if (m_tileset->get_autotileset_from_tile(tile) != nullptr &&
+      m_tileset->get_autotileset_from_tile(tile)->is_member(current_tile))
+  {
+    // Special case 2 : If the tile is in multiple autotilesets, check if it
+    // is in the same tileset as the selected tile. (Example : tile 47)
+    curr_set = m_tileset->get_autotileset_from_tile(tile);
+  }
+  else
+  {
+    curr_set = m_tileset->get_autotileset_from_tile(current_tile);
+  }
+
+  // If tile is not autotileable, abort
+  // If tile is from a corner autotileset, abort as well
+  if (curr_set == nullptr)
+  {
+    return;
+  }
+
+  uint32_t realtile = curr_set->get_autotile(current_tile,
+    curr_set->is_solid(get_tile_id(x-1, y-1)),
+    curr_set->is_solid(get_tile_id(x  , y-1)),
+    curr_set->is_solid(get_tile_id(x+1, y-1)),
+    curr_set->is_solid(get_tile_id(x-1, y  )),
+    curr_set->is_solid(get_tile_id(x  , y  )),
+    curr_set->is_solid(get_tile_id(x+1, y  )),
+    curr_set->is_solid(get_tile_id(x-1, y+1)),
+    curr_set->is_solid(get_tile_id(x  , y+1)),
+    curr_set->is_solid(get_tile_id(x+1, y+1)),
+    x, y);
+
+  m_tiles[y*m_width + x] = realtile;
+}
+
+void
+TileMap::autotile_corner(int x, int y, uint32_t tile, AutotileCornerOperation op)
+{
+  if (x < 0 || x >= m_width || y < 0 || y >= m_height)
+    return;
+
+  if (!m_tileset->get_autotileset_from_tile(tile)->is_corner())
+    return;
+
+  AutotileSet* curr_set = m_tileset->get_autotileset_from_tile(tile);
+
+  // If tile is not autotileable, abort
+  if (curr_set == nullptr)
+  {
+    return;
+  }
+
+  // If tile is not empty or already of the appropriate tileset, abort
+  uint32_t current_tile = m_tiles[y*m_width + x];
+  if (current_tile != 0 && (m_tileset->get_autotileset_from_tile(tile) != nullptr
+      && !m_tileset->get_autotileset_from_tile(tile)->is_member(current_tile)))
+  {
+    return;
+  }
+
+  // If the current tile is 0, it will automatically return 0
+  uint8_t mask = curr_set->get_mask_from_tile(current_tile);
+  if (op == AutotileCornerOperation::REMOVE_TOP_LEFT) mask = static_cast<uint8_t>(mask & 0x07);
+  if (op == AutotileCornerOperation::REMOVE_TOP_RIGHT) mask = static_cast<uint8_t>(mask & 0x0B);
+  if (op == AutotileCornerOperation::REMOVE_BOTTOM_LEFT) mask = static_cast<uint8_t>(mask & 0x0D);
+  if (op == AutotileCornerOperation::REMOVE_BOTTOM_RIGHT) mask = static_cast<uint8_t>(mask & 0x0E);
+  if (op == AutotileCornerOperation::ADD_TOP_LEFT) mask = static_cast<uint8_t>(mask | 0x08);
+  if (op == AutotileCornerOperation::ADD_TOP_RIGHT) mask = static_cast<uint8_t>(mask | 0x04);
+  if (op == AutotileCornerOperation::ADD_BOTTOM_LEFT) mask = static_cast<uint8_t>(mask | 0x02);
+  if (op == AutotileCornerOperation::ADD_BOTTOM_RIGHT) mask = static_cast<uint8_t>(mask | 0x01);
+
+  uint32_t realtile = (!mask) ? 0 : curr_set->get_autotile(current_tile,
+    (mask & 0x08) != 0,
+    false,
+    (mask & 0x04) != 0,
+    false,
+    false,
+    false,
+    (mask & 0x02) != 0,
+    false,
+    (mask & 0x01) != 0,
+    x, y);
+
+  m_tiles[y*m_width + x] = realtile;
+}
+
+bool
+TileMap::is_corner(uint32_t tile)
+{
+  auto* ats = m_tileset->get_autotileset_from_tile(tile);
+  
+  return ats && ats->is_corner();
+}
+
+void
+TileMap::autotile_erase(const Vector& pos, const Vector& corner_pos)
+{
+  if (pos.x < 0.f || pos.x >= static_cast<float>(m_width) ||
+      pos.y < 0.f || pos.y >= static_cast<float>(m_height))
+    return;
+
+  if (corner_pos.x < 0.f || corner_pos.x >= static_cast<float>(m_width) ||
+      corner_pos.y < 0.f || corner_pos.y >= static_cast<float>(m_height))
+    return;
+
+  uint32_t current_tile = m_tiles[static_cast<int>(pos.y)*m_width
+                                  + static_cast<int>(pos.x)];
+
+  AutotileSet* curr_set = m_tileset->get_autotileset_from_tile(current_tile);
+  
+  if (curr_set && curr_set->is_corner()) {
+    int x = static_cast<int>(corner_pos.x), y = static_cast<int>(corner_pos.y);
+    autotile_corner(x, y, current_tile, AutotileCornerOperation::REMOVE_TOP_LEFT);
+    autotile_corner(x-1, y, current_tile, AutotileCornerOperation::REMOVE_TOP_RIGHT);
+    autotile_corner(x, y-1, current_tile, AutotileCornerOperation::REMOVE_BOTTOM_LEFT);
+    autotile_corner(x-1, y-1, current_tile, AutotileCornerOperation::REMOVE_BOTTOM_RIGHT);
+  }
+  else
+  {
+    int x = static_cast<int>(pos.x), y = static_cast<int>(pos.y);
+    m_tiles[y*m_width + x] = 0;
+
+    if (x - 1 >= 0 && y - 1 >= 0 && !is_corner(m_tiles[(y-1)*m_width + x-1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y-1)*m_width + x-1]);
+      autotile(x-1, y-1, m_tiles[(y-1)*m_width + x-1]);
+    }
+
+    if (y - 1 >= 0 && !is_corner(m_tiles[(y-1)*m_width + x])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y-1)*m_width + x]);
+      autotile(x, y-1, m_tiles[(y-1)*m_width + x]);
+    }
+
+    if (y - 1 >= 0 && x + 1 < m_width && !is_corner(m_tiles[(y-1)*m_width + x+1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y-1)*m_width + x+1]);
+      autotile(x+1, y-1, m_tiles[(y-1)*m_width + x+1]);
+    }
+
+    if (x - 1 >= 0 && !is_corner(m_tiles[y*m_width + x-1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[y*m_width + x-1]);
+      autotile(x-1, y, m_tiles[y*m_width + x-1]);
+    }
+
+    if (x + 1 < m_width && !is_corner(m_tiles[y*m_width + x+1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[y*m_width + x+1]);
+      autotile(x+1, y, m_tiles[y*m_width + x+1]);
+    }
+
+    if (x - 1 >= 0 && y + 1 < m_height && !is_corner(m_tiles[(y+1)*m_width + x-1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y+1)*m_width + x-1]);
+      autotile(x-1, y+1, m_tiles[(y+1)*m_width + x-1]);
+    }
+
+    if (y + 1 < m_height && !is_corner(m_tiles[(y+1)*m_width + x])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y+1)*m_width + x]);
+      autotile(x, y+1, m_tiles[(y+1)*m_width + x]);
+    }
+
+    if (y + 1 < m_height && x + 1 < m_width && !is_corner(m_tiles[(y+1)*m_width + x+1])) {
+      if (m_tiles[y*m_width + x] == 0)
+        autotile(x, y, m_tiles[(y+1)*m_width + x+1]);
+      autotile(x+1, y+1, m_tiles[(y+1)*m_width + x+1]);
+    }
+  }
+}
+
+AutotileSet*
+TileMap::get_autotileset(uint32_t tile) const
+{
+  return m_tileset->get_autotileset_from_tile(tile);
 }
 
 void
@@ -625,12 +926,20 @@ TileMap::move_by(const Vector& shift)
 void
 TileMap::update_effective_solid()
 {
+  bool old = m_effective_solid;
   if (!m_real_solid)
     m_effective_solid = false;
   else if (m_effective_solid && (m_current_alpha < 0.25f))
     m_effective_solid = false;
   else if (!m_effective_solid && (m_current_alpha >= 0.75f))
     m_effective_solid = true;
+
+  if(Sector::current() != nullptr && old != m_effective_solid)
+  {
+      Sector::get().update_solid(this);
+  } else if(worldmap::WorldMap::current() != nullptr && old != m_effective_solid) {
+      worldmap::WorldMap::current()->update_solid(this);
+  }
 }
 
 void

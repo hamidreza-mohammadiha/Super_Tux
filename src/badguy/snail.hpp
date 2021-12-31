@@ -50,7 +50,7 @@ protected:
 
   void be_normal(); /**< switch to state STATE_NORMAL */
   void be_flat(); /**< switch to state STATE_FLAT */
-  void be_kicked(); /**< switch to state STATE_KICKED_DELAY */
+  void be_kicked(bool upwards); /**< switch to state STATE_KICKED_DELAY */
   void be_grabbed();
 
 private:
@@ -59,7 +59,7 @@ private:
     STATE_FLAT, /**< flipped upside-down */
     STATE_KICKED_DELAY, /**< short delay before being launched */
     STATE_KICKED, /**< launched */
-    STATE_GRABBED /**< grabbed by tux */
+    STATE_GRABBED, /**< grabbed by tux */
   };
 
 private:

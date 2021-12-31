@@ -16,6 +16,7 @@
 
 #include "trigger/secretarea_trigger.hpp"
 
+#include "audio/sound_manager.hpp"
 #include "editor/editor.hpp"
 #include "object/tilemap.hpp"
 #include "supertux/debug.hpp"
@@ -36,7 +37,7 @@ SecretAreaTrigger::SecretAreaTrigger(const ReaderMapping& reader) :
   message(),
   fade_tilemap(),
   script(),
-  new_size()
+  new_size(0.0f, 0.0f)
 {
   reader.get("x", m_col.m_bbox.get_left());
   reader.get("y", m_col.m_bbox.get_top());
@@ -60,7 +61,7 @@ SecretAreaTrigger::SecretAreaTrigger(const Rectf& area, const std::string& fade_
   message(_("You found a secret area!")),
   fade_tilemap(fade_tilemap_),
   script(),
-  new_size()
+  new_size(0.0f, 0.0f)
 {
   m_col.m_bbox = area;
 }
@@ -120,7 +121,8 @@ SecretAreaTrigger::event(Player& , EventType type)
     if (!message_displayed) {
       message_timer.start(MESSAGE_TIME);
       message_displayed = true;
-      Sector::get().get_level().m_stats.m_secrets++;
+      Sector::get().get_level().m_stats.increment_secrets();
+      SoundManager::current()->play("sounds/welldone.ogg");
 
       if (!fade_tilemap.empty()) {
         // fade away tilemaps

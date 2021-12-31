@@ -43,7 +43,7 @@ Tux::Tux(WorldMap* worldmap) :
   m_controller(InputManager::current()->get_controller()),
   m_input_direction(Direction::NONE),
   m_direction(Direction::NONE),
-  m_tile_pos(),
+  m_tile_pos(0.0f, 0.0f),
   m_offset(0),
   m_moving(false),
   m_ghost_mode(false)
@@ -58,7 +58,27 @@ Tux::draw(DrawingContext& context)
   std::string action = get_action_prefix_for_bonus(m_worldmap->get_savegame().get_player_status().bonus);
   if (!action.empty())
   {
-    m_sprite->set_action(m_moving ? action + "-walking" : action + "-stop");
+    if (m_moving && (get_axis().x != 0 || get_axis().y != 0))
+    {
+      std::string direct = "-up";
+      if (get_axis().x == 1) direct = "-right";
+      if (get_axis().x == -1) direct = "-left"; 
+      if (get_axis().y == 1) direct = "-up"; 
+      if (get_axis().y == -1) direct = "-down"; 
+      if (m_sprite->has_action(action + "-walking" + direct))
+      {
+        m_sprite->set_action(action + "-walking" + direct);
+      }
+      else if (m_sprite->has_action(action + "-walking"))
+      {
+        m_sprite->set_action(action + "-walking");
+      }
+      // else, keep the same animation that was already playing
+    }
+    else
+    {
+      m_sprite->set_action(action + "-stop");
+    }
   }
   else
   {
@@ -114,6 +134,33 @@ Tux::get_pos() const
   return Vector(x, y);
 }
 
+Vector
+Tux::get_axis() const
+{
+  float x = 0.0f;
+  float y = 0.0f;
+
+  switch (m_direction)
+  {
+    case Direction::WEST:
+      x = -1.0f;
+      break;
+    case Direction::EAST:
+      x = 1.0f;
+      break;
+    case Direction::NORTH:
+      y = 1.0f;
+      break;
+    case Direction::SOUTH:
+      y = -1.0f;
+      break;
+    case Direction::NONE:
+      break;
+  }
+
+  return Vector(x, y);
+}
+
 void
 Tux::stop()
 {
@@ -152,7 +199,7 @@ Tux::try_start_walking()
   auto level = m_worldmap->at_level();
 
   // We got a new direction, so lets start walking when possible
-  Vector next_tile;
+  Vector next_tile(0.0f, 0.0f);
   if ((!level || level->is_solved() || level->is_perfect()
       || (Editor::current() && Editor::current()->is_testing_level()))
       && m_worldmap->path_ok(m_input_direction, m_tile_pos, &next_tile)) {
@@ -271,7 +318,7 @@ Tux::try_continue_walking(float dt_sec)
   if (m_direction == Direction::NONE)
     return;
 
-  Vector next_tile;
+  Vector next_tile(0.0f, 0.0f);
   if (!m_ghost_mode && !m_worldmap->path_ok(m_direction, m_tile_pos, &next_tile)) {
     log_debug << "Tilemap data is buggy" << std::endl;
     stop();
