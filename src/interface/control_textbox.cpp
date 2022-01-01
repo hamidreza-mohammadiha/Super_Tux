@@ -19,6 +19,9 @@
 #include <math.h>
 
 #include <SDL.h>
+#ifdef __ANDROID__
+#include <SDL_screenkeyboard.h>
+#endif
 
 #include "math/vector.hpp"
 #include "math/rectf.hpp"
@@ -306,8 +309,10 @@ bool
 ControlTextbox::event(const SDL_Event& ev) {
   Widget::event(ev);
 
+#if SDL_VERSION_ATLEAST(2,0,0)
   if (ev.type == SDL_TEXTINPUT && m_has_focus)
     put_text(std::string(ev.text.text));
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   return false;
 }
