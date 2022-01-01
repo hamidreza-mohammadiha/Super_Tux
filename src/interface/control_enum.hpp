@@ -71,6 +71,11 @@ private:
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
+#if !SDL_VERSION_ATLEAST(2,0,0)
+#define SDLK_RETURN2 SDLK_KP_ENTER
+#endif // SDL_VERSION_ATLEAST(2,0,0)
+
+
 template<class T>
 ControlEnum<T>::ControlEnum() :
   m_value(),

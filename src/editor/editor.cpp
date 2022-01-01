@@ -772,11 +772,13 @@ Editor::event(const SDL_Event& ev)
 
     // Scroll with mouse wheel, if the mouse is not over the toolbox.
     // The toolbox does scrolling independently from the main area.
+#if SDL_VERSION_ATLEAST(2,0,0)
     if (ev.type == SDL_MOUSEWHEEL && !m_toolbox_widget->has_mouse_focus() && !m_layers_widget->has_mouse_focus()) {
       float scroll_x = static_cast<float>(ev.wheel.x * -32);
       float scroll_y = static_cast<float>(ev.wheel.y * -32);
       scroll({scroll_x, scroll_y});
     }
+#endif // SDL_VERSION_ATLEAST(2,0,0)
   }
   catch(const std::exception& err)
   {

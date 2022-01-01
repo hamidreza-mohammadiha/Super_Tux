@@ -90,7 +90,7 @@ ItemTextField::process_action(const MenuAction& action)
     }
   }
 #ifdef __ANDROID__
-  if (action == MENU_ACTION_HIT && !SDL_IsScreenKeyboardShown(NULL)) {
+  if (action == MenuAction::HIT && !SDL_IsScreenKeyboardShown(NULL)) {
     // strncpy() is not safe, as it's not guaranteed to be zero-terminated, so use safe snprintf() instead
     snprintf(s_text_input_buffer, sizeof(s_text_input_buffer), "%s", input->c_str());
     SDL_ANDROID_GetScreenKeyboardTextInputAsync(s_text_input_buffer, sizeof(s_text_input_buffer));
