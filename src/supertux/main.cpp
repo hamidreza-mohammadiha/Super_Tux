@@ -259,7 +259,7 @@ void PhysfsSubsystem::find_userdir() const
 #ifdef __ANDROID__
     userdir = getenv("HOME");
     userdir += "/.supertux2";
-#else
+#endif
   }
 //Kept for backwards-compatability only, hence the silence
 #ifdef __GNUC__

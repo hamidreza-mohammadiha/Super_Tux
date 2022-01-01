@@ -17,7 +17,7 @@
 
 #include "control/keyboard_manager.hpp"
 
-//#include "control/joystick_manager.hpp"
+#include "control/joystick_manager.hpp"
 #include "control/input_manager.hpp"
 #include "control/keyboard_config.hpp"
 #include "gui/menu_manager.hpp"

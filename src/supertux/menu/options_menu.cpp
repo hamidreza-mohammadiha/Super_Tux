@@ -194,20 +194,39 @@ OptionsMenu::OptionsMenu(bool complete) :
   }
 
   resolutions.clear();
+#if SDL_VERSION_ATLEAST(2,0,0)
+  int display_mode_count = SDL_GetNumDisplayModes(0);
   std::string last_display_mode;
-  SDL_Rect **modes = SDL_ListModes(NULL, 0);
-  for (int i = 0; modes != (SDL_Rect **) -1 && modes && modes[i]; ++i)
+  for (int i = 0; i < display_mode_count; ++i)
   {
-    SDL_Rect mode = *(modes[i]);
+    SDL_DisplayMode mode;
+    int ret = SDL_GetDisplayMode(0, i, &mode);
+    if (ret != 0)
+    {
+      log_warning << "failed to get display mode: " << SDL_GetError() << std::endl;
+    }
+    else
     {
       std::ostringstream out;
       out << mode.w << "x" << mode.h;
+      if (mode.refresh_rate)
+        out << "@" << mode.refresh_rate;
       if (last_display_mode == out.str())
         continue;
       last_display_mode = out.str();
       resolutions.insert(resolutions.begin(), out.str());
     }
   }
+#else // SDL_VERSION_ATLEAST(2,0,0)
+  SDL_Rect **modes = SDL_ListModes(NULL, 0);
+  for (int i = 0; modes != (SDL_Rect **) -1 && modes && modes[i]; ++i)
+  {
+    SDL_Rect mode = *(modes[i]);
+    std::ostringstream out;
+    out << mode.w << "x" << mode.h;
+    resolutions.insert(resolutions.begin(), out.str());
+  }
+#endif // SDL_VERSION_ATLEAST(2,0,0)
   resolutions.push_back("Desktop");
 
   std::string fullscreen_size_str = _("Desktop");

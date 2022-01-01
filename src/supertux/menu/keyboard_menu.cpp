@@ -80,9 +80,9 @@ KeyboardMenu::get_key_name(SDL_Keycode key) const
       return _("Right Alt");
     case SDLK_LALT:
       return _("Left Alt");
-    case SDLK_RMETA:
+    case SDLK_RGUI:
       return _("Right Command");
-    case SDLK_LMETA:
+    case SDLK_LGUI:
       return _("Left Command");
     default:
       return SDL_GetKeyName(static_cast<SDL_Keycode>(key));

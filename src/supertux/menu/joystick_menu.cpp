@@ -86,14 +86,18 @@ JoystickMenu::recreate_menu()
       add_toggle(MNID_JUMP_WITH_UP, _("Jump with Up"), &g_config->joystick_config.m_jump_with_up_joy);
     }
     else
-#endif // SDL_VERSION_ATLEAST(2,0,0)
     {
       m_joysticks_available = false;
 
       add_inactive(_("No Joysticks found"));
       add_entry(MNID_SCAN_JOYSTICKS, _("Scan for Joysticks"));
     }
-//  }
+  }
+#else // SDL_VERSION_ATLEAST(2,0,0)
+  m_joysticks_available = false;
+  add_inactive(_("No Joysticks found"));
+  add_entry(MNID_SCAN_JOYSTICKS, _("Scan for Joysticks"));
+#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   add_hl();
   add_back(_("Back"));

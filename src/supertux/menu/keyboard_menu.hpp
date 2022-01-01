@@ -20,7 +20,11 @@
 
 #include "gui/menu_item.hpp"
 
+#if !SDL_VERSION_ATLEAST(2,0,0)
 typedef SDLKey SDL_Keycode;
+#define SDLK_RGUI SDLK_RMETA
+#define SDLK_LGUI SDLK_LMETA
+#endif // !SDL_VERSION_ATLEAST(2,0,0)
 class InputManager;
 
 class KeyboardMenu final : public Menu

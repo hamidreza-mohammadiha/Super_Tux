@@ -2339,7 +2339,6 @@ Player::ungrab_object(GameObject* gameobject)
     go->del_remove_listener(m_grabbed_object_remove_listener.get());
 
   m_grabbed_object = nullptr;
->>>>>>> v0.6.3
 }
 
 /* EOF */
