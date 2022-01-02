@@ -25,7 +25,9 @@
 #include <emscripten/html5.h>
 #endif
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
 #include <SDL_screenkeyboard.h>
+#endif
 #endif
 
 #include "zip_manager.hpp"
@@ -144,7 +146,9 @@ Editor::Editor() :
 Editor::~Editor()
 {
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
   SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
 #endif
 }
 
@@ -175,7 +179,9 @@ void
 Editor::update(float dt_sec, const Controller& controller)
 {
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
   SDL_ANDROID_SetScreenKeyboardShown(MenuManager::instance().is_active());
+#endif
 #endif
   // Auto-save (interval)
   if (m_level) {
@@ -211,7 +217,9 @@ Editor::update(float dt_sec, const Controller& controller)
   if (m_quit_request) {
     quit_editor();
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
     SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
 #endif
   }
 
@@ -236,7 +244,9 @@ Editor::update(float dt_sec, const Controller& controller)
     m_test_request = false;
     MouseCursor::current()->set_icon(nullptr);
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
     SDL_ANDROID_SetScreenKeyboardShown(1);
+#endif
 #endif
     test_level(m_test_pos);
     return;

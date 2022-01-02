@@ -30,7 +30,9 @@ extern "C" {
 #include <findlocale.h>
 }
 #ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
 #include <SDL_android.h>
+#endif
 #endif
 
 #ifdef WIN32
@@ -437,11 +439,14 @@ Main::launch_game(const CommandLineArguments& args)
 {
   m_sdl_subsystem.reset(new SDLSubsystem());
   m_console_buffer.reset(new ConsoleBuffer());
-#ifdef __ANDROID__
   if (getenv("ANDROID_TV")) {
+    g_config->mobile_controls = false;
+#ifdef __ANDROID__
+#if !SDL_VERSION_ATLEAST(2,0,0)
     SDL_ANDROID_SetScreenKeyboardShown(0);
-  }
 #endif
+#endif
+  }
 
   s_timelog.log("controller");
   m_input_manager.reset(new InputManager(g_config->keyboard_config, g_config->joystick_config));

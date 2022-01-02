@@ -19,9 +19,6 @@
 #include <math.h>
 
 #include <SDL.h>
-#ifdef __ANDROID__
-#include <SDL_screenkeyboard.h>
-#endif
 
 #include "math/vector.hpp"
 #include "math/rectf.hpp"
