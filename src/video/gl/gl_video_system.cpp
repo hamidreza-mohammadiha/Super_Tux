@@ -255,6 +255,12 @@ GLVideoSystem::apply_config()
 
   m_viewport = Viewport::from_size(target_size, m_desktop_size);
 
+#ifdef __ANDROID__
+  // On Android the screen can rotate freely, even if we force the screen orientation it still rotates when the lockscreen is active.
+  // m_desktop_size will report the portrait display resolution and mess up viewport dimensions, so just ignore it.
+  m_viewport = Viewport::from_size(g_config->window_size, g_config->window_size);
+#endif
+
   m_lightmap.reset(new GLTextureRenderer(*this, m_viewport.get_screen_size(), 5));
   if (m_use_opengl33core)
   {
