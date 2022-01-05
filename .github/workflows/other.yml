@@ -71,7 +71,7 @@ jobs:
             pkg install -y glm
           run: |
             mkdir build && cd build
-            cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON -DCMAKE_INSTALL_MESSAGE=NEVER -DCMAKE_INSTALL_PREFIX=/usr -DINSTALL_SUBDIR_BIN=bin -DINSTALL_SUBDIR_SHARE=share/supertux2
+            cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DWARNINGS=ON -DWERROR=OFF -DBUILD_TESTS=ON -DCMAKE_INSTALL_MESSAGE=NEVER -DCMAKE_INSTALL_PREFIX=/usr -DINSTALL_SUBDIR_BIN=bin -DINSTALL_SUBDIR_SHARE=share/supertux2
             make -j3 VERBOSE=1
             make install DESTDIR="/tmp/supertux" VERBOSE=1
             ./test_supertux2
@@ -178,7 +178,7 @@ jobs:
           source ~/emsdk/emsdk_env.sh
           mkdir build
           cd build
-          # TODO: Add -DWARNINGS=ON -DWERROR=ON (when the warnings will be fixed)
+          # TODO: Add -DWARNINGS=ON -DWERROR=OFF (when the warnings will be fixed)
           emcmake cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DENABLE_OPENGLES2=ON -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=wasm32-emscripten -DGLBINDING_ENABLED=ON -DEMSCRIPTEN=1 -DWARNINGS=ON -DWERROR=ON ..
           rsync -aP ../data/ data/
           emmake make -j$(nproc)
