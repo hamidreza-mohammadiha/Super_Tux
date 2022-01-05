@@ -22,9 +22,7 @@
 #ifdef HAVE_OPENGL
 
 #if defined(USE_OPENGLES2)
-#  include <GLES2/gl2platform.h>
-#  include <GLES2/gl2.h>
-#  include <GLES2/gl2ext.h>
+#  include <SDL_opengles2.h>
 #elif defined(USE_OPENGLES1)
 #  include <SDL_opengles.h>
 #else

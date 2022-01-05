@@ -39,20 +39,6 @@ void log_info_callback(const std::string& str);
 void log_error_callback(const std::string& str);
 void log_warning_callback(const std::string& str);
 
-#ifdef __ANDROID__
-#include <sstream>
-// Where else to put this, eh?
-namespace std
-{
-    template < typename T > std::string to_string( const T& n )
-    {
-        std::ostringstream ss;
-        ss << n ;
-        return ss.str() ;
-    }
-}
-#endif
-
 #endif
 
 /* EOF */

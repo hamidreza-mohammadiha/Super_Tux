@@ -140,11 +140,7 @@ public:
 
   SDL_Rect to_sdl() const
   {
-#if SDL_VERSION_ATLEAST(2,0,0)
     return {left, top, get_width(), get_height()};
-#else // SDL_VERSION_ATLEAST(2,0,0)
-    return {(Sint16) left, (Sint16) top, (Uint16) get_width(), (Uint16) get_height()};
-#endif // SDL_VERSION_ATLEAST(2,0,0)
   }
 
   bool operator<(const Rect& other) const {

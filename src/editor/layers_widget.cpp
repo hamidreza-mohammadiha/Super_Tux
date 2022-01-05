@@ -252,7 +252,6 @@ EditorLayersWidget::on_mouse_motion(const SDL_MouseMotionEvent& motion)
 }
 
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 bool
 EditorLayersWidget::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
 {
@@ -284,7 +283,6 @@ EditorLayersWidget::on_mouse_wheel(const SDL_MouseWheelEvent& wheel)
   }
   return false;
 }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 bool
 EditorLayersWidget::has_mouse_focus() const

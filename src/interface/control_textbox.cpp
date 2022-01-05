@@ -306,10 +306,8 @@ bool
 ControlTextbox::event(const SDL_Event& ev) {
   Widget::event(ev);
 
-#if SDL_VERSION_ATLEAST(2,0,0)
   if (ev.type == SDL_TEXTINPUT && m_has_focus)
     put_text(std::string(ev.text.text));
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   return false;
 }

@@ -124,7 +124,6 @@ MobileController::update()
 
   m_up = m_down = m_left = m_right = m_jump = m_action = m_escape = false;
 
-#if SDL_VERSION_ATLEAST(2,0,0)
   // FIXME: This assumes that 1) there is only one touchscreen and 2) SuperTux
   // fills the whole screen
   if (SDL_GetNumTouchDevices() < 1)
@@ -152,7 +151,6 @@ MobileController::update()
 
     activate_widget_at_pos(finger->x * float(m_screen_width), finger->y * float(m_screen_height));
   }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 }
 
 void

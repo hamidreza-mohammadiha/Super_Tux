@@ -53,14 +53,12 @@ ItemIntField::get_width() const {
 
 void
 ItemIntField::event(const SDL_Event& ev) {
-#if SDL_VERSION_ATLEAST(2,0,0)
   if (ev.type == SDL_TEXTINPUT) {
     std::string txt = ev.text.text;
     for (auto& c : txt) {
       add_char(c);
     }
   }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 }
 
 void

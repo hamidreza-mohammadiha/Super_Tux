@@ -27,12 +27,9 @@ InputManager::InputManager(KeyboardConfig& keyboard_config,
                            JoystickConfig& joystick_config) :
   controller(new Controller),
   m_use_game_controller(joystick_config.m_use_game_controller),
-  keyboard_manager(new KeyboardManager(this, keyboard_config))
-#if SDL_VERSION_ATLEAST(2,0,0)
-  ,
+  keyboard_manager(new KeyboardManager(this, keyboard_config)),
   joystick_manager(new JoystickManager(this, joystick_config)),
   game_controller_manager(new GameControllerManager(this))
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 {
 }
 
@@ -74,18 +71,15 @@ void
 InputManager::process_event(const SDL_Event& event)
 {
   switch (event.type) {
-#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_TEXTINPUT:
       keyboard_manager->process_text_input_event(event.text);
       break;
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
     case SDL_KEYUP:
     case SDL_KEYDOWN:
       keyboard_manager->process_key_event(event.key);
       break;
 
-#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_JOYAXISMOTION:
       if (!m_use_game_controller) joystick_manager->process_axis_event(event.jaxis);
       break;
@@ -132,7 +126,7 @@ InputManager::process_event(const SDL_Event& event)
     case SDL_CONTROLLERDEVICEREMAPPED:
       log_debug << "SDL_CONTROLLERDEVICEREMAPPED" << std::endl;
       break;
-#endif // SDL_VERSION_ATLEAST(2,0,0)
+
     default:
       break;
   }

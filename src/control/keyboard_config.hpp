@@ -24,9 +24,6 @@
 #include "control/controller.hpp"
 
 class ReaderMapping;
-#if !SDL_VERSION_ATLEAST(2,0,0)
-typedef SDLKey SDL_Keycode;
-#endif // !SDL_VERSION_ATLEAST(2,0,0)
 class Writer;
 
 class KeyboardConfig final

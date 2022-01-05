@@ -643,9 +643,7 @@ Menu::get_item_by_id(int id)
   if(item != m_items.end())
     return *item->get();
 
-  char c[32];
-  sprintf(c, "%d", id);
-  throw std::runtime_error(std::string("MenuItem not found: ") + c);
+  throw std::runtime_error("MenuItem not found: " + std::to_string(id));
 }
 
 const MenuItem&
@@ -674,14 +672,9 @@ Menu::event(const SDL_Event& ev)
   switch (ev.type)
   {
     case SDL_KEYDOWN:
-#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_TEXTINPUT:
-#endif // SDL_VERSION_ATLEAST(2,0,0)
-      if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE)
-#if SDL_VERSION_ATLEAST(2,0,0)
-          || ev.type == SDL_TEXTINPUT
-#endif // SDL_VERSION_ATLEAST(2,0,0)
-          ) && m_items[m_active_item]->changes_width())
+      if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE) ||
+          ev.type == SDL_TEXTINPUT) && m_items[m_active_item]->changes_width())
       {
         // Changed item value? Let's recalculate width:
         calculate_width();

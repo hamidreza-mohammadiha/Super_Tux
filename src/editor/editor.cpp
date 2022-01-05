@@ -24,11 +24,6 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #endif
-#ifdef __ANDROID__
-#if !SDL_VERSION_ATLEAST(2,0,0)
-#include <SDL_screenkeyboard.h>
-#endif
-#endif
 
 #include "zip_manager.hpp"
 
@@ -145,11 +140,6 @@ Editor::Editor() :
 
 Editor::~Editor()
 {
-#ifdef __ANDROID__
-#if !SDL_VERSION_ATLEAST(2,0,0)
-  SDL_ANDROID_SetScreenKeyboardShown(1);
-#endif
-#endif
 }
 
 void
@@ -178,11 +168,6 @@ Editor::draw(Compositor& compositor)
 void
 Editor::update(float dt_sec, const Controller& controller)
 {
-#ifdef __ANDROID__
-#if !SDL_VERSION_ATLEAST(2,0,0)
-  SDL_ANDROID_SetScreenKeyboardShown(MenuManager::instance().is_active());
-#endif
-#endif
   // Auto-save (interval)
   if (m_level) {
     m_time_since_last_save += dt_sec;
@@ -216,11 +201,6 @@ Editor::update(float dt_sec, const Controller& controller)
 
   if (m_quit_request) {
     quit_editor();
-#ifdef __ANDROID__
-#if !SDL_VERSION_ATLEAST(2,0,0)
-    SDL_ANDROID_SetScreenKeyboardShown(1);
-#endif
-#endif
   }
 
   if (m_newlevel_request) {
@@ -243,11 +223,6 @@ Editor::update(float dt_sec, const Controller& controller)
   if (m_test_request) {
     m_test_request = false;
     MouseCursor::current()->set_icon(nullptr);
-#ifdef __ANDROID__
-#if !SDL_VERSION_ATLEAST(2,0,0)
-    SDL_ANDROID_SetScreenKeyboardShown(1);
-#endif
-#endif
     test_level(m_test_pos);
     return;
   }
@@ -763,10 +738,7 @@ Editor::event(const SDL_Event& ev)
     }
 
     // unreliable heuristic to snapshot the current state for future undo
-    if (((ev.type == SDL_KEYUP &&
-#if SDL_VERSION_ATLEAST(2,0,0)
-         ev.key.repeat == 0 &&
-#endif // SDL_VERSION_ATLEAST(2,0,0)
+    if (((ev.type == SDL_KEYUP && ev.key.repeat == 0 &&
          ev.key.keysym.sym != SDLK_LSHIFT &&
          ev.key.keysym.sym != SDLK_RSHIFT &&
          ev.key.keysym.sym != SDLK_LCTRL &&
@@ -782,13 +754,11 @@ Editor::event(const SDL_Event& ev)
 
     // Scroll with mouse wheel, if the mouse is not over the toolbox.
     // The toolbox does scrolling independently from the main area.
-#if SDL_VERSION_ATLEAST(2,0,0)
     if (ev.type == SDL_MOUSEWHEEL && !m_toolbox_widget->has_mouse_focus() && !m_layers_widget->has_mouse_focus()) {
       float scroll_x = static_cast<float>(ev.wheel.x * -32);
       float scroll_y = static_cast<float>(ev.wheel.y * -32);
       scroll({scroll_x, scroll_y});
     }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
   }
   catch(const std::exception& err)
   {

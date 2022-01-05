@@ -48,11 +48,6 @@
 #include <chrono>
 #include <iostream>
 
-#if SDL_VERSION_ATLEAST(2,0,0)
-#else // SDL_VERSION_ATLEAST(2,0,0)
-#define SDLK_PRINTSCREEN SDLK_PRINT
-#endif // SDL_VERSION_ATLEAST(2,0,0)
-
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -401,7 +396,6 @@ ScreenManager::process_events()
       case SDL_QUIT:
         quit();
         break;
-#if SDL_VERSION_ATLEAST(2,0,0)
       case SDL_WINDOWEVENT:
         switch (event.window.event)
         {
@@ -424,15 +418,6 @@ ScreenManager::process_events()
             break;
         }
         break;
-#else // SDL_VERSION_ATLEAST(2,0,0)
-      case SDL_VIDEORESIZE:
-        m_video_system.on_resize(event.resize.w, event.resize.h);
-        m_menu_manager->on_window_resize();
-        if (Editor::is_active()) {
-          Editor::current()->resize();
-        }
-        break;
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
       case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_F10)

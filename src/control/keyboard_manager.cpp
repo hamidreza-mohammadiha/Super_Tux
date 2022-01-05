@@ -83,7 +83,6 @@ KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
   }
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 void
 KeyboardManager::process_text_input_event(const SDL_TextInputEvent& event)
 {
@@ -94,7 +93,6 @@ KeyboardManager::process_text_input_event(const SDL_TextInputEvent& event)
     }
   }
 }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 void
 KeyboardManager::process_console_key_event(const SDL_KeyboardEvent& event)
@@ -174,7 +172,6 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
     return;
   }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
   if (m_parent->joystick_manager->wait_for_joystick >= 0)
   {
     if (event.keysym.sym == SDLK_ESCAPE)
@@ -185,7 +182,6 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
     }
     return;
   }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   Control control;
   /* we use default keys when the menu is open (to avoid problems when

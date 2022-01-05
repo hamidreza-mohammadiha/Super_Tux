@@ -28,21 +28,13 @@
 
 namespace {
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 Sint64 funcSize(struct SDL_RWops* context)
 {
   PHYSFS_file* file = static_cast<PHYSFS_file*>(context->hidden.unknown.data1);
   return PHYSFS_fileLength(file);
 }
-#else
-enum { SDL_RWOPS_UNKNOWN = 0 };
-#endif
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 Sint64 funcSeek(struct SDL_RWops* context, Sint64 offset, int whence)
-#else // SDL_VERSION_ATLEAST(2,0,0)
-int funcSeek(struct SDL_RWops *context, int offset, int whence)
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 {
   PHYSFS_file* file = static_cast<PHYSFS_file*>(context->hidden.unknown.data1);
   int res;
@@ -71,11 +63,7 @@ int funcSeek(struct SDL_RWops *context, int offset, int whence)
   return i;
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 size_t funcRead(struct SDL_RWops* context, void* ptr, size_t size, size_t maxnum)
-#else // SDL_VERSION_ATLEAST(2,0,0)
-int funcRead(struct SDL_RWops *context, void *ptr, int size, int maxnum)
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 {
   PHYSFS_file* file = static_cast<PHYSFS_file*>(context->hidden.unknown.data1);
 
@@ -90,11 +78,7 @@ int funcRead(struct SDL_RWops *context, void *ptr, int size, int maxnum)
   }
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 size_t funcWrite(struct SDL_RWops* context, const void* ptr, size_t size, size_t num)
-#else // SDL_VERSION_ATLEAST(2,0,0)
-int funcWrite(struct SDL_RWops *context, const void *ptr, int size, int num)
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 {
   PHYSFS_file* file = static_cast<PHYSFS_file*>(context->hidden.unknown.data1);
 
@@ -138,9 +122,7 @@ SDL_RWops* get_physfs_SDLRWops(const std::string& filename)
   }
 
   SDL_RWops* ops = new SDL_RWops;
-#if SDL_VERSION_ATLEAST(2,0,0)
   ops->size = funcSize;
-#endif // SDL_VERSION_ATLEAST(2,0,0)
   ops->seek = funcSeek;
   ops->read = funcRead;
   ops->write = funcWrite;
@@ -168,9 +150,7 @@ SDL_RWops* get_writable_physfs_SDLRWops(const std::string& filename)
   }
 
   SDL_RWops* ops = new SDL_RWops;
-#if SDL_VERSION_ATLEAST(2,0,0)
   ops->size = funcSize;
-#endif // SDL_VERSION_ATLEAST(2,0,0)
   ops->seek = funcSeek;
   ops->read = funcRead;
   ops->write = funcWrite;

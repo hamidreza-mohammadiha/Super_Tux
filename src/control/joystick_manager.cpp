@@ -16,8 +16,6 @@
 
 #include "control/joystick_manager.hpp"
 
-#if SDL_VERSION_ATLEAST(2,0,0)
-
 #include <algorithm>
 
 #include "control/input_manager.hpp"
@@ -235,7 +233,5 @@ JoystickManager::set_joy_controls(Control id, bool value)
 
   parent->get_controller().set_control(id, value);
 }
-
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
 /* EOF */

@@ -30,10 +30,8 @@ Widget::event(const SDL_Event& ev)
     case SDL_MOUSEMOTION:
       return on_mouse_motion(ev.motion);
 
-#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_MOUSEWHEEL:
       return on_mouse_wheel(ev.wheel);
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
     case SDL_KEYDOWN:
       return on_key_down(ev.key);
@@ -41,15 +39,10 @@ Widget::event(const SDL_Event& ev)
     case SDL_KEYUP:
       return on_key_up(ev.key);
 
-#if SDL_VERSION_ATLEAST(2,0,0)
     case SDL_WINDOWEVENT:
       if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
         resize();
       }
-#else // SDL_VERSION_ATLEAST(2,0,0)
-    case SDL_VIDEORESIZE:
-      resize();
-#endif // SDL_VERSION_ATLEAST(2,0,0)
       return false;
 
     default:

@@ -34,9 +34,7 @@ public:
   KeyboardManager(InputManager* parent, KeyboardConfig& keyboard_config);
 
   void process_key_event(const SDL_KeyboardEvent& event);
-#if SDL_VERSION_ATLEAST(2,0,0)
   void process_text_input_event(const SDL_TextInputEvent& event);
-#endif // SDL_VERSION_ATLEAST(2,0,0)
   void process_console_key_event(const SDL_KeyboardEvent& event);
   void process_menu_key_event(const SDL_KeyboardEvent& event);
 

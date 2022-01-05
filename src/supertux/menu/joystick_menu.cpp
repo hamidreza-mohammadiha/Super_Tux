@@ -56,7 +56,6 @@ JoystickMenu::recreate_menu()
              &m_auto_joystick_cfg)
     .set_help(_("Use manual configuration instead of SDL2's automatic GameController support"));
 
-#if SDL_VERSION_ATLEAST(2,0,0)
   if (m_input_manager.use_game_controller())
   {
     m_joysticks_available = false;
@@ -93,11 +92,6 @@ JoystickMenu::recreate_menu()
       add_entry(MNID_SCAN_JOYSTICKS, _("Scan for Joysticks"));
     }
   }
-#else // SDL_VERSION_ATLEAST(2,0,0)
-  m_joysticks_available = false;
-  add_inactive(_("No Joysticks found"));
-  add_entry(MNID_SCAN_JOYSTICKS, _("Scan for Joysticks"));
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 
   add_hl();
   add_back(_("Back"));
@@ -122,7 +116,6 @@ JoystickMenu::get_button_name(int button) const
 void
 JoystickMenu::menu_action(MenuItem& item)
 {
-#if SDL_VERSION_ATLEAST(2,0,0)
   if (0 <= item.get_id() && item.get_id() < static_cast<int>(Control::CONTROLCOUNT))
   {
     ItemControlField* micf = dynamic_cast<ItemControlField*>(&item);
@@ -144,7 +137,6 @@ JoystickMenu::menu_action(MenuItem& item)
     m_input_manager.reset();
     recreate_menu();
   }
-#endif // SDL_VERSION_ATLEAST(2,0,0)
 }
 
 void

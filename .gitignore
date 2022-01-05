@@ -46,7 +46,6 @@ supertux.*
 
 # Useful Customization Files
 data/levels/more/
-/data/tilecache
 *.patch
 *.zip
 *.diff
