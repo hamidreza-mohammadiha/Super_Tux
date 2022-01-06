@@ -29,7 +29,12 @@ class Texture;
 class GLContext
 {
 public:
-  GLContext() {}
+  GLContext()
+  {
+#ifdef GL_PERFORMANCE_LOG
+    m_triangles_counter = m_frame_counter = 0;
+#endif
+  }
   virtual ~GLContext() {}
 
   virtual std::string get_name() const = 0;
@@ -55,6 +60,10 @@ public:
 
   virtual bool supports_framebuffer() const = 0;
 
+#ifdef GL_PERFORMANCE_LOG
+  int m_triangles_counter;
+  int m_frame_counter;
+#endif
 private:
   GLContext(const GLContext&) = delete;
   GLContext& operator=(const GLContext&) = delete;
