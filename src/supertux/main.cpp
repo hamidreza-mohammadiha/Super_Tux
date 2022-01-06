@@ -253,10 +253,6 @@ void PhysfsSubsystem::find_userdir() const
   else
   {
   userdir = PHYSFS_getPrefDir("SuperTux","supertux2");
-#ifdef __ANDROID__
-    userdir = getenv("HOME");
-    userdir += "/.supertux2";
-#endif
   }
 //Kept for backwards-compatability only, hence the silence
 #ifdef __GNUC__
@@ -694,6 +690,13 @@ Main::run(int argc, char** argv)
   }
 
   g_dictionary_manager.reset();
+
+#ifdef __ANDROID__
+  // SDL2 keeps shared libraries loaded after the app is closed,
+  // when we launch the app again the static initializers will run twice and crash the app.
+  // So we just need to terminate the app process 'gracefully', without running destructors or atexit() functions.
+  _exit(result);
+#endif
 
   return result;
 }

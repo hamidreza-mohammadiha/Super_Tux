@@ -193,7 +193,7 @@ ScreenManager::quit(std::unique_ptr<ScreenFade> screen_fade)
 {
   Integration::close_all();
 
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__) || defined(__ANDROID__)
   g_config->save();
 #endif
 
