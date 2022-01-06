@@ -239,12 +239,12 @@ MobileController::activate_widget_at_pos(float x, float y)
     m_down = true;
 
   Rectf left = m_rect_directions;
-  left.set_right(left.get_right() - left.get_width() * 2.f / 3.f);
+  left.set_right(left.get_right() - left.get_width() * 3.f / 4.f);
   if (left.contains(pos))
     m_left = true;
 
   Rectf right = m_rect_directions;
-  right.set_left(right.get_left() + right.get_width() * 2.f / 3.f);
+  right.set_left(right.get_left() + right.get_width() * 3.f / 4.f);
   if (right.contains(pos))
     m_right = true;
 }
