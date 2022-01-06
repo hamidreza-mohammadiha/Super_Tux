@@ -71,7 +71,6 @@ private:
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-
 template<class T>
 ControlEnum<T>::ControlEnum() :
   m_value(),

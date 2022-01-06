@@ -26,7 +26,6 @@
 #include "object/tilemap.hpp"
 #include "supertux/sector.hpp"
 
-
 void
 FlipLevelTransformer::transform_sector(Sector& sector)
 {

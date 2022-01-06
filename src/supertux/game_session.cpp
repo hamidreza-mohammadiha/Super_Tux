@@ -214,9 +214,6 @@ GameSession::toggle_pause()
     m_currentsector->stop_looping_sounds();
     SoundManager::current()->pause_music();
     m_game_pause = true;
-  } else if (m_game_pause && MenuManager::instance().is_active()) {
-    MenuManager::instance().clear_menu_stack();
-    ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
   }
 
   // unpause is done in update() after the menu is processed
@@ -283,7 +280,7 @@ GameSession::check_end_conditions()
 void
 GameSession::draw(Compositor& compositor)
 {
-  if (!m_currentsector)
+  if (m_currentsector == nullptr)
     return;
 
   auto& context = compositor.make_context();

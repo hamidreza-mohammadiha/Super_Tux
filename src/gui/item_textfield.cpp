@@ -43,7 +43,6 @@ ItemTextField::draw(DrawingContext& context, const Vector& pos, int menu_width, 
                             Vector(pos.x + 16.0f,
                                    pos.y - static_cast<float>(Resources::normal_font->get_height()) / 2.0f),
                             ALIGN_LEFT, LAYER_GUI, active ? ColorScheme::Menu::active_color : get_color());
-
 }
 
 int

@@ -245,7 +245,6 @@ Config::load()
 void
 Config::save()
 {
-  log_info << "Config::save()" << std::endl;
   Writer writer("config");
 
   writer.start_list("supertux-config");

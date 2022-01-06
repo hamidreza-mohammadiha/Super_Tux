@@ -25,8 +25,6 @@
 #include "util/file_system.hpp"
 #include "util/log.hpp"
 #include "util/writer.hpp"
-#include "supertux/screen_manager.hpp"
-#include "supertux/screen_fade.hpp"
 
 #include <physfs.h>
 #include <numeric>
@@ -70,7 +68,6 @@ void
 Level::save(const std::string& filepath, bool retry)
 {
   //FIXME: It tests for directory in supertux/data, but saves into .supertux2.
-
   try {
     { // make sure the level directory exists
       std::string dirname = FileSystem::dirname(filepath);

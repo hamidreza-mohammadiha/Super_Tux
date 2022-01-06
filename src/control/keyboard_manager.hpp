@@ -18,7 +18,6 @@
 #ifndef HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 #define HEADER_SUPERTUX_CONTROL_KEYBOARD_MANAGER_HPP
 
-#include <SDL.h>
 #include <boost/optional.hpp>
 
 #include "control/controller.hpp"

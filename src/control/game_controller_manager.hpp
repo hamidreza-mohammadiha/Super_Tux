@@ -17,7 +17,6 @@
 #ifndef HEADER_SUPERTUX_CONTROL_GAME_CONTROLLER_MANAGER_HPP
 #define HEADER_SUPERTUX_CONTROL_GAME_CONTROLLER_MANAGER_HPP
 
-#include <SDL.h>
 #include <vector>
 #include <array>
 

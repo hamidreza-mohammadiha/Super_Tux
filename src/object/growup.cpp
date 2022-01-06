@@ -23,7 +23,6 @@
 #include "object/player.hpp"
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
-#include "supertux/sector.hpp"
 
 GrowUp::GrowUp(const Vector& pos, Direction direction) :
   MovingSprite(pos, "images/powerups/egg/egg.sprite", LAYER_OBJECTS, COLGROUP_MOVING),

@@ -23,7 +23,6 @@
 #include "gui/menu_manager.hpp"
 #include "util/log.hpp"
 
-
 JoystickManager::JoystickManager(InputManager* parent_,
                                  JoystickConfig& joystick_config) :
   parent(parent_),

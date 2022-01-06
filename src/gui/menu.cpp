@@ -43,8 +43,6 @@
 #include "math/util.hpp"
 #include "supertux/globals.hpp"
 #include "supertux/resources.hpp"
-#include "supertux/screen_fade.hpp"
-#include "supertux/screen_manager.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 #include "video/video_system.hpp"
@@ -506,9 +504,6 @@ Menu::process_action(const MenuAction& menuaction)
     case MenuAction::BACK:
       if (on_back_action()) {
         MenuManager::instance().pop_menu();
-        if (!MenuManager::instance().is_active()) {
-          ScreenManager::current()->pop_screen(); // Escape key exits to previous screen, required by Android TV
-        }
       }
       return;
 
@@ -674,7 +669,7 @@ Menu::event(const SDL_Event& ev)
     case SDL_KEYDOWN:
     case SDL_TEXTINPUT:
       if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE) ||
-          ev.type == SDL_TEXTINPUT) && m_items[m_active_item]->changes_width())
+         ev.type == SDL_TEXTINPUT) && m_items[m_active_item]->changes_width())
       {
         // Changed item value? Let's recalculate width:
         calculate_width();
