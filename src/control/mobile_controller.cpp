@@ -103,7 +103,7 @@ MobileController::draw(DrawingContext& context)
 
     m_rect_escape.set_size(m_screen_height * BUTTON_SCALE / 3, m_screen_height * BUTTON_SCALE / 3);
     m_rect_escape.set_pos(Vector(0, 0));
-    m_draw_escape = m_rect_escape.grown(-m_rect_action.get_height() / 4);
+    m_draw_escape = m_rect_escape.grown(-m_rect_escape.get_height() / 4);
   }
 
   context.color().draw_surface_scaled(m_tex_dirs, m_draw_directions, 1650, transparent);
