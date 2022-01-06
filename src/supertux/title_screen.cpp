@@ -25,15 +25,12 @@
 #include "object/player.hpp"
 #include "sdk/integration.hpp"
 #include "supertux/fadetoblack.hpp"
-#include "supertux/game_manager.hpp"
 #include "supertux/game_session.hpp"
 #include "supertux/level.hpp"
-#include "supertux/levelsavestate.hpp"
 #include "supertux/menu/menu_storage.hpp"
 #include "supertux/resources.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
-#include "supertux/world.hpp"
 #include "video/compositor.hpp"
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
@@ -149,24 +146,6 @@ TitleScreen::update(float dt_sec, const Controller& controller)
   if (!MenuManager::instance().is_active() && !ScreenManager::current()->has_pending_fadeout())
   {
     MenuManager::instance().set_menu(MenuStorage::MAIN_MENU);
-  }
-
-  if (LevelSaveState::getLoading())
-  {
-    std::string worldname = LevelSaveState::get().getWorld();
-    if (worldname != "")
-    {
-      try
-      {
-        std::unique_ptr<World> world = World::from_directory(worldname);
-        GameManager::current()->start_worldmap(*world);
-      }
-      catch(const std::exception& e)
-      {
-        log_fatal << "Couldn't load world " << worldname << ": " << e.what() << std::endl;
-      }
-    }
-    LevelSaveState::finishLoading();
   }
 }
 

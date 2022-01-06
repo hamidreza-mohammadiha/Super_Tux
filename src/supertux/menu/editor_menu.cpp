@@ -109,7 +109,6 @@ EditorMenu::menu_action(MenuItem& item)
   {
     case MNID_RETURNTOEDITOR:
       MenuManager::instance().clear_menu_stack();
-      editor->resize();
       break;
 
     case MNID_SAVELEVEL:

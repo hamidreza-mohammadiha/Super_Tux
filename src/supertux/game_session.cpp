@@ -41,7 +41,6 @@
 #include "supertux/savegame.hpp"
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
-#include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "video/compositor.hpp"
 #include "video/drawing_context.hpp"
@@ -83,9 +82,6 @@ GameSession::GameSession(const std::string& levelfile_, Savegame& savegame, Stat
   m_end_seq_started(false),
   m_current_cutscene_text()
 {
-  if (LevelSaveState::getLoading() && LevelSaveState::get().level != "" && LevelSaveState::get().sector != "" && m_levelfile.find("levels/misc") != 0) {
-    set_reset_point(LevelSaveState::get().sector, LevelSaveState::get().pos);
-  }
   if (restart_level() != 0)
     throw std::runtime_error ("Initializing the level failed.");
 }
@@ -535,7 +531,6 @@ GameSession::set_start_pos(const std::string& sector,
 void
 GameSession::set_reset_point(const std::string& sector, const Vector& pos)
 {
-  LevelSaveState::save(LevelSaveState(m_levelfile, sector, pos));
   m_reset_sector = sector;
   m_reset_pos = pos;
 }

@@ -18,7 +18,6 @@
 
 #include "gui/menu_item.hpp"
 #include "gui/menu_manager.hpp"
-#include "supertux/levelsavestate.hpp"
 #include "supertux/menu/menu_storage.hpp"
 #include "supertux/screen_fade.hpp"
 #include "supertux/screen_manager.hpp"
@@ -46,7 +45,6 @@ WorldmapMenu::menu_action(MenuItem& item)
     case MNID_QUITWORLDMAP:
       MenuManager::instance().clear_menu_stack();
       ScreenManager::current()->pop_screen();
-      LevelSaveState::erase();
       break;
   }
 }

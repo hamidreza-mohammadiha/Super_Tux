@@ -47,7 +47,6 @@
 #include "supertux/shrinkfade.hpp"
 #include "supertux/tile.hpp"
 #include "supertux/tile_manager.hpp"
-#include "supertux/levelsavestate.hpp"
 #include "util/file_system.hpp"
 #include "util/reader.hpp"
 #include "util/reader_document.hpp"
@@ -263,7 +262,6 @@ WorldMap::finished_level(Level* gamelevel)
   }
 
   save_state();
-  LevelSaveState::save(LevelSaveState(m_levels_path));
 
   if (old_level_state != level->is_solved()) {
     // Try to detect the next direction to which we should walk
@@ -485,11 +483,6 @@ WorldMap::at_teleporter(const Vector& pos) const
 void
 WorldMap::draw(DrawingContext& context)
 {
-  if (m_in_level)
-  {
-    return;
-  }
-
   BIND_WORLDMAP(*this);
 
   if (get_width() < static_cast<float>(context.get_width()) ||
