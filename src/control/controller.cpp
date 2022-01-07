@@ -15,8 +15,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "control/controller.hpp"
-#include "video/video_system.hpp"
-#include "video/viewport.hpp"
 
 #include <ostream>
 
@@ -83,8 +81,6 @@ Controller::reset()
     m_controls[i] = false;
     m_old_controls[i] = false;
   }
-  mousePressed = false;
-  mousePos = Vector(0,0);
 }
 
 void
@@ -117,25 +113,6 @@ Controller::update()
   for (int i = 0; i < static_cast<int>(Control::CONTROLCOUNT); ++i) {
     m_old_controls[i] = m_controls[i];
   }
-}
-
-bool
-Controller::mouse_pressed() const
-{
-  return mousePressed;
-}
-
-Vector
-Controller::mouse_pos() const
-{
-  return mousePos;
-}
-
-void
-Controller::set_mouse(int x, int y, bool pressed)
-{
-  mousePressed = pressed;
-  mousePos = VideoSystem::current()->get_viewport().to_logical(x, y);
 }
 
 /* EOF */

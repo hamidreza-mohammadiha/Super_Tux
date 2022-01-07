@@ -230,7 +230,6 @@ private:
 
   void handle_horizontal_input();
   void handle_vertical_input();
-  void handle_jump_helper();
 
   void do_jump_apex();
   void early_jump_apex();
@@ -329,14 +328,6 @@ private:
   Portable* m_grabbed_object;
   std::unique_ptr<ObjectRemoveListener> m_grabbed_object_remove_listener;
   bool released_object;
-
-  SurfacePtr jumparrow; /**< arrow indicating wherer Tux' will jump */
-  bool jump_helper;     /**< Jump helper for touchscreens to perform precise jumps */
-  bool jump_helper_jump;
-  bool jump_helper_move_left;
-  bool jump_helper_move_right;
-  bool jump_helper_draw;
-  float jump_helper_x;
 
   SpritePtr m_sprite; /**< The main sprite representing Tux */
 

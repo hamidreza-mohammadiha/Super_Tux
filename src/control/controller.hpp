@@ -20,8 +20,6 @@
 #include <iosfwd>
 #include <boost/optional.hpp>
 
-#include "math/vector.hpp"
-
 enum class Control {
   LEFT = 0,
   RIGHT,
@@ -76,18 +74,12 @@ public:
 
   void reset();
 
-  bool mouse_pressed() const;
-  Vector mouse_pos() const;
-  void set_mouse(int x, int y, bool pressed);
-
 protected:
   /** current control status */
   bool m_controls[static_cast<int>(Control::CONTROLCOUNT)];
 
   /** control status at last frame */
   bool m_old_controls[static_cast<int>(Control::CONTROLCOUNT)];
-  bool mousePressed;
-  Vector mousePos;
 
 private:
   Controller(const Controller&) = delete;
