@@ -327,7 +327,7 @@ private:
 
   Portable* m_grabbed_object;
   std::unique_ptr<ObjectRemoveListener> m_grabbed_object_remove_listener;
-  bool released_object;
+  bool m_released_object;
 
   SpritePtr m_sprite; /**< The main sprite representing Tux */
 

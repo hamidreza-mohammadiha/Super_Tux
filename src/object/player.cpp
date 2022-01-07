@@ -193,7 +193,7 @@ Player::Player(PlayerStatus& player_status, const std::string& name_) :
   m_visible(true),
   m_grabbed_object(nullptr),
   m_grabbed_object_remove_listener(new GrabListener(*this)),
-  released_object(false),
+  m_released_object(false),
   // if/when we have complete penny gfx, we can
   // load those instead of Tux's sprite in the
   // constructor
@@ -1152,8 +1152,7 @@ Player::handle_input()
 
   /* Shoot! */
   auto active_bullets = Sector::get().get_object_count<Bullet>();
-  if (m_controller->pressed(Control::ACTION) && (m_player_status.bonus == FIRE_BONUS || m_player_status.bonus == ICE_BONUS)
-      && !m_grabbed_object) {
+  if (m_controller->pressed(Control::ACTION) && (m_player_status.bonus == FIRE_BONUS || m_player_status.bonus == ICE_BONUS) && !m_grabbed_object) {
     if ((m_player_status.bonus == FIRE_BONUS &&
       active_bullets < m_player_status.max_fire_bullets) ||
       (m_player_status.bonus == ICE_BONUS &&
@@ -1216,7 +1215,7 @@ Player::handle_input()
     do_standup(false);
   }
 
-  if (!m_controller->hold(Control::ACTION) && m_grabbed_object && !just_grabbed) {
+  if (m_controller->pressed(Control::ACTION) && m_grabbed_object && !just_grabbed) {
     auto moving_object = dynamic_cast<MovingObject*> (m_grabbed_object);
     if (moving_object) {
       // move the grabbed object a bit away from tux
@@ -1269,15 +1268,15 @@ Player::handle_input()
         }
         moving_object->del_remove_listener(m_grabbed_object_remove_listener.get());
         m_grabbed_object = nullptr;
-        released_object = true;
+        m_released_object = true;
       }
     } else {
       log_debug << "Non MovingObject grabbed?!?" << std::endl;
     }
   }
 
-  if (!m_controller->hold(Control::ACTION) && released_object) {
-    released_object = false;
+  if (!m_controller->hold(Control::ACTION) && m_released_object) {
+    m_released_object = false;
   }
 
   /* stop backflipping at will */
@@ -1314,7 +1313,7 @@ Player::position_grabbed_object()
 bool
 Player::try_grab()
 {
-  if (m_controller->hold(Control::ACTION) && !m_grabbed_object && !m_duck && !released_object)
+  if (m_controller->hold(Control::ACTION) && !m_grabbed_object && !m_duck && !m_released_object)
   {
 
     Vector pos(0.0f, 0.0f);
