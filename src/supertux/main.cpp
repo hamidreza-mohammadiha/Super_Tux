@@ -197,13 +197,13 @@ void PhysfsSubsystem::find_datadir() const
   {
     datadir = env_datadir;
   }
-  else if (const char* env_datadir = getenv("ANDROID_ASSET_PACK_PATH"))
+  else if (const char* env_datadir2 = getenv("ANDROID_ASSET_PACK_PATH"))
   {
-    datadir = env_datadir;
+    datadir = env_datadir2;
   }
-  else if (const char* env_datadir = getenv("ANDROID_MY_OWN_APP_FILE"))
+  else if (const char* env_datadir3 = getenv("ANDROID_MY_OWN_APP_FILE"))
   {
-    datadir = env_datadir;
+    datadir = env_datadir3;
   }
   else
   {
@@ -430,9 +430,11 @@ Main::launch_game(const CommandLineArguments& args)
 {
   m_sdl_subsystem.reset(new SDLSubsystem());
   m_console_buffer.reset(new ConsoleBuffer());
+#ifdef ENABLE_TOUCHSCREEN_SUPPORT
   if (getenv("ANDROID_TV")) {
     g_config->mobile_controls = false;
   }
+#endif
 
   s_timelog.log("controller");
   m_input_manager.reset(new InputManager(g_config->keyboard_config, g_config->joystick_config));
