@@ -29,8 +29,7 @@ union SDL_Event;
 class EditorScrollerWidget final : public Widget
 {
 public:
-  enum { SCROLLER_NONE, SCROLLER_TOP, SCROLLER_BOTTOM, };
-  static int rendered;
+  static bool rendered;
 
 public:
   EditorScrollerWidget(Editor& editor);
