@@ -1,0 +1,75 @@
+#  SuperTux
+#  Copyright (C) 2021-2021 Sergii Pylypenko <x.pelya.x@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+name: android
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request: {}
+
+jobs:
+  build-android:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          submodules: true
+
+      - name: Clone SDL Android repo
+        run: |
+          # Check out specific stable revision, so the build won't break if I modify my SDL build scrips
+          git clone --depth=100 https://github.com/pelya/commandergenius.git build-android
+          git -C build-android checkout 292775eb07
+          git -C build-android submodule update --init --recursive --depth=1 project/jni/boost/src project/jni/iconv/src project/jni/sdl2 project/jni/sdl2_image project/jni/sdl2_mixer project/jni/sdl2_ttf
+
+      - name: Generate menu.stl
+        run: |
+          sed 's/@LOGO_FILE@/logo_final.sprite/g' data/levels/misc/menu.stl.in > data/levels/misc/menu.stl
+
+      - name: Symlink to the source dir
+        run: |
+          ln -s `pwd` build-android/project/jni/application/supertux/supertux
+
+      - name: Hyper turbo build script GOOOOOOOOO
+        working-directory: build-android
+        run: |
+          export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          echo "ndk-build path:"
+          which ndk-build
+          build.sh supertux
+
+      - name: Package
+        working-directory: build-android
+        run: |
+          cd project/jni/application/supertux
+          ./create-apk-with-data.sh
+          cd ../../../..
+          mkdir -p upload/
+          mv SuperTux*.apk upload/
+
+      # Github actions is dumb and won't let you download single files from artifacts, so break up the artifacts instead
+      - uses: actions/upload-artifact@v2
+        with:
+          name: "android-apk"
+          path: build-android/upload
+          if-no-files-found: ignore
