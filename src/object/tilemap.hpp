@@ -157,6 +157,8 @@ public:
   /** changes all tiles with the given ID */
   void change_all(uint32_t oldtile, uint32_t newtile);
 
+  void draw_rects_update_enabled(bool enabled);
+
   /** Puts the correct autotile block at the given position */
   void autotile(int x, int y, uint32_t tile);
   
@@ -222,6 +224,10 @@ private:
   typedef std::vector<uint32_t> Tiles;
   Tiles m_tiles;
 
+  typedef std::vector<unsigned char> TilesDrawRects;
+  TilesDrawRects tiles_draw_rects; /**< Tiles draw cache, with adjacent tiles merged into big rectangles */
+  bool draw_rects_update;
+
   /* read solid: In *general*, is this a solid layer? effective solid:
      is the layer *currently* solid? A generally solid layer may be
      not solid when its alpha is low. See `is_solid' above. */
@@ -267,6 +273,9 @@ private:
 private:
   TileMap(const TileMap&) = delete;
   TileMap& operator=(const TileMap&) = delete;
+
+  void calculateDrawRects(bool useCache = false);
+  void calculateDrawRects(uint32_t oldtile, uint32_t newtile);
 };
 
 #endif

@@ -27,6 +27,7 @@ GLVertexArrays::GLVertexArrays(GL33CoreContext& context) :
   m_vao(),
   m_positions_buffer(),
   m_texcoords_buffer(),
+  m_texcoords_repeat_buffer(),
   m_color_buffer()
 {
   assert_gl();
@@ -34,6 +35,7 @@ GLVertexArrays::GLVertexArrays(GL33CoreContext& context) :
   glGenVertexArrays(1, &m_vao);
   glGenBuffers(1, &m_positions_buffer);
   glGenBuffers(1, &m_texcoords_buffer);
+  glGenBuffers(1, &m_texcoords_repeat_buffer);
   glGenBuffers(1, &m_color_buffer);
 
   assert_gl();
@@ -43,6 +45,7 @@ GLVertexArrays::~GLVertexArrays()
 {
   glDeleteBuffers(1, &m_positions_buffer);
   glDeleteBuffers(1, &m_texcoords_buffer);
+  glDeleteBuffers(1, &m_texcoords_repeat_buffer);
   glDeleteBuffers(1, &m_color_buffer);
   glDeleteVertexArrays(1, &m_vao);
 }
@@ -88,12 +91,31 @@ GLVertexArrays::set_texcoords(const float* data, size_t size)
 }
 
 void
+GLVertexArrays::set_texcoords_repeat(const float* data, size_t size)
+{
+  assert_gl();
+
+  glBindBuffer(GL_ARRAY_BUFFER, m_texcoords_repeat_buffer);
+  glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+
+  int loc = m_context.get_program().get_attrib_location("texcoord_repeat");
+  glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glEnableVertexAttribArray(loc);
+
+  assert_gl();
+}
+
+void
 GLVertexArrays::set_texcoord(float u, float v)
 {
   assert_gl();
 
   int loc = m_context.get_program().get_attrib_location("texcoord");
   glVertexAttrib2f(loc, u, v);
+  glDisableVertexAttribArray(loc);
+
+  loc = m_context.get_program().get_attrib_location("texcoord_repeat");
+  glVertexAttrib4f(loc, 0.0f, 0.0f, 1.0f, 1.0f);
   glDisableVertexAttribArray(loc);
 
   assert_gl();
