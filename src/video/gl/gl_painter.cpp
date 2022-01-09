@@ -90,13 +90,13 @@ GLPainter::draw_texture(const TextureRequest& request)
   {
     const float left = request.dstrects[i].get_left();
     const float top = request.dstrects[i].get_top();
-    const float right  = request.dstrects[i].get_left() + request.dstrects[i].get_width() * request.repeats[i].width;
-    const float bottom = request.dstrects[i].get_top() + request.dstrects[i].get_height() * request.repeats[i].height;
+    const float right  = request.dstrects[i].get_left() + request.dstrects[i].get_width() * static_cast<float>(request.repeats[i].width);
+    const float bottom = request.dstrects[i].get_top() + request.dstrects[i].get_height() * static_cast<float>(request.repeats[i].height);
 
     float uv_left = 0.0f;
     float uv_top = 0.0f;
-    float uv_right = request.srcrects[i].get_width() * request.repeats[i].width / static_cast<float>(texture.get_texture_width());
-    float uv_bottom = request.srcrects[i].get_height() * request.repeats[i].height / static_cast<float>(texture.get_texture_height());
+    float uv_right = request.srcrects[i].get_width() * static_cast<float>(request.repeats[i].width) / static_cast<float>(texture.get_texture_width());
+    float uv_bottom = request.srcrects[i].get_height() * static_cast<float>(request.repeats[i].height) / static_cast<float>(texture.get_texture_height());
     float uv_left_start = request.srcrects[i].get_left() / static_cast<float>(texture.get_texture_width());
     float uv_top_start = request.srcrects[i].get_top() / static_cast<float>(texture.get_texture_height());
     float uv_left_step = request.srcrects[i].get_width() / static_cast<float>(texture.get_texture_width());
