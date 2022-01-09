@@ -1036,7 +1036,7 @@ TileMap::calculateDrawRects(bool useCache)
   if (useCache)
   {
     MD5 md5hash;
-    md5hash.update(reinterpret_cast<unsigned char *>(m_tiles.data()), m_tiles.size() * sizeof(m_tiles[0]));
+    md5hash.update(reinterpret_cast<unsigned char *>(m_tiles.data()), static_cast<unsigned>(m_tiles.size() * sizeof(m_tiles[0])));
     fname = "tilecache/" + md5hash.hex_digest();
 
     PHYSFS_file* file = PHYSFS_openRead(fname.c_str());
@@ -1044,7 +1044,7 @@ TileMap::calculateDrawRects(bool useCache)
     {
       long long size = PHYSFS_readBytes(file, tiles_draw_rects.data(), m_tiles.size() * 2);
       PHYSFS_close(file);
-      if (size == m_tiles.size() * 2)
+      if (size == static_cast<long long>(m_tiles.size()) * 2)
       {
         return;
       }
