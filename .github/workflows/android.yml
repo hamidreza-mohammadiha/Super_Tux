@@ -54,9 +54,7 @@ jobs:
         working-directory: build-android
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
-          echo "ndk-build path:"
-          which ndk-build
-          build.sh supertux
+          ./build.sh supertux
 
       - name: Package
         working-directory: build-android
