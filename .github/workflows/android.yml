@@ -39,7 +39,7 @@ jobs:
         run: |
           # Check out specific stable revision, so the build won't break if I modify my SDL build scrips
           git clone --depth=100 https://github.com/pelya/commandergenius.git build-android
-          git -C build-android checkout 292775eb07
+          git -C build-android checkout 8edb321123
           git -C build-android submodule update --init --recursive --depth=1 project/jni/boost/src project/jni/iconv/src project/jni/sdl2 project/jni/sdl2_image project/jni/sdl2_mixer project/jni/sdl2_ttf
 
       - name: Generate menu.stl
