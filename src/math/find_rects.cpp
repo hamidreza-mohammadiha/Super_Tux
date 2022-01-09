@@ -131,8 +131,8 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 				output[(y * rowWidth + x) * 2 + 1] = 0;
 			}
 		}
-		output[(biggest.y * rowWidth + biggest.x) * 2] = biggest.w;
-		output[(biggest.y * rowWidth + biggest.x) * 2 + 1] = biggest.h;
+		output[(biggest.y * rowWidth + biggest.x) * 2] = static_cast<OutputType>(biggest.w);
+		output[(biggest.y * rowWidth + biggest.x) * 2 + 1] = static_cast<OutputType>(biggest.h);
 	}
 
 #ifdef CHECK_BOTH_WAYS
@@ -160,7 +160,7 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 	if (splitHorizArea > splitVertArea) {
 		if (output != NULL) {
 #endif
-			return (long long)biggest.w * biggest.h +
+			return static_cast<long long>(biggest.w) * biggest.h +
 			findRectsInArea(input, rowWidth, minLength, output,
 				Rect(search.x, search.y, biggest.x - search.x, search.h)) +
 			findRectsInArea(input, rowWidth, minLength, output,
@@ -171,7 +171,7 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 				Rect(biggest.x, biggest.y + biggest.h, biggest.w, search.y + search.h - biggest.y - biggest.h));
 #ifdef CHECK_BOTH_WAYS
 		}
-		return splitHorizArea + (long long)biggest.w * biggest.h;
+		return splitHorizArea + static_cast<long long>(biggest.w) * biggest.h;
 	} else {
 		if (output != NULL) {
 			findRectsInArea(input, rowWidth, minLength, output,
@@ -183,7 +183,7 @@ static long long findRectsInArea (const InputType* input, int rowWidth, int minL
 			findRectsInArea(input, rowWidth, minLength, output,
 				Rect(biggest.x + biggest.w, biggest.y, search.x + search.w - biggest.x - biggest.w, biggest.h));
 		}
-		return splitVertArea + (long long)biggest.w * biggest.h;
+		return splitVertArea + static_cast<long long>(biggest.w) * biggest.h;
 	}
 #endif
 }
