@@ -1036,7 +1036,7 @@ TileMap::calculateDrawRects(bool useCache)
   if (useCache)
   {
     MD5 md5hash;
-    md5hash.update(static_cast<unsigned char *>(m_tiles.data()), m_tiles.size() * sizeof(m_tiles[0]));
+    md5hash.update(reinterpret_cast<unsigned char *>(m_tiles.data()), m_tiles.size() * sizeof(m_tiles[0]));
     fname = "tilecache/" + md5hash.hex_digest();
 
     PHYSFS_file* file = PHYSFS_openRead(fname.c_str());
