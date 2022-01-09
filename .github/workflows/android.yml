@@ -46,15 +46,22 @@ jobs:
         run: |
           sed 's/@LOGO_FILE@/logo_final.sprite/g' data/levels/misc/menu.stl.in > data/levels/misc/menu.stl
 
-      - name: Symlink to the source dir
+      - name: Symlink to the SuperTux source dir
         run: |
           ln -s `pwd` build-android/project/jni/application/supertux/supertux
+          ln -s supertux build-android/project/jni/application/src
+
+      - name: Build Boost, ICU, and OpenSSL
+        working-directory: build-android
+        run: |
+          export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          ./changeAppSettings.sh
 
       - name: Hyper turbo build script GOOOOOOOOO
         working-directory: build-android
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
-          ./build.sh supertux
+          ./build.sh
 
       - name: Package
         working-directory: build-android
