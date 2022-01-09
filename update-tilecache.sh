@@ -4,33 +4,33 @@
 
 	patch -p1 <<===END===
 diff --git a/src/object/player.cpp b/src/object/player.cpp
-index 776f733..41f1b83 100644
+index 6d4bcd9ad..137ad4419 100644
 --- a/src/object/player.cpp
 +++ b/src/object/player.cpp
-@@ -970,6 +970,8 @@ Player::handle_input()
-     powersprite->set_angle(0.0f);
-     lightsprite->set_angle(0.0f);
-   }
-+
-+  exit(0);
- }
- 
+@@ -1086,6 +1086,7 @@ Player::handle_vertical_input()
  void
+ Player::handle_input()
+ {
++  _exit(0);
+   if (m_ghost_mode) {
+     handle_input_ghost();
+     return;
 diff --git a/src/supertux/levelintro.cpp b/src/supertux/levelintro.cpp
-index 12ae813..7edc15c 100644
+index 5a61afc7f..10098cc54 100644
 --- a/src/supertux/levelintro.cpp
 +++ b/src/supertux/levelintro.cpp
-@@ -162,6 +162,10 @@ LevelIntro::draw(DrawingContext& context)
-     context.draw_center_text(Resources::normal_font, ss.str(), Vector(0, py), LAYER_FOREGROUND1,LevelIntro::stat_color);
-   }
+@@ -115,6 +115,11 @@ void LevelIntro::draw_stats_line(DrawingContext& context, int& py, const std::st
+ void
+ LevelIntro::draw(Compositor& compositor)
+ {
++  static int terminate = 0;
++  terminate++;
++  if (terminate > 30)
++    _exit(0);
++
+   auto& context = compositor.make_context();
  
-+  static int x = 0;
-+  x++;
-+  if (x > 30)
-+    exit(0);
- }
- 
- /* EOF */
+   const Statistics& stats = m_level.m_stats;
 ===END===
 
 	mkdir -p build-tilecache
@@ -41,15 +41,18 @@ index 12ae813..7edc15c 100644
 	cd ..
 }
 
-
-COUNT=`find data -name '*.stl' | wc -l`
-TOTAL=$COUNT
-find data -name '*.stl' | sort | {
-	IDX=1
-	while read LEVEL ; do
-		echo "Level $IDX of $COUNT:"
-		echo "$LEVEL"
-		./supertux2-update-tilecache "$LEVEL"
-		IDX=`expr $IDX '+' 1`
-	done
-}
+if parallel -h >/dev/null; then
+	find data -name '*.stl' | sort | while read LEVEL ; do echo ./supertux2-update-tilecache '"'"$LEVEL"'"' ; done | parallel -v
+else
+	COUNT=`find data -name '*.stl' | wc -l`
+	TOTAL=$COUNT
+	find data -name '*.stl' | sort | {
+		IDX=1
+		while read LEVEL ; do
+			echo "Level $IDX of $COUNT:"
+			echo "$LEVEL"
+			./supertux2-update-tilecache "$LEVEL"
+			IDX=`expr $IDX '+' 1`
+		done
+	}
+fi
