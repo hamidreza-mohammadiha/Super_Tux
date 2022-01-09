@@ -188,6 +188,29 @@ PhysfsSubsystem::PhysfsSubsystem(const char* argv0,
 void PhysfsSubsystem::find_datadir() const
 {
 #ifndef __EMSCRIPTEN__
+  if (const char* assetpack = getenv("ANDROID_ASSET_PACK_PATH"))
+  {
+    if (!PHYSFS_mount(boost::filesystem::canonical(assetpack).string().c_str(), nullptr, 1))
+    {
+      log_warning << "Couldn't add '" << assetpack << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
+      return;
+    }
+
+    PHYSFS_File* data = PHYSFS_openRead("assets/data.zip");
+    if (!data)
+    {
+      log_warning << "Couldn't open assets/data.zip inside '" << assetpack << "' : " << PHYSFS_getLastErrorCode() << std::endl;
+      return;
+    }
+
+    if (!PHYSFS_mountHandle(data, "assets/data.zip", nullptr, 1))
+    {
+      log_warning << "Couldn't add assets/data.zip inside '" << assetpack << "' to physfs searchpath: " << PHYSFS_getLastErrorCode() << std::endl;
+    }
+
+    return;
+  }
+
   std::string datadir;
   if (m_forced_datadir)
   {
@@ -196,10 +219,6 @@ void PhysfsSubsystem::find_datadir() const
   else if (const char* env_datadir = getenv("SUPERTUX2_DATA_DIR"))
   {
     datadir = env_datadir;
-  }
-  else if (const char* env_datadir2 = getenv("ANDROID_ASSET_PACK_PATH"))
-  {
-    datadir = env_datadir2;
   }
   else if (const char* env_datadir3 = getenv("ANDROID_MY_OWN_APP_FILE"))
   {
