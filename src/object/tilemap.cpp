@@ -1036,15 +1036,15 @@ TileMap::calculateDrawRects(bool useCache)
   if (useCache)
   {
     MD5 md5hash;
-    md5hash.update((unsigned char *) m_tiles.data(), m_tiles.size() * sizeof(m_tiles[0]));
+    md5hash.update(static_cast<unsigned char *>(m_tiles.data()), m_tiles.size() * sizeof(m_tiles[0]));
     fname = "tilecache/" + md5hash.hex_digest();
 
     PHYSFS_file* file = PHYSFS_openRead(fname.c_str());
     if (file)
     {
-      long size = PHYSFS_readBytes(file, (void *) tiles_draw_rects.data(), m_tiles.size() * 2);
+      long long size = PHYSFS_readBytes(file, tiles_draw_rects.data(), m_tiles.size() * 2);
       PHYSFS_close(file);
-      if (size == (long)m_tiles.size() * 2)
+      if (size == m_tiles.size() * 2)
       {
         return;
       }
@@ -1081,7 +1081,7 @@ TileMap::calculateDrawRects(bool useCache)
     PHYSFS_file* file = PHYSFS_openWrite(fname.c_str());
     if (file)
     {
-      PHYSFS_writeBytes(file, (void *) tiles_draw_rects.data(), m_tiles.size() * 2);
+      PHYSFS_writeBytes(file, tiles_draw_rects.data(), m_tiles.size() * 2);
       PHYSFS_close(file);
     }
   }
