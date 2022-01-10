@@ -62,7 +62,7 @@ jobs:
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
           ./changeAppSettings.sh
 
-      - name: Hyper turbo build script GOOOOOOOOO
+      - name: Hyper turbo build script GOOOOOOOOOOOO
         working-directory: build-android
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
