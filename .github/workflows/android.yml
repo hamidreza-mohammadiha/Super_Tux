@@ -39,7 +39,7 @@ jobs:
         run: |
           # Check out specific stable revision, so the build won't break if I modify my SDL build scrips
           git clone --depth=100 https://github.com/pelya/commandergenius.git build-android
-          git -C build-android checkout 8edb321123
+          git -C build-android checkout d7ef921317
           git -C build-android submodule update --init --recursive --depth=1 project/jni/boost/src project/jni/iconv/src project/jni/sdl2 project/jni/sdl2_image project/jni/sdl2_mixer project/jni/sdl2_ttf
 
       - name: Generate menu.stl
@@ -50,6 +50,11 @@ jobs:
         run: |
           ln -s `pwd` build-android/project/jni/application/supertux/supertux
           ln -s supertux build-android/project/jni/application/src
+
+      - name: Limit architectures to ARM64
+        working-directory: build-android
+        run: |
+          sed -i 's/MultiABI=/MultiABI=arm64-v8a/g' project/jni/application/supertux/AndroidAppSettings.cfg
 
       - name: Build Boost, ICU, and OpenSSL
         working-directory: build-android
