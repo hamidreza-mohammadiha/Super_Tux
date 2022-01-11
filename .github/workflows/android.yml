@@ -74,14 +74,14 @@ jobs:
           # The same SDL revision will produce the same libraries
           key: ${{env.SDL_ANDROID_REV}}
           path: |
-            project/jni/boost/include
-            project/jni/boost/lib
-            project/jni/iconv/include
-            project/jni/iconv/lib
-            project/jni/icuuc/include
-            project/jni/icuuc/lib
-            project/jni/openssl/include
-            project/jni/openssl/lib
+            build-android/project/jni/boost/include
+            build-android/project/jni/boost/lib
+            build-android/project/jni/iconv/include
+            build-android/project/jni/iconv/lib
+            build-android/project/jni/icuuc/include
+            build-android/project/jni/icuuc/lib
+            build-android/project/jni/openssl/include
+            build-android/project/jni/openssl/lib
 
       - name: Check file timestamps on precompiled libraries
         working-directory: build-android
