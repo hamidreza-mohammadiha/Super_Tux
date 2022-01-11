@@ -48,6 +48,7 @@ jobs:
 
       - name: Symlink to the SuperTux source dir
         run: |
+          rm -rf build-android/project/jni/application/supertux/supertux
           ln -s `pwd` build-android/project/jni/application/supertux/supertux
           ln -s supertux build-android/project/jni/application/src
 
