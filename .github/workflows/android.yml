@@ -69,7 +69,7 @@ jobs:
         with:
           # The same SDL revision will produce the same libraries
           key: ${SDL_ANDROID_REV}
-          path: |
+          path: >
             project/jni/boost/include
             project/jni/boost/lib
             project/jni/iconv/include
@@ -88,6 +88,7 @@ jobs:
           project/jni/iconv/lib/*
           project/jni/icuuc/lib/*
           project/jni/openssl/lib/*
+          || true
 
       - name: Build Boost, ICU, and OpenSSL
         # This takes exactly one hour on Gitlab runner
