@@ -42,10 +42,6 @@ jobs:
           git -C build-android checkout 021ebb853e
           git -C build-android submodule update --init --recursive --depth=1 project/jni/boost/src project/jni/iconv/src project/jni/sdl2 project/jni/sdl2_image project/jni/sdl2_mixer project/jni/sdl2_ttf
 
-      - name: Generate menu.stl
-        run: |
-          sed 's/@LOGO_FILE@/logo_final.sprite/g' data/levels/misc/menu.stl.in > data/levels/misc/menu.stl
-
       - name: Symlink to the SuperTux source dir
         run: |
           rm -rf build-android/project/jni/application/supertux/supertux
