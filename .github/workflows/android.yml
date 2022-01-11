@@ -72,7 +72,7 @@ jobs:
         uses: actions/cache@v2
         with:
           # The same SDL revision will produce the same libraries
-          key: ${SDL_ANDROID_REV}
+          key: ${{env.SDL_ANDROID_REV}}
           path: >
             project/jni/boost/include
             project/jni/boost/lib
@@ -120,6 +120,7 @@ jobs:
         working-directory: build-android
         run: |
           cd project/jni/application/supertux
+          export PATH=$ANDROID_NDK_LATEST_HOME:$ANDROID_SDK_ROOT/build-tools/31.0.0:$PATH
           ./create-apk-with-data.sh
           cd ../../../..
           mkdir -p upload/
