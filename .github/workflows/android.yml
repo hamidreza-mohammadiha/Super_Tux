@@ -26,6 +26,11 @@ on:
 
 jobs:
   build-android:
+    env:
+      # Revision of https://github.com/pelya/commandergenius.git - SDL2 repo is a submodule
+      # We check out a specific stable revision, so the build won't break if I modify my SDL repo
+      SDL_ANDROID_REV: 44047831b3
+      ARCH_LIST: arm64-v8a
 
     runs-on: ubuntu-latest
 
@@ -37,10 +42,16 @@ jobs:
 
       - name: Clone SDL Android repo
         run: |
-          # Check out specific stable revision, so the build won't break if I modify my SDL build scrips
           git clone --depth=100 https://github.com/pelya/commandergenius.git build-android
-          git -C build-android checkout 021ebb853e
-          git -C build-android submodule update --init --recursive --depth=1 project/jni/boost/src project/jni/iconv/src project/jni/sdl2 project/jni/sdl2_image project/jni/sdl2_mixer project/jni/sdl2_ttf
+          git -C build-android checkout ${SDL_ANDROID_REV}
+
+      - name: Clone SDL Android repo submodules
+        # There are many more submodules in this repo, we don't need them all
+        run: >
+          git -C build-android submodule update --init --recursive --depth=1
+            project/jni/boost/src project/jni/iconv/src
+            project/jni/sdl2 project/jni/sdl2_image
+            project/jni/sdl2_mixer project/jni/sdl2_ttf
 
       - name: Symlink to the SuperTux source dir
         run: |
@@ -51,9 +62,35 @@ jobs:
       - name: Limit architectures to ARM64
         working-directory: build-android
         run: |
-          sed -i 's/MultiABI=/MultiABI=arm64-v8a/g' project/jni/application/supertux/AndroidAppSettings.cfg
+          sed -i 's/MultiABI=/MultiABI="${ARCH_LIST}"/g' project/jni/application/supertux/AndroidAppSettings.cfg
+
+      - name: Read precompiled libraries from cache
+        uses: actions/cache@v2
+        with:
+          # The same SDL revision will produce the same libraries
+          key: ${SDL_ANDROID_REV}
+          path: |
+            project/jni/boost/include
+            project/jni/boost/lib
+            project/jni/iconv/include
+            project/jni/iconv/lib
+            project/jni/icuuc/include
+            project/jni/icuuc/lib
+            project/jni/openssl/include
+            project/jni/openssl/lib
+
+      - name: Check file timestamps on precompiled libraries
+        working-directory: build-android
+        run: |
+          ls -l
+            project/jni/boost/src/build-android.sh
+            project/jni/boost/lib/*
+            project/jni/iconv/lib/*
+            project/jni/icuuc/lib/*
+            project/jni/openssl/lib/*
 
       - name: Build Boost, ICU, and OpenSSL
+        # This takes exactly one hour on Gitlab runner
         working-directory: build-android
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
@@ -79,4 +116,4 @@ jobs:
         with:
           name: "android-apk"
           path: build-android/upload
-          if-no-files-found: ignore
+          if-no-files-found: error
