@@ -49,9 +49,9 @@ jobs:
         # There are many more submodules in this repo, we don't need them all
         run: >
           git -C build-android submodule update --init --recursive --depth=1
-            project/jni/boost/src project/jni/iconv/src
-            project/jni/sdl2 project/jni/sdl2_image
-            project/jni/sdl2_mixer project/jni/sdl2_ttf
+          project/jni/boost/src project/jni/iconv/src
+          project/jni/sdl2 project/jni/sdl2_image
+          project/jni/sdl2_mixer project/jni/sdl2_ttf
 
       - name: Symlink to the SuperTux source dir
         run: |
@@ -81,13 +81,13 @@ jobs:
 
       - name: Check file timestamps on precompiled libraries
         working-directory: build-android
-        run: |
+        run: >
           ls -l
-            project/jni/boost/src/build-android.sh
-            project/jni/boost/lib/*
-            project/jni/iconv/lib/*
-            project/jni/icuuc/lib/*
-            project/jni/openssl/lib/*
+          project/jni/boost/src/build-android.sh
+          project/jni/boost/lib/*
+          project/jni/iconv/lib/*
+          project/jni/icuuc/lib/*
+          project/jni/openssl/lib/*
 
       - name: Build Boost, ICU, and OpenSSL
         # This takes exactly one hour on Gitlab runner
