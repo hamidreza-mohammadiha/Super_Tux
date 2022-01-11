@@ -65,7 +65,7 @@ jobs:
       - name: Limit architectures to ARM64
         working-directory: build-android
         run: |
-          sed -i 's/MultiABI=/MultiABI="${ARCH_LIST}"/g' project/jni/application/supertux/AndroidAppSettings.cfg
+          sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/supertux/AndroidAppSettings.cfg
 
       - name: Read precompiled libraries from cache
         uses: actions/cache@v2
