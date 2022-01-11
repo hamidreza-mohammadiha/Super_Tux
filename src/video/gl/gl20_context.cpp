@@ -189,9 +189,7 @@ GL20Context::draw_arrays(GLenum type, GLint first, GLsizei count)
   assert_gl();
 
   glDrawArrays(type, first, count);
-#ifdef GL_PERFORMANCE_LOG
-  m_triangles_counter += (type == GL_TRIANGLES) ? count / 3 : count - 2;
-#endif
+
   assert_gl();
 }
 

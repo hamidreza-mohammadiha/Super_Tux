@@ -297,14 +297,6 @@ GLVideoSystem::flip()
 {
   assert_gl();
   SDL_GL_SwapWindow(m_sdl_window.get());
-#ifdef GL_PERFORMANCE_LOG
-  m_context->m_frame_counter++;
-  if (m_context->m_frame_counter >= 30)
-  {
-    log_warning << "GL rendered " << m_context->m_triangles_counter / 30 << " triangles per frame" << std::endl;
-    m_context->m_frame_counter = m_context->m_triangles_counter = 0;
-  }
-#endif
 }
 
 void
