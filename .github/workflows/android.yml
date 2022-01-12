@@ -30,7 +30,7 @@ jobs:
       # Revision of https://github.com/pelya/commandergenius.git - SDL2 repo is a submodule
       # We check out a specific stable revision, so the build won't break if I modify my SDL repo
       SDL_ANDROID_REV: ad753cbdd
-      # It takes one hour per one architecture to build Boost and ICU libraries, and Github limits CI script duration to 6 hours
+      # It takes 35 minutes per one architecture to build SuperTux, of which 20 minutes are for building Boost and ICU libraries
       # Enable additional architectures when we have these libraries inside the cache, or create a separate Android script for each architecture
       # ARCH_LIST: armeabi-v7a arm64-v8a x86 x86_64
       ARCH_LIST: arm64-v8a
@@ -95,7 +95,6 @@ jobs:
           || true
 
       - name: Build Boost, ICU, and OpenSSL
-        # This takes exactly one hour on Gitlab runner
         working-directory: build-android
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
