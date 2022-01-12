@@ -68,6 +68,14 @@ jobs:
         run: |
           sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/supertux/AndroidAppSettings.cfg
 
+      - name: Debug print NDK paths
+        run: |
+          ls -l $ANDROID_NDK_HOME || true
+          ls -l $ANDROID_NDK_LATEST_HOME || true
+          ls -l $ANDROID_SDK_ROOT || true
+          ls -l $ANDROID_SDK_ROOT || true
+          ls -l $ANDROID_SDK_ROOT/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objcopy || true
+
       - name: Copy precompiled libraries from cache
         uses: actions/cache@v2
         id: cache
@@ -109,6 +117,9 @@ jobs:
           for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=`pwd`
           mkdir -p $HOME/.android
           keytool -genkey -v -keystore $HOME/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Debug, OU=Debug, O=Debug, L=Debug, ST=Debug, C=Debug"
+          echo sdk.dir=$ANDROID_SDK_ROOT > local.properties
+          echo proguard.config=proguard.cfg;proguard-local.cfg >> local.properties
+          cat local.properties
 
       - name: Hyper turbo build script GOOOOOOOOOOOO
         working-directory: build-android
