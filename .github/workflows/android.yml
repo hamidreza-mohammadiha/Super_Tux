@@ -117,8 +117,8 @@ jobs:
           for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=`pwd`
           mkdir -p $HOME/.android
           keytool -genkey -v -keystore $HOME/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Debug, OU=Debug, O=Debug, L=Debug, ST=Debug, C=Debug"
-          echo sdk.dir=$ANDROID_SDK_ROOT > local.properties
-          echo proguard.config=proguard.cfg;proguard-local.cfg >> local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          echo "proguard.config=proguard.cfg;proguard-local.cfg" >> local.properties
           cat local.properties
 
       - name: Hyper turbo build script GOOOOOOOOOOOO
