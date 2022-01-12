@@ -95,8 +95,9 @@ jobs:
           project/jni/openssl/lib/*
           || true
 
-      - name: Generate Prime Numbers
+      - name: Touch cached file timestamps
         if: steps.cache.outputs.cache-hit == 'true'
+        working-directory: build-android
         run: >
           touch
           project/jni/boost/lib/*/*
