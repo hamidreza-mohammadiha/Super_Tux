@@ -68,7 +68,7 @@ jobs:
         run: |
           sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/supertux/AndroidAppSettings.cfg
 
-      - name: Read precompiled libraries from cache
+      - name: Copy precompiled libraries from cache
         uses: actions/cache@v2
         id: cache
         with:
@@ -83,17 +83,6 @@ jobs:
             build-android/project/jni/icuuc/lib
             build-android/project/jni/openssl/include
             build-android/project/jni/openssl/lib
-
-      - name: Check file timestamps on precompiled libraries
-        working-directory: build-android
-        run: >
-          ls -l
-          project/jni/boost/src/build-android.sh
-          project/jni/boost/lib/*
-          project/jni/iconv/lib/*
-          project/jni/icuuc/lib/*
-          project/jni/openssl/lib/*
-          || true
 
       - name: Touch cached file timestamps
         if: steps.cache.outputs.cache-hit == 'true'
